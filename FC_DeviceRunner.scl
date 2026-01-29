@@ -3,13 +3,18 @@
 // ==============================================================================
 // Project  : Elevator_System
 // Author   : Engineering Team
-// Version  : 2.0.0
-// Generated: 2026-01-14 15:47:36
+// Version  : 3.0.0
+// Generated: 2026-01-29
+// ==============================================================================
+// Зміни v3.0.0:
+//   - Використання констант MECHS_COUNT замість жорстко закодованих діапазонів
+//   - Динамічне визначення типу механізму через DeviceType
+//   - Підтримка всіх типів механізмів: Redler, Noria, Gate2P, Fan
 // ==============================================================================
 
 FUNCTION "FC_DeviceRunner" : VOID
 { S7_Optimized_Access := 'TRUE' }
-VERSION : 1.0
+VERSION : 3.0
 
 VAR_IN_OUT
     Mechs  : ARRAY[*] OF "UDT_BaseMechanism";
@@ -20,41 +25,72 @@ VAR_IN_OUT
 END_VAR
 
 VAR_TEMP
-    slot : INT;
+    slot : UINT;  // Змінено на UINT для відповідності константі MECHS_COUNT
     idx  : UINT;
 END_VAR
 
 BEGIN
-    // === REDLERS (slot 0..1) ===
-    FOR slot := 0 TO 1 DO
-        IF Mechs[slot].DeviceType = TYPE_REDLER THEN
-            idx := Mechs[slot].TypedIndex;
-            "FC_Redler"(R := Redler[idx], B := Mechs[slot]);
+    // ==============================================================================
+    // Проходимо через всі слоти базової шини механізмів
+    // ==============================================================================
+    FOR slot := 0 TO "MECHS_COUNT" DO
+        
+        // Пропускаємо порожні слоти
+        IF Mechs[slot].DeviceType = "TYPE_NONE" THEN
+            CONTINUE;
         END_IF;
-    END_FOR;
-    
-    // === NORIAS (slot 50..51) ===
-    FOR slot := 50 TO 51 DO
-        IF Mechs[slot].DeviceType = TYPE_NORIA THEN
-            idx := Mechs[slot].TypedIndex;
-            "FC_Noria"(N := Noria[idx], B := Mechs[slot]);
-        END_IF;
-    END_FOR;
-    
-    // === GATES (slot 100..101) ===
-    FOR slot := 100 TO 101 DO
-        IF Mechs[slot].DeviceType = TYPE_GATE2P THEN
-            idx := Mechs[slot].TypedIndex;
-            "FC_Gate2P"(G := Gate[idx], B := Mechs[slot]);
-        END_IF;
-    END_FOR;
-    
-    // === FANS (slot 150..150) ===
-    FOR slot := 150 TO 150 DO
-        IF Mechs[slot].DeviceType = TYPE_FAN THEN
-            idx := Mechs[slot].TypedIndex;
-            "FC_Fan"(F := Fan[idx], B := Mechs[slot]);
-        END_IF;
+        
+        // Отримуємо індекс у типізованому масиві
+        idx := Mechs[slot].TypedIndex;
+        
+        // ==============================================================================
+        // Виконуємо механізм відповідного типу
+        // ==============================================================================
+        
+        CASE Mechs[slot].DeviceType OF
+            
+            // === РЕДЛЕРИ ===
+            "TYPE_REDLER":
+                IF idx <= "REDLERS_COUNT" THEN
+                    "FC_Redler"(
+                        R := Redler[idx],
+                        B := Mechs[slot]
+                    );
+                END_IF;
+            
+            // === НОРІЇ ===
+            "TYPE_NORIA":
+                IF idx <= "NORIAS_COUNT" THEN
+                    "FC_Noria"(
+                        N := Noria[idx],
+                        B := Mechs[slot]
+                    );
+                END_IF;
+            
+            // === ШИБЕРИ (2-позиційні) ===
+            "TYPE_GATE2P":
+                IF idx <= "GATES2P_COUNT" THEN
+                    "FC_Gate2P"(
+                        G := Gate[idx],
+                        B := Mechs[slot]
+                    );
+                END_IF;
+            
+            // === ВЕНТИЛЯТОРИ ===
+            "TYPE_FAN":
+                IF idx <= "FANS_COUNT" THEN
+                    "FC_Fan"(
+                        F := Fan[idx],
+                        B := Mechs[slot]
+                    );
+                END_IF;
+            
+            // === Невідомий тип (не повинно статися) ===
+            ELSE
+                ; // Нічого не робимо
+                
+        END_CASE;
+        
     END_FOR;
     
 END_FUNCTION

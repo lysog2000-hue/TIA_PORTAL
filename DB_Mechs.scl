@@ -21,11 +21,27 @@ VAR
 
     Noria : ARRAY [0.."NORIAS_COUNT"] OF "UDT_Noria";
 
-    Gate : ARRAY [0.."GATES2P_COUNT"] OF "UDT_Gate2P";
+    Gate2P : ARRAY [0.."GATES2P_COUNT"] OF "UDT_Gate2P";
 
     Fan : ARRAY [0.."FANS_COUNT"] OF "UDT_Fan";
     
 END_VAR
 
 BEGIN
+
+    // Механізм 0 - Редлер 0
+    Mechs[0].DeviceType := "TYPE_REDLER";
+    Mechs[0].TypedIndex := 0;
+    Mechs[0].Enable_OK := TRUE;
+    
+    // Механізм 1 - Редлер 1
+    Mechs[1].DeviceType := "TYPE_REDLER";
+    Mechs[1].TypedIndex := 1;
+    Mechs[1].Enable_OK := TRUE;
+    
+    // Механізм 2 - Норія 0
+    Mechs[2].DeviceType := "TYPE_NORIA";
+    Mechs[2].TypedIndex := 0;
+    Mechs[2].Enable_OK := TRUE;
+
 END_DATA_BLOCK
