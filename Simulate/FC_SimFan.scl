@@ -1,0 +1,173 @@
+// ==============================================================================
+// FC_SimFan - Симулятор фізики та несправностей вентилятора
+// ==============================================================================
+// Версія: 2.0.0
+// Дата: 2026-01-29
+// ==============================================================================
+// Призначення:
+//   Імітує фізичне залізо вентилятора для тестування FC_Fan без обладнання
+//   Версія 2.0: FC з глобальним DB_SimMechs
+//   
+// Комунікація з FC_Fan ТІЛЬКИ через 3 сигнали:
+//   - Читає:  DB_Mechs.Fan[FanIdx].DO_Run
+//   - Пише:   DB_Mechs.Fan[FanIdx].DI_Breaker_OK
+//             DB_Mechs.Fan[FanIdx].DI_Feedback_OK
+//
+// Використання в OB1:
+//   // Симуляція вентилятора 0
+//   "FC_SimFan"(
+//       FanIdx := 0,
+//       StartupTime_ms := 3000,
+//       StopTime_ms := 2000,
+//       SimFault_Breaker := FALSE,
+//       FaultTime_Breaker_ms := 10000
+//   );
+//   
+//   FC_DeviceRunner(...);  // викликає FC_Fan як зазвичай
+//
+// Особливості вентилятора:
+//   - DI_Feedback_OK з'являється після StartupTime_ms (аналог швидкості)
+//   - Зникає після StopTime_ms (вибіг)
+//   - Немає додаткових аварій крім Breaker
+//
+// ==============================================================================
+
+FUNCTION "FC_SimFan" : VOID
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 2.0
+
+VAR_INPUT
+    FanIdx               : UINT;           // індекс у DB_Mechs.Fan[] (0..N)
+    
+    // === Фізика мотора ===
+    StartupTime_ms       : DINT;           // час розгону до фідбеку (мс)
+    StopTime_ms          : DINT;           // час зникнення фідбеку після зупинки (мс)
+    
+    // === Симуляція аварії автомата ===
+    SimFault_Breaker     : BOOL;           // увімкнути симуляцію FLT_BREAKER
+    FaultTime_Breaker_ms : DINT;           // час до аварії від пуску мотора (мс)
+    
+    // === Ручний скид аварій ===
+    ManualReset          : BOOL;           // скинути латчовані аварії (Breaker)
+END_VAR
+
+VAR_TEMP
+    // === Індекс у масиві ===
+    idx : UINT;
+    
+    // === Допоміжні ===
+    elapsedMs         : DINT;              // для FC_TimeElapsedMs
+    nowTck            : DINT;              // поточний TIME_TCK
+    startupTimeout    : BOOL;              // флаг появи фідбеку
+    stopTimeout       : BOOL;              // флаг зникнення фідбеку
+    breakerTimeout    : BOOL;              // флаг спрацювання breaker
+END_VAR
+
+BEGIN
+    // =========================================================
+    // VALIDATE INDEX
+    // =========================================================
+    IF FanIdx >= 32 THEN  // обмеження розміру масиву DB_SimMechs
+        RETURN;  // індекс за межами - нічого не робимо
+    END_IF;
+    
+    // Копіюємо індекс у temp змінну для зручності
+    idx := FanIdx;
+    
+    // =========================================================
+    // PHASE 0: Ручний скид аварій
+    // =========================================================
+    IF ManualReset THEN
+        "DB_SimMechs".Fan[idx].Breaker_Tripped := FALSE;
+    END_IF;
+    
+    // =========================================================
+    // PHASE 1: Edge detection DO_Run (команда від FC_Fan)
+    // =========================================================
+    
+    // Детект фронту 0→1 (пуск мотора)
+    IF "DB_Mechs".Fan[idx].DO_Run AND NOT "DB_SimMechs".Fan[idx].LastDO_Run THEN
+        "DB_SimMechs".Fan[idx].MotorStartTck := TIME_TCK();
+        "DB_SimMechs".Fan[idx].FaultStartTck := TIME_TCK();
+        "DB_SimMechs".Fan[idx].IsMotorRunning := TRUE;
+        "DB_SimMechs".Fan[idx].IsSpinningUp := TRUE;
+        "DB_SimMechs".Fan[idx].IsSpinningDown := FALSE;
+    END_IF;
+    
+    // Детект фронту 1→0 (зупинка мотора)
+    IF NOT "DB_Mechs".Fan[idx].DO_Run AND "DB_SimMechs".Fan[idx].LastDO_Run THEN
+        "DB_SimMechs".Fan[idx].MotorStopTck := TIME_TCK();
+        "DB_SimMechs".Fan[idx].IsMotorRunning := FALSE;
+        "DB_SimMechs".Fan[idx].IsSpinningUp := FALSE;
+        "DB_SimMechs".Fan[idx].IsSpinningDown := TRUE;
+    END_IF;
+    
+    "DB_SimMechs".Fan[idx].LastDO_Run := "DB_Mechs".Fan[idx].DO_Run;
+    
+    // =========================================================
+    // PHASE 2: Симуляція DI_Feedback_OK (фізика розгону/вибігу)
+    // =========================================================
+    
+    IF "DB_SimMechs".Fan[idx].IsSpinningUp THEN
+        // Розгін: FALSE → TRUE через StartupTime_ms
+        startupTimeout := "FC_TimeElapsedMs"(
+            StartTck := "DB_SimMechs".Fan[idx].MotorStartTck,
+            TimeoutMs := StartupTime_ms,
+            ElapsedMs => elapsedMs,
+            NowTck => nowTck
+        );
+        
+        IF startupTimeout THEN
+            "DB_Mechs".Fan[idx].DI_Feedback_OK := TRUE;
+            "DB_SimMechs".Fan[idx].IsSpinningUp := FALSE;  // розгін завершено
+        ELSE
+            "DB_Mechs".Fan[idx].DI_Feedback_OK := FALSE;  // ще розганяється
+        END_IF;
+        
+    ELSIF "DB_SimMechs".Fan[idx].IsSpinningDown THEN
+        // Вибіг: TRUE → FALSE через StopTime_ms
+        stopTimeout := "FC_TimeElapsedMs"(
+            StartTck := "DB_SimMechs".Fan[idx].MotorStopTck,
+            TimeoutMs := StopTime_ms,
+            ElapsedMs => elapsedMs,
+            NowTck => nowTck
+        );
+        
+        IF stopTimeout THEN
+            "DB_Mechs".Fan[idx].DI_Feedback_OK := FALSE;
+            "DB_SimMechs".Fan[idx].IsSpinningDown := FALSE;  // вибіг завершено
+        ELSE
+            "DB_Mechs".Fan[idx].DI_Feedback_OK := TRUE;  // ще крутиться за інерцією
+        END_IF;
+        
+    ELSIF "DB_SimMechs".Fan[idx].IsMotorRunning THEN
+        // Нормальна робота (розгін завершено, ще не зупинився)
+        "DB_Mechs".Fan[idx].DI_Feedback_OK := TRUE;
+        
+    ELSE
+        // Мотор стоїть
+        "DB_Mechs".Fan[idx].DI_Feedback_OK := FALSE;
+    END_IF;
+    
+    // =========================================================
+    // PHASE 3: Симуляція аварії BREAKER
+    // =========================================================
+    
+    // Перевірка таймера аварії (тільки якщо увімкнено та мотор працює)
+    IF SimFault_Breaker AND "DB_SimMechs".Fan[idx].IsMotorRunning AND NOT "DB_SimMechs".Fan[idx].Breaker_Tripped THEN
+        breakerTimeout := "FC_TimeElapsedMs"(
+            StartTck := "DB_SimMechs".Fan[idx].FaultStartTck,
+            TimeoutMs := FaultTime_Breaker_ms,
+            ElapsedMs => elapsedMs,
+            NowTck => nowTck
+        );
+        
+        IF breakerTimeout THEN
+            "DB_SimMechs".Fan[idx].Breaker_Tripped := TRUE;  // латч аварії
+        END_IF;
+    END_IF;
+    
+    // Запис DI (інверсія: Tripped=TRUE → DI_OK=FALSE)
+    "DB_Mechs".Fan[idx].DI_Breaker_OK := NOT "DB_SimMechs".Fan[idx].Breaker_Tripped;
+    
+END_FUNCTION

@@ -1,0 +1,197 @@
+// ==============================================================================
+// FC_SimNoria - Симулятор фізики та несправностей норії
+// ==============================================================================
+// Версія: 2.0.0
+// Дата: 2026-01-29
+// ==============================================================================
+// Призначення:
+//   Імітує фізичне залізо норії для тестування FC_Noria без обладнання
+//   Версія 2.0: FC з глобальним DB_SimMechs
+//   
+// Комунікація з FC_Noria ТІЛЬКИ через 5 сигналів:
+//   - Читає:  DB_Mechs.Noria[NoriaIdx].DO_Run
+//   - Пише:   DB_Mechs.Noria[NoriaIdx].DI_Speed_OK
+//             DB_Mechs.Noria[NoriaIdx].DI_Breaker_OK
+//             DB_Mechs.Noria[NoriaIdx].DI_Alingment_OK
+//             (typo "Alingment" збережено для сумісності)
+//
+// Використання в OB1:
+//   // Симуляція норії 0
+//   "FC_SimNoria"(
+//       NoriaIdx := 0,
+//       StartupTime_ms := 7000,
+//       StopTime_ms := 3000,
+//       SimFault_Breaker := FALSE,
+//       FaultTime_Breaker_ms := 10000
+//   );
+//   
+//   FC_DeviceRunner(...);  // викликає FC_Noria як зазвичай
+//
+// ==============================================================================
+
+FUNCTION "FC_SimNoria" : VOID
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 2.0
+
+VAR_INPUT
+    NoriaIdx             : UINT;           // індекс у DB_Mechs.Noria[] (0..N)
+    
+    // === Фізика мотора ===
+    StartupTime_ms       : DINT;           // час розгону до робочої швидкості (мс)
+    StopTime_ms          : DINT;           // час вибігу після зупинки (мс)
+    
+    // === Симуляція аварії автомата ===
+    SimFault_Breaker     : BOOL;           // увімкнути симуляцію FLT_BREAKER
+    FaultTime_Breaker_ms : DINT;           // час до аварії від пуску мотора (мс)
+    
+    // === Симуляція аварії вирівнювання стрічки ===
+    SimFault_Alignment   : BOOL;           // увімкнути симуляцію FLT_ALIGNMENT
+    FaultTime_Alignment_ms: DINT;          // час до аварії від пуску (мс)
+    
+    // === Ручний скид аварій ===
+    ManualReset          : BOOL;           // скинути латчовані аварії (Breaker, Alignment)
+END_VAR
+
+VAR_TEMP
+    // === Індекс у масиві ===
+    idx : UINT;
+    
+    // === Допоміжні ===
+    elapsedMs         : DINT;              // для FC_TimeElapsedMs
+    nowTck            : DINT;              // поточний TIME_TCK
+    startupTimeout    : BOOL;              // флаг завершення розгону
+    stopTimeout       : BOOL;              // флаг завершення вибігу
+    breakerTimeout    : BOOL;              // флаг спрацювання breaker
+    alignmentTimeout  : BOOL;              // флаг спрацювання alignment
+END_VAR
+
+BEGIN
+    // =========================================================
+    // VALIDATE INDEX
+    // =========================================================
+    IF NoriaIdx >= 32 THEN  // обмеження розміру масиву DB_SimMechs
+        RETURN;  // індекс за межами - нічого не робимо
+    END_IF;
+    
+    // Копіюємо індекс у temp змінну для зручності
+    idx := NoriaIdx;
+    
+    // =========================================================
+    // PHASE 0: Ручний скид аварій
+    // =========================================================
+    IF ManualReset THEN
+        "DB_SimMechs".Noria[idx].Breaker_Tripped := FALSE;
+        "DB_SimMechs".Noria[idx].Alignment_Tripped := FALSE;
+    END_IF;
+    
+    // =========================================================
+    // PHASE 1: Edge detection DO_Run (команда від FC_Noria)
+    // =========================================================
+    
+    // Детект фронту 0→1 (пуск мотора)
+    IF "DB_Mechs".Noria[idx].DO_Run AND NOT "DB_SimMechs".Noria[idx].LastDO_Run THEN
+        "DB_SimMechs".Noria[idx].MotorStartTck := TIME_TCK();
+        "DB_SimMechs".Noria[idx].FaultStartTck := TIME_TCK();
+        "DB_SimMechs".Noria[idx].IsMotorRunning := TRUE;
+        "DB_SimMechs".Noria[idx].IsSpinningUp := TRUE;
+        "DB_SimMechs".Noria[idx].IsSpinningDown := FALSE;
+    END_IF;
+    
+    // Детект фронту 1→0 (зупинка мотора)
+    IF NOT "DB_Mechs".Noria[idx].DO_Run AND "DB_SimMechs".Noria[idx].LastDO_Run THEN
+        "DB_SimMechs".Noria[idx].MotorStopTck := TIME_TCK();
+        "DB_SimMechs".Noria[idx].IsMotorRunning := FALSE;
+        "DB_SimMechs".Noria[idx].IsSpinningUp := FALSE;
+        "DB_SimMechs".Noria[idx].IsSpinningDown := TRUE;
+    END_IF;
+    
+    "DB_SimMechs".Noria[idx].LastDO_Run := "DB_Mechs".Noria[idx].DO_Run;
+    
+    // =========================================================
+    // PHASE 2: Симуляція DI_Speed_OK (фізика розгону/вибігу)
+    // =========================================================
+    
+    IF "DB_SimMechs".Noria[idx].IsSpinningUp THEN
+        // Розгін: FALSE → TRUE через StartupTime_ms
+        startupTimeout := "FC_TimeElapsedMs"(
+            StartTck := "DB_SimMechs".Noria[idx].MotorStartTck,
+            TimeoutMs := StartupTime_ms,
+            ElapsedMs => elapsedMs,
+            NowTck => nowTck
+        );
+        
+        IF startupTimeout THEN
+            "DB_Mechs".Noria[idx].DI_Speed_OK := TRUE;
+            "DB_SimMechs".Noria[idx].IsSpinningUp := FALSE;  // розгін завершено
+        ELSE
+            "DB_Mechs".Noria[idx].DI_Speed_OK := FALSE;  // ще розганяється
+        END_IF;
+        
+    ELSIF "DB_SimMechs".Noria[idx].IsSpinningDown THEN
+        // Вибіг: TRUE → FALSE через StopTime_ms
+        stopTimeout := "FC_TimeElapsedMs"(
+            StartTck := "DB_SimMechs".Noria[idx].MotorStopTck,
+            TimeoutMs := StopTime_ms,
+            ElapsedMs => elapsedMs,
+            NowTck => nowTck
+        );
+        
+        IF stopTimeout THEN
+            "DB_Mechs".Noria[idx].DI_Speed_OK := FALSE;
+            "DB_SimMechs".Noria[idx].IsSpinningDown := FALSE;  // вибіг завершено
+        ELSE
+            "DB_Mechs".Noria[idx].DI_Speed_OK := TRUE;  // ще крутиться за інерцією
+        END_IF;
+        
+    ELSIF "DB_SimMechs".Noria[idx].IsMotorRunning THEN
+        // Нормальна робота (розгін завершено, ще не зупинився)
+        "DB_Mechs".Noria[idx].DI_Speed_OK := TRUE;
+        
+    ELSE
+        // Мотор стоїть
+        "DB_Mechs".Noria[idx].DI_Speed_OK := FALSE;
+    END_IF;
+    
+    // =========================================================
+    // PHASE 3: Симуляція аварії BREAKER
+    // =========================================================
+    
+    // Перевірка таймера аварії (тільки якщо увімкнено та мотор працює)
+    IF SimFault_Breaker AND "DB_SimMechs".Noria[idx].IsMotorRunning AND NOT "DB_SimMechs".Noria[idx].Breaker_Tripped THEN
+        breakerTimeout := "FC_TimeElapsedMs"(
+            StartTck := "DB_SimMechs".Noria[idx].FaultStartTck,
+            TimeoutMs := FaultTime_Breaker_ms,
+            ElapsedMs => elapsedMs,
+            NowTck => nowTck
+        );
+        
+        IF breakerTimeout THEN
+            "DB_SimMechs".Noria[idx].Breaker_Tripped := TRUE;  // латч аварії
+        END_IF;
+    END_IF;
+    
+    // Запис DI (інверсія: Tripped=TRUE → DI_OK=FALSE)
+    "DB_Mechs".Noria[idx].DI_Breaker_OK := NOT "DB_SimMechs".Noria[idx].Breaker_Tripped;
+    
+    // =========================================================
+    // PHASE 4: Симуляція аварії ALIGNMENT (вирівнювання стрічки)
+    // =========================================================
+    
+    // Перевірка таймера аварії
+    IF SimFault_Alignment AND "DB_SimMechs".Noria[idx].IsMotorRunning AND NOT "DB_SimMechs".Noria[idx].Alignment_Tripped THEN
+        alignmentTimeout := "FC_TimeElapsedMs"(
+            StartTck := "DB_SimMechs".Noria[idx].FaultStartTck,
+            TimeoutMs := FaultTime_Alignment_ms,
+            ElapsedMs => elapsedMs,
+            NowTck => nowTck
+        );
+        
+        IF alignmentTimeout THEN
+            "DB_SimMechs".Noria[idx].Alignment_Tripped := TRUE;  // латч аварії
+        END_IF;
+    END_IF;
+    
+    // Запис DI (збережено оригінальний typo "Alingment")
+    "DB_Mechs".Noria[idx].DI_Alingment_OK := NOT "DB_SimMechs".Noria[idx].Alignment_Tripped;
+    
+END_FUNCTION
