@@ -1,0 +1,187 @@
+// ==============================================================================
+// ПРИКЛАД: Використання FC_SimRedler у OB1
+// ==============================================================================
+// Версія: 2.0.0
+// Дата: 2026-01-29
+// ==============================================================================
+
+// ==============================================================================
+// ВАРІАНТ 1: Базова симуляція окремих редлерів
+// ==============================================================================
+
+// Редлер 0: нормальна фізика, без аварій
+"FC_SimRedler"(
+    RedlerIdx := 0,
+    StartupTime_ms := 5000,      // 5 сек розгону
+    StopTime_ms := 2000           // 2 сек вибігу
+);
+
+// Редлер 1: швидкий розгін, аварія автомата через 10 секунд
+"FC_SimRedler"(
+    RedlerIdx := 1,
+    StartupTime_ms := 3000,       // 3 сек розгону
+    StopTime_ms := 1500,          // 1.5 сек вибігу
+    SimFault_Breaker := TRUE,     // симулювати аварію
+    FaultTime_Breaker_ms := 10000 // через 10 сек після пуску
+);
+
+// Редлер 2: аварія переповнення через 20 секунд
+"FC_SimRedler"(
+    RedlerIdx := 2,
+    StartupTime_ms := 4000,
+    StopTime_ms := 2000,
+    SimFault_Overflow := TRUE,
+    FaultTime_Overflow_ms := 20000
+);
+
+// Редлер 3: обидві аварії (спочатку спрацює та, що швидша)
+"FC_SimRedler"(
+    RedlerIdx := 3,
+    StartupTime_ms := 5000,
+    StopTime_ms := 2000,
+    SimFault_Breaker := TRUE,
+    FaultTime_Breaker_ms := 8000,   // спрацює перша
+    SimFault_Overflow := TRUE,
+    FaultTime_Overflow_ms := 15000
+);
+
+// Редлер 4: з ручним скиданням аварій
+"FC_SimRedler"(
+    RedlerIdx := 4,
+    StartupTime_ms := 5000,
+    StopTime_ms := 2000,
+    SimFault_Breaker := TRUE,
+    FaultTime_Breaker_ms := 10000,
+    ManualReset := "HMI".Redler4_ResetFaults  // кнопка з HMI
+);
+
+// ==============================================================================
+// ВАРІАНТ 2: Масова симуляція через FOR (однакові параметри)
+// ==============================================================================
+
+// Симулюємо 10 редлерів з ідентичними параметрами
+FOR #i := 0 TO 9 DO
+    "FC_SimRedler"(
+        RedlerIdx := #i,
+        StartupTime_ms := 5000,
+        StopTime_ms := 2000
+    );
+END_FOR;
+
+// ==============================================================================
+// ВАРІАНТ 3: Симуляція через конфіг-таблицю
+// ==============================================================================
+
+// Припустимо, у нас є DB_SimConfig з параметрами для кожного редлера:
+// DB_SimConfig.Redler[idx].Enable : BOOL
+// DB_SimConfig.Redler[idx].StartupTime_ms : DINT
+// DB_SimConfig.Redler[idx].StopTime_ms : DINT
+// DB_SimConfig.Redler[idx].SimFault_Breaker : BOOL
+// DB_SimConfig.Redler[idx].FaultTime_Breaker_ms : DINT
+// ...
+
+FOR #i := 0 TO 31 DO
+    // Симулюємо тільки ті, що увімкнені у конфігу
+    IF "DB_SimConfig".Redler[#i].Enable THEN
+        "FC_SimRedler"(
+            RedlerIdx := #i,
+            StartupTime_ms := "DB_SimConfig".Redler[#i].StartupTime_ms,
+            StopTime_ms := "DB_SimConfig".Redler[#i].StopTime_ms,
+            SimFault_Breaker := "DB_SimConfig".Redler[#i].SimFault_Breaker,
+            FaultTime_Breaker_ms := "DB_SimConfig".Redler[#i].FaultTime_Breaker_ms,
+            SimFault_Overflow := "DB_SimConfig".Redler[#i].SimFault_Overflow,
+            FaultTime_Overflow_ms := "DB_SimConfig".Redler[#i].FaultTime_Overflow_ms,
+            ManualReset := "DB_SimConfig".Redler[#i].ManualReset
+        );
+    END_IF;
+END_FOR;
+
+// ==============================================================================
+// ВАРІАНТ 4: Селективна симуляція (тільки потрібних механізмів)
+// ==============================================================================
+
+// Симулюємо тільки редлери, що беруть участь у конкретному технологічному процесі
+
+// Приймальний редлер
+"FC_SimRedler"(RedlerIdx := 0, StartupTime_ms := 5000, StopTime_ms := 2000);
+
+// Транспортний редлер 1
+"FC_SimRedler"(RedlerIdx := 1, StartupTime_ms := 4000, StopTime_ms := 1800);
+
+// Транспортний редлер 2
+"FC_SimRedler"(RedlerIdx := 2, StartupTime_ms := 4000, StopTime_ms := 1800);
+
+// Вивантажувальний редлер
+"FC_SimRedler"(RedlerIdx := 5, StartupTime_ms := 3000, StopTime_ms := 1500);
+
+// Редлери 3, 4, 6..31 НЕ симулюються (реальне залізо або не використовуються)
+
+// ==============================================================================
+// ВАРІАНТ 5: Стрес-тест з аваріями
+// ==============================================================================
+
+// Симуляція 20 редлерів, кожен 5-й має аварію автомата
+FOR #i := 0 TO 19 DO
+    "FC_SimRedler"(
+        RedlerIdx := #i,
+        StartupTime_ms := 5000,
+        StopTime_ms := 2000,
+        SimFault_Breaker := (#i MOD 5) = 0,          // кожен 5-й (0, 5, 10, 15)
+        FaultTime_Breaker_ms := 8000 + (#i * 1000)   // різний час аварії
+    );
+END_FOR;
+
+// ==============================================================================
+// ВАЖЛИВО: Порядок викликів у OB1
+// ==============================================================================
+
+// ПРАВИЛЬНИЙ порядок:
+// 1. FC_SimRedler (пише DI_Speed_OK, DI_Breaker_OK, DI_Overflow_OK)
+// 2. FC_DeviceRunner → FC_Redler (читає DI сигнали, пише DO_Run)
+// 3. Наступний цикл: FC_SimRedler бачить оновлений DO_Run
+
+// НЕПРАВИЛЬНИЙ порядок (симулятор працюватиме з затримкою на 1 цикл):
+// 1. FC_DeviceRunner → FC_Redler
+// 2. FC_SimRedler  <-- запізнюється на 1 цикл
+
+// ==============================================================================
+// WATCH-таблиця для дебагу
+// ==============================================================================
+
+// Створіть Watch-таблицю у TIA Portal з наступними тегами:
+
+// Для редлера 0:
+// DB_Mechs.Redler[0].DO_Run
+// DB_Mechs.Redler[0].DI_Speed_OK
+// DB_Mechs.Redler[0].DI_Breaker_OK
+// DB_Mechs.Redler[0].DI_Overflow_OK
+// DB_SimRedlers.State[0].IsMotorRunning
+// DB_SimRedlers.State[0].IsSpinningUp
+// DB_SimRedlers.State[0].IsSpinningDown
+// DB_SimRedlers.State[0].Breaker_Tripped
+// DB_SimRedlers.State[0].Overflow_Tripped
+
+// ==============================================================================
+// HMI інтеграція (приклад для WinCC)
+// ==============================================================================
+
+// Кнопка "Скинути аварії редлера 0":
+// Тег: HMI.Redler0_ResetFaults
+// Тип: BOOL
+// Подія "OnClick": Set TRUE
+// Подія "OnRelease": Set FALSE
+
+// Використання у OB1:
+"FC_SimRedler"(
+    RedlerIdx := 0,
+    ManualReset := "HMI".Redler0_ResetFaults
+);
+
+// Індикатори на HMI:
+// "Мотор працює": DB_SimRedlers.State[0].IsMotorRunning
+// "Розгін": DB_SimRedlers.State[0].IsSpinningUp
+// "Вибіг": DB_SimRedlers.State[0].IsSpinningDown
+// "Аварія автомата": DB_SimRedlers.State[0].Breaker_Tripped
+// "Переповнення": DB_SimRedlers.State[0].Overflow_Tripped
+
+// ==============================================================================

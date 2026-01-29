@@ -1,0 +1,209 @@
+// ==============================================================================
+// FC_SimRedler - Симулятор фізики та несправностей редлера
+// ==============================================================================
+// Версія: 2.0.0
+// Дата: 2026-01-29
+// ==============================================================================
+// Призначення:
+//   Імітує фізичне залізо редлера для тестування FC_Redler без обладнання
+//   Версія 2.0: переробка з FB на FC з глобальним DB_SimRedlers
+//   
+// Комунікація з FC_Redler ТІЛЬКИ через 4 сигнали:
+//   - Читає:  DB_Mechs.Redler[RedlerIdx].DO_Run
+//   - Пише:   DB_Mechs.Redler[RedlerIdx].DI_Speed_OK
+//             DB_Mechs.Redler[RedlerIdx].DI_Breaker_OK
+//             DB_Mechs.Redler[RedlerIdx].DI_Overflow_OK
+//
+// Використання в OB1:
+//   // Симуляція редлера 0
+//   "FC_SimRedler"(
+//       RedlerIdx := 0,
+//       StartupTime_ms := 5000,
+//       StopTime_ms := 2000,
+//       SimFault_Breaker := FALSE,
+//       FaultTime_Breaker_ms := 10000
+//   );
+//   
+//   // Симуляція редлера 1
+//   "FC_SimRedler"(
+//       RedlerIdx := 1,
+//       StartupTime_ms := 3000,
+//       StopTime_ms := 1500,
+//       SimFault_Overflow := TRUE,
+//       FaultTime_Overflow_ms := 20000
+//   );
+//   
+//   FC_DeviceRunner(...);  // викликає FC_Redler як зазвичай
+//
+// Переваги FC над FB:
+//   - Один глобальний DB_SimRedlers замість багатьох інстанс-DB
+//   - Простіше масове тестування багатьох механізмів
+//   - Менше пам'яті на CPU
+// ==============================================================================
+
+FUNCTION "FC_SimRedler" : VOID
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 2.0
+
+VAR_INPUT
+    RedlerIdx            : UINT;           // індекс у DB_Mechs.Redler[] (0..N)
+    
+    // === Фізика мотора ===
+    StartupTime_ms       : DINT;           // час розгону до робочої швидкості (мс)
+    StopTime_ms          : DINT;           // час вибігу після зупинки (мс)
+    
+    // === Симуляція аварії автомата ===
+    SimFault_Breaker     : BOOL;           // увімкнути симуляцію FLT_BREAKER
+    FaultTime_Breaker_ms : DINT;           // час до аварії від пуску мотора (мс)
+    
+    // === Симуляція аварії переповнення ===
+    SimFault_Overflow    : BOOL;           // увімкнути симуляцію FLT_OVERFLOW
+    FaultTime_Overflow_ms: DINT;           // час до аварії від пуску (мс)
+    
+    // === Ручний скид аварій ===
+    ManualReset          : BOOL;           // скинути латчовані аварії (Breaker, Overflow)
+END_VAR
+
+VAR_TEMP
+    // === Індекс у масиві ===
+    idx : UINT;
+    
+    // === Допоміжні ===
+    elapsedMs         : DINT;              // для FC_TimeElapsedMs
+    nowTck            : DINT;              // поточний TIME_TCK
+    startupTimeout    : BOOL;              // флаг завершення розгону
+    stopTimeout       : BOOL;              // флаг завершення вибігу
+    breakerTimeout    : BOOL;              // флаг спрацювання breaker
+    overflowTimeout   : BOOL;              // флаг спрацювання overflow
+END_VAR
+
+BEGIN
+    // =========================================================
+    // VALIDATE INDEX
+    // =========================================================
+    IF RedlerIdx >= 32 THEN  // обмеження розміру масиву DB_SimRedlers
+        RETURN;  // індекс за межами - нічого не робимо
+    END_IF;
+    
+    // Копіюємо індекс у temp змінну для зручності
+    idx := RedlerIdx;
+    
+    // =========================================================
+    // PHASE 0: Ручний скид аварій
+    // =========================================================
+    IF ManualReset THEN
+        "DB_SimRedlers".State[idx].Breaker_Tripped := FALSE;
+        "DB_SimRedlers".State[idx].Overflow_Tripped := FALSE;
+    END_IF;
+    
+    // =========================================================
+    // PHASE 1: Edge detection DO_Run (команда від FC_Redler)
+    // =========================================================
+    
+    // Детект фронту 0→1 (пуск мотора)
+    IF "DB_Mechs".Redler[idx].DO_Run AND NOT "DB_SimRedlers".State[idx].LastDO_Run THEN
+        "DB_SimRedlers".State[idx].MotorStartTck := TIME_TCK();
+        "DB_SimRedlers".State[idx].FaultStartTck := TIME_TCK();
+        "DB_SimRedlers".State[idx].IsMotorRunning := TRUE;
+        "DB_SimRedlers".State[idx].IsSpinningUp := TRUE;
+        "DB_SimRedlers".State[idx].IsSpinningDown := FALSE;
+    END_IF;
+    
+    // Детект фронту 1→0 (зупинка мотора)
+    IF NOT "DB_Mechs".Redler[idx].DO_Run AND "DB_SimRedlers".State[idx].LastDO_Run THEN
+        "DB_SimRedlers".State[idx].MotorStopTck := TIME_TCK();
+        "DB_SimRedlers".State[idx].IsMotorRunning := FALSE;
+        "DB_SimRedlers".State[idx].IsSpinningUp := FALSE;
+        "DB_SimRedlers".State[idx].IsSpinningDown := TRUE;
+    END_IF;
+    
+    "DB_SimRedlers".State[idx].LastDO_Run := "DB_Mechs".Redler[idx].DO_Run;
+    
+    // =========================================================
+    // PHASE 2: Симуляція DI_Speed_OK (фізика розгону/вибігу)
+    // =========================================================
+    
+    IF "DB_SimRedlers".State[idx].IsSpinningUp THEN
+        // Розгін: FALSE → TRUE через StartupTime_ms
+        startupTimeout := "FC_TimeElapsedMs"(
+            StartTck := "DB_SimRedlers".State[idx].MotorStartTck,
+            TimeoutMs := StartupTime_ms,
+            ElapsedMs => elapsedMs,
+            NowTck => nowTck
+        );
+        
+        IF startupTimeout THEN
+            "DB_Mechs".Redler[idx].DI_Speed_OK := TRUE;
+            "DB_SimRedlers".State[idx].IsSpinningUp := FALSE;  // розгін завершено
+        ELSE
+            "DB_Mechs".Redler[idx].DI_Speed_OK := FALSE;  // ще розганяється
+        END_IF;
+        
+    ELSIF "DB_SimRedlers".State[idx].IsSpinningDown THEN
+        // Вибіг: TRUE → FALSE через StopTime_ms
+        stopTimeout := "FC_TimeElapsedMs"(
+            StartTck := "DB_SimRedlers".State[idx].MotorStopTck,
+            TimeoutMs := StopTime_ms,
+            ElapsedMs => elapsedMs,
+            NowTck => nowTck
+        );
+        
+        IF stopTimeout THEN
+            "DB_Mechs".Redler[idx].DI_Speed_OK := FALSE;
+            "DB_SimRedlers".State[idx].IsSpinningDown := FALSE;  // вибіг завершено
+        ELSE
+            "DB_Mechs".Redler[idx].DI_Speed_OK := TRUE;  // ще крутиться за інерцією
+        END_IF;
+        
+    ELSIF "DB_SimRedlers".State[idx].IsMotorRunning THEN
+        // Нормальна робота (розгін завершено, ще не зупинився)
+        "DB_Mechs".Redler[idx].DI_Speed_OK := TRUE;
+        
+    ELSE
+        // Мотор стоїть
+        "DB_Mechs".Redler[idx].DI_Speed_OK := FALSE;
+    END_IF;
+    
+    // =========================================================
+    // PHASE 3: Симуляція аварії BREAKER
+    // =========================================================
+    
+    // Перевірка таймера аварії (тільки якщо увімкнено та мотор працює)
+    IF SimFault_Breaker AND "DB_SimRedlers".State[idx].IsMotorRunning AND NOT "DB_SimRedlers".State[idx].Breaker_Tripped THEN
+        breakerTimeout := "FC_TimeElapsedMs"(
+            StartTck := "DB_SimRedlers".State[idx].FaultStartTck,
+            TimeoutMs := FaultTime_Breaker_ms,
+            ElapsedMs => elapsedMs,
+            NowTck => nowTck
+        );
+        
+        IF breakerTimeout THEN
+            "DB_SimRedlers".State[idx].Breaker_Tripped := TRUE;  // латч аварії
+        END_IF;
+    END_IF;
+    
+    // Запис DI (інверсія: Tripped=TRUE → DI_OK=FALSE)
+    "DB_Mechs".Redler[idx].DI_Breaker_OK := NOT "DB_SimRedlers".State[idx].Breaker_Tripped;
+    
+    // =========================================================
+    // PHASE 4: Симуляція аварії OVERFLOW
+    // =========================================================
+    
+    // Перевірка таймера аварії
+    IF SimFault_Overflow AND "DB_SimRedlers".State[idx].IsMotorRunning AND NOT "DB_SimRedlers".State[idx].Overflow_Tripped THEN
+        overflowTimeout := "FC_TimeElapsedMs"(
+            StartTck := "DB_SimRedlers".State[idx].FaultStartTck,
+            TimeoutMs := FaultTime_Overflow_ms,
+            ElapsedMs => elapsedMs,
+            NowTck => nowTck
+        );
+        
+        IF overflowTimeout THEN
+            "DB_SimRedlers".State[idx].Overflow_Tripped := TRUE;  // латч аварії
+        END_IF;
+    END_IF;
+    
+    // Запис DI
+    "DB_Mechs".Redler[idx].DI_Overflow_OK := NOT "DB_SimRedlers".State[idx].Overflow_Tripped;
+    
+END_FUNCTION
