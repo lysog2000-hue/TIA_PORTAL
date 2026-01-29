@@ -25,7 +25,7 @@ VAR
 
         // === Масив станів симуляторів ===
         // Індекс відповідає DB_Mechs.Redler[idx]
-        State : ARRAY[0..31] OF "UDT_SimRedlerState";
+        State : ARRAY[0.."REDLERS_COUNT"] OF "UDT_SimRedlerState";
         
 END_VAR
 

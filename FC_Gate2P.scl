@@ -34,7 +34,7 @@ BEGIN
 	END_REGION
 	
 	REGION "1) RESET та лач FAULT"
-	    IF #B.Cmd = "CMD_RESET" THEN
+	    IF #B.Cmd = "CMD_RESET" AND #isFault  THEN
 	        #B.FLTCode := "FLT_NONE";
 	        #B.Status := "STS_IDLE";
 	        #G.MoveStartMs := 0;

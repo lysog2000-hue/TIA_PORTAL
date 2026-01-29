@@ -13,21 +13,17 @@ VERSION : 1.0
 
 VAR
     // ===================================================================
-    // Базова шина механізмів (усі слоти 0..255)
+    // Базова шина механізмів (усі слоти 0..MECHS_COUNT)
     // ===================================================================
-    Mechs : ARRAY [0..255] OF "UDT_BaseMechanism";
+    Mechs : ARRAY [0.."MECHS_COUNT"] OF "UDT_BaseMechanism";
     
-    // Редлери: 2 шт, масив [0..1]
-    Redler : ARRAY [0..1] OF "UDT_Redler";
-    
-    // Норії: 2 шт, масив [0..1]
-    Noria : ARRAY [0..1] OF "UDT_Noria";
-    
-    // Засувки: 2 шт, масив [0..1]
-    Gate : ARRAY [0..1] OF "UDT_Gate2P";
-    
-    // Вентилятори: 1 шт, масив [0..0]
-    Fan : ARRAY [0..0] OF "UDT_Fan";
+    Redler : ARRAY [0.."REDLERS_COUNT"] OF "UDT_Redler";
+
+    Noria : ARRAY [0.."NORIAS_COUNT"] OF "UDT_Noria";
+
+    Gate : ARRAY [0.."GATES2P_COUNT"] OF "UDT_Gate2P";
+
+    Fan : ARRAY [0.."FANS_COUNT"] OF "UDT_Fan";
     
 END_VAR
 
