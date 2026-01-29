@@ -17,7 +17,7 @@
 //   2. Викликайте FC_SimRedler, передаючи параметри з конфігу
 // ==============================================================================
 
-DATA_BLOCK "DB_SimRedlersConfig"
+DATA_BLOCK "DB_SimConfig"
 { S7_Optimized_Access := 'TRUE' }
 VERSION : 2.0
     
@@ -27,7 +27,8 @@ VAR
 END_VAR
 
 BEGIN
-    // Приклад початкових налаштувань для редлера 0
+    // Початкові налаштуваня 
+	// Решта  за замовчуванням вимкнені (Enable := FALSE)
     Redler[0].Enable := TRUE;
     Redler[0].StartupTime_ms := 5000;
     Redler[0].StopTime_ms := 2000;
