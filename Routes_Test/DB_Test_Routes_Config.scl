@@ -1,0 +1,32 @@
+DATA_BLOCK "DB_Test_Routes_Config"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+NON_RETAIN
+
+VAR
+    // === Керування тестами ===
+    TestEnabled         : BOOL := FALSE;   // Головний вимикач
+    TestScenario        : USINT := 0;      // 0=вимкнено, 1..10=сценарії
+    TestStep            : USINT := 0;      // Поточний крок сценарію
+    TestTimer           : DINT := 0;       // Таймер для затримок
+    
+    // === Налаштування ===
+    RouteId             : USINT := 1;      // Який маршрут тестуємо (1..12)
+    StepDelayMs         : DINT := 2000;    // Затримка між кроками (2с)
+    
+    // === Діагностика ===
+    LastState           : UINT := 0;       // Останній State для детекту змін
+    LastResultCode      : UINT := 0;       // Останній ResultCode
+    TransitionCount     : UDINT := 0;      // Лічильник переходів
+    
+    // === Snapshot для аналізу ===
+    Snapshot_State      : UINT;
+    Snapshot_ResultCode : UINT;
+    Snapshot_ActiveStep : USINT;
+    Snapshot_StepSts    : USINT;
+    Snapshot_Timestamp  : DINT;
+    
+END_VAR
+
+BEGIN
+END_DATA_BLOCK

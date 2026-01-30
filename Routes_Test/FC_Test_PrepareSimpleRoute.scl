@@ -1,0 +1,50 @@
+FUNCTION "FC_Test_PrepareSimpleRoute" : VOID
+{ S7_Optimized_Access := 'TRUE' }
+
+VAR_INPUT
+    RouteId : USINT;
+    Slot1   : UINT;
+    Slot2   : UINT;
+END_VAR
+
+VAR_TEMP
+    bufIdx : USINT;
+END_VAR
+
+BEGIN
+    // Вибір неактивного буфера
+    bufIdx := "DB_ScadaToPlc_RouteCmd".HDR_ActiveBuf;
+    IF bufIdx = 0 THEN
+        bufIdx := 1;
+    ELSE
+        bufIdx := 0;
+    END_IF;
+    
+    // Заповнення маршруту
+    IF bufIdx = 0 THEN
+        "DB_ScadaToPlc_RouteCmd".BUF0_Routes[RouteId].RC_Cmd := RT_CMD_NONE;
+        "DB_ScadaToPlc_RouteCmd".BUF0_Routes[RouteId].RC_StepCount := 2;
+        
+        // Крок 0: START Slot1, чекати RUNNING
+        "DB_ScadaToPlc_RouteCmd".BUF0_Routes[RouteId].RC_Steps[0].RS_Slot := Slot1;
+        "DB_ScadaToPlc_RouteCmd".BUF0_Routes[RouteId].RC_Steps[0].RS_Action := RS_ACT_START;
+        "DB_ScadaToPlc_RouteCmd".BUF0_Routes[RouteId].RC_Steps[0].RS_Wait := RS_WAIT_RUNNING;
+        
+        // Крок 1: START Slot2, чекати RUNNING
+        "DB_ScadaToPlc_RouteCmd".BUF0_Routes[RouteId].RC_Steps[1].RS_Slot := Slot2;
+        "DB_ScadaToPlc_RouteCmd".BUF0_Routes[RouteId].RC_Steps[1].RS_Action := RS_ACT_START;
+        "DB_ScadaToPlc_RouteCmd".BUF0_Routes[RouteId].RC_Steps[1].RS_Wait := RS_WAIT_RUNNING;
+    ELSE
+        "DB_ScadaToPlc_RouteCmd".BUF1_Routes[RouteId].RC_Cmd := RT_CMD_NONE;
+        "DB_ScadaToPlc_RouteCmd".BUF1_Routes[RouteId].RC_StepCount := 2;
+        
+        "DB_ScadaToPlc_RouteCmd".BUF1_Routes[RouteId].RC_Steps[0].RS_Slot := Slot1;
+        "DB_ScadaToPlc_RouteCmd".BUF1_Routes[RouteId].RC_Steps[0].RS_Action := RS_ACT_START;
+        "DB_ScadaToPlc_RouteCmd".BUF1_Routes[RouteId].RC_Steps[0].RS_Wait := RS_WAIT_RUNNING;
+        
+        "DB_ScadaToPlc_RouteCmd".BUF1_Routes[RouteId].RC_Steps[1].RS_Slot := Slot2;
+        "DB_ScadaToPlc_RouteCmd".BUF1_Routes[RouteId].RC_Steps[1].RS_Action := RS_ACT_START;
+        "DB_ScadaToPlc_RouteCmd".BUF1_Routes[RouteId].RC_Steps[1].RS_Wait := RS_WAIT_RUNNING;
+    END_IF;
+    
+END_FUNCTION

@@ -1,0 +1,33 @@
+FUNCTION "FC_Test_SendRouteCommand" : VOID
+{ S7_Optimized_Access := 'TRUE' }
+
+VAR_INPUT
+    RouteId : USINT;
+    Cmd     : USINT;
+END_VAR
+
+VAR_TEMP
+    bufIdx : USINT;
+END_VAR
+
+BEGIN
+    // Вибір неактивного буфера
+    bufIdx := "DB_ScadaToPlc_RouteCmd".HDR_ActiveBuf;
+    IF bufIdx = 0 THEN
+        bufIdx := 1;
+    ELSE
+        bufIdx := 0;
+    END_IF;
+    
+    // Запис команди
+    IF bufIdx = 0 THEN
+        "DB_ScadaToPlc_RouteCmd".BUF0_Routes[RouteId].RC_Cmd := Cmd;
+    ELSE
+        "DB_ScadaToPlc_RouteCmd".BUF1_Routes[RouteId].RC_Cmd := Cmd;
+    END_IF;
+    
+    // Атомарна публікація (switch buffer + increment commit)
+    "DB_ScadaToPlc_RouteCmd".HDR_ActiveBuf := bufIdx;
+    "DB_ScadaToPlc_RouteCmd".HDR_Commit := "DB_ScadaToPlc_RouteCmd".HDR_Commit + 1;
+    
+END_FUNCTION

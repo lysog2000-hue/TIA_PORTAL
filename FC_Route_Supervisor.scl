@@ -1,0 +1,60 @@
+FUNCTION "FC_Route_Supervisor" : VOID
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+
+VAR_TEMP
+    i : INT;
+    commitIn : UDINT;
+    commitAck : UDINT;
+    activeBuf : USINT;
+END_VAR
+
+BEGIN
+    
+    // =========================================================
+    // 1. Перевірка нового commit
+    // =========================================================
+    commitIn := "DB_ScadaToPlc_RouteCmd".HDR_Commit;
+    commitAck := "DB_PlcToScada_RouteStatus".ACK_CommitApplied;
+    
+    // Якщо є новий commit - оновити ACK
+    IF commitIn <> commitAck THEN
+        "DB_PlcToScada_RouteStatus".ACK_CommitApplied := commitIn;
+    END_IF;
+    
+    // =========================================================
+    // 2. Визначити активний буфер
+    // =========================================================
+    activeBuf := "DB_ScadaToPlc_RouteCmd".HDR_ActiveBuf;
+    
+    // =========================================================
+    // 3. Виклик FSM для кожного маршруту (1..12)
+    // =========================================================
+    FOR i := 1 TO 12 DO
+        
+        // Вибрати команду з активного буфера
+        IF activeBuf = 0 THEN
+            "FB_RouteFSM"(
+                RouteIdx := INT_TO_USINT(i),
+                Cmd := "DB_ScadaToPlc_RouteCmd".BUF0_Routes[i],
+                GlobalSafetyStop := FALSE,
+                LocalManualGlobal := FALSE,
+                Mechs := "DB_Mechs".Mechs,
+                Fsm := "DB_Plc_RouteFsm".RoutesFsm[i],
+                Sts => "DB_PlcToScada_RouteStatus".RoutesSts[i]
+            );
+        ELSE
+            "FB_RouteFSM"(
+                RouteIdx := INT_TO_USINT(i),
+                Cmd := "DB_ScadaToPlc_RouteCmd".BUF1_Routes[i],
+                GlobalSafetyStop := FALSE,
+                LocalManualGlobal := FALSE,
+                Mechs := "DB_Mechs".Mechs,
+                Fsm := "DB_Plc_RouteFsm".RoutesFsm[i],
+                Sts => "DB_PlcToScada_RouteStatus".RoutesSts[i]
+            );
+        END_IF;
+        
+    END_FOR;
+    
+END_FUNCTION
