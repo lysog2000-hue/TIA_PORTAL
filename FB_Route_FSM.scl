@@ -36,7 +36,7 @@ VAR
     lockOkOne  : BOOL;
 
     cmdOk      : BOOL;
-    tmpOk      : BOOL;   // для викликів, де результат не цікавить
+    dummyOk    : BOOL;    // 🆕 Для анонімних викликів
 
     safetyHit  : BOOL;
 END_VAR
@@ -86,6 +86,11 @@ BEGIN
             IF LocalManualGlobal OR Mechs[slot].LocalManual THEN
                 anyLocal := TRUE;
             END_IF;
+            
+            // Рання зупинка циклу (оптимізація)
+            IF anyFault AND anyLocal THEN
+                EXIT;
+            END_IF;
         END_FOR;
     END_IF;
 
@@ -100,7 +105,7 @@ BEGIN
             FOR i := 0 TO stepCnt - 1 DO
                 slot := Cmd.RC_Steps[i].RS_Slot;
 
-                tmpOk := "FC_ArbiterMech"(
+                dummyOk := "FC_ArbiterMech"(
                     LocalManualGlobal := LocalManualGlobal,
                     OwnerReq          := OWNER_ROUTE,
                     OwnerReqId        := USINT_TO_UINT(RouteIdx),
@@ -150,27 +155,33 @@ BEGIN
 
                         stepOk := TRUE;
 
+                        // Валідація Action
                         IF (Cmd.RC_Steps[i].RS_Action <> RS_ACT_START)
                            AND (Cmd.RC_Steps[i].RS_Action <> RS_ACT_STOP) THEN
                             stepOk := FALSE;
                         END_IF;
 
+                        // Валідація Wait
                         IF (Cmd.RC_Steps[i].RS_Wait <> RS_WAIT_RUNNING)
                            AND (Cmd.RC_Steps[i].RS_Wait <> RS_WAIT_STOPPED) THEN
                             stepOk := FALSE;
                         END_IF;
 
+                        // Перевірка контракту
                         IF NOT stepOk THEN
                             Fsm.RF_State      := ROUTE_STS_REJECTED;
                             Fsm.RF_ResultCode := ROUTE_REJ_BY_CONTRACT;
                             EXIT;
 
+                        // Перевірка ownership
                         ELSIF Mechs[slot].OwnerCur <> OWNER_NONE THEN
                             Fsm.RF_State      := ROUTE_STS_REJECTED;
                             Fsm.RF_ResultCode := ROUTE_REJ_BY_OWNER;
                             EXIT;
 
+                        // Перевірка готовності механізму
                         ELSIF (NOT Mechs[slot].Enable_OK)
+                              OR LocalManualGlobal
                               OR Mechs[slot].LocalManual
                               OR (Mechs[slot].FLTCode <> 0) THEN
                             Fsm.RF_State      := ROUTE_STS_REJECTED;
@@ -179,6 +190,7 @@ BEGIN
                         END_IF;
                     END_FOR;
 
+                    // Якщо всі перевірки пройшли
                     IF Fsm.RF_State = ROUTE_STS_VALIDATING THEN
                         Fsm.RF_State := ROUTE_STS_STARTING;
                     END_IF;
@@ -214,12 +226,12 @@ BEGIN
             END_IF;
 
             IF NOT lockOkAll THEN
-                // release what could be partially locked
+                // Release what could be partially locked
                 IF stepCnt > 0 THEN
                     FOR i := 0 TO stepCnt - 1 DO
                         slot := Cmd.RC_Steps[i].RS_Slot;
 
-                        tmpOk := "FC_ArbiterMech"(
+                        dummyOk := "FC_ArbiterMech"(
                             LocalManualGlobal := LocalManualGlobal,
                             OwnerReq          := OWNER_ROUTE,
                             OwnerReqId        := USINT_TO_UINT(RouteIdx),
@@ -262,7 +274,7 @@ BEGIN
                         FOR i := 0 TO stepCnt - 1 DO
                             slot := Cmd.RC_Steps[i].RS_Slot;
 
-                            tmpOk := "FC_ArbiterMech"(
+                            dummyOk := "FC_ArbiterMech"(
                                 LocalManualGlobal := LocalManualGlobal,
                                 OwnerReq          := OWNER_ROUTE,
                                 OwnerReqId        := USINT_TO_UINT(RouteIdx),
@@ -281,7 +293,7 @@ BEGIN
                 ELSE
                     slot := Cmd.RC_Steps[stepIdx].RS_Slot;
 
-                    // request START/STOP via arbiter
+                    // Request START/STOP via arbiter
                     IF Cmd.RC_Steps[stepIdx].RS_Action = RS_ACT_START THEN
                         cmdOk := "FC_ArbiterMech"(
                             LocalManualGlobal := LocalManualGlobal,
@@ -306,17 +318,16 @@ BEGIN
                         );
                     END_IF;
 
-                    // якщо команда не пройшла => ownership/local змінився під час виконання
+                    // Якщо команда не пройшла => ownership змінився під час виконання
                     IF NOT cmdOk THEN
-                        // якщо в константах є ABRT_BY_OWNER — став його.
-                        // якщо ще нема — поки що ставимо OPERATOR (щоб не ламати DB_Const_Routes).
-                        // Рекомендація: додати ROUTE_ABRT_BY_OWNER.
-                        Fsm.RF_AbortLatched := ROUTE_ABRT_BY_OPERATOR;
+                        // Поки що використовуємо OPERATOR (константа BY_OWNER буде додана пізніше)
+                        Fsm.RF_AbortLatched := ROUTE_ABRT_BY_OWNER;
                         Fsm.RF_State := ROUTE_STS_STOPPING;
 
                     ELSE
                         Fsm.RF_StepSts := STEP_STS_WORK;
 
+                        // Wait for mechanism state
                         IF Cmd.RC_Steps[stepIdx].RS_Wait = RS_WAIT_RUNNING THEN
                             IF Mechs[slot].Status = STS_RUNNING THEN
                                 Fsm.RF_ActiveStep := Fsm.RF_ActiveStep + 1;
@@ -335,12 +346,12 @@ BEGIN
         // ---------------- STOPPING ----------------
         ELSIF Fsm.RF_State = ROUTE_STS_STOPPING THEN
 
-            // reverse order stop via arbiter
+            // Reverse order stop via arbiter
             IF stepCnt > 0 THEN
                 FOR i := stepCnt - 1 TO 0 BY -1 DO
                     slot := Cmd.RC_Steps[i].RS_Slot;
 
-                    tmpOk := "FC_ArbiterMech"(
+                    dummyOk := "FC_ArbiterMech"(
                         LocalManualGlobal := LocalManualGlobal,
                         OwnerReq          := OWNER_ROUTE,
                         OwnerReqId        := USINT_TO_UINT(RouteIdx),
@@ -353,7 +364,7 @@ BEGIN
                 END_FOR;
             END_IF;
 
-            // wait all stopped
+            // Wait all stopped
             allStopped := TRUE;
 
             IF stepCnt > 0 THEN
@@ -366,12 +377,12 @@ BEGIN
             END_IF;
 
             IF allStopped THEN
-                // release owners
+                // Release owners
                 IF stepCnt > 0 THEN
                     FOR i := 0 TO stepCnt - 1 DO
                         slot := Cmd.RC_Steps[i].RS_Slot;
 
-                        tmpOk := "FC_ArbiterMech"(
+                        dummyOk := "FC_ArbiterMech"(
                             LocalManualGlobal := LocalManualGlobal,
                             OwnerReq          := OWNER_ROUTE,
                             OwnerReqId        := USINT_TO_UINT(RouteIdx),
