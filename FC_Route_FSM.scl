@@ -10,7 +10,7 @@ VAR_INPUT
 END_VAR
 
 VAR_IN_OUT
-    Mechs : ARRAY[0..255] OF "UDT_BaseMechanism";
+    Mechs : ARRAY[0.."MECHS_COUNT"] OF "UDT_BaseMechanism";
     Fsm   : "UDT_RouteFsmState";
     Work  : "UDT_RouteFsmWork";
 END_VAR
