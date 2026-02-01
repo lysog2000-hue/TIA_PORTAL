@@ -266,26 +266,8 @@ BEGIN
                 // Поточний активний крок
                 Work.stepIdx := USINT_TO_INT(Fsm.RF_ActiveStep);
 
-                // Якщо всі кроки виконані — DONE + release owners
+                // Якщо всі кроки виконані — DONE 
                 IF Work.stepIdx >= Work.stepCnt THEN
-
-                    IF Work.stepCnt > 0 THEN
-                        FOR Work.i := 0 TO Work.stepCnt - 1 DO
-                            Work.slot := Cmd.RC_Steps[Work.i].RS_Slot;
-
-                            Work.dummyOk := "FC_ArbiterMech"(
-                                LocalManualGlobal := LocalManualGlobal,
-                                OwnerReq          := OWNER_ROUTE,
-                                OwnerReqId        := USINT_TO_UINT(RouteIdx),
-                                ReqCmd            := CMD_NONE,
-                                ReqParam1         := 0,
-                                ReleaseOwner      := TRUE,
-                                LockOnly          := FALSE,
-                                M                 := Mechs[Work.slot]
-                            );
-                        END_FOR;
-                    END_IF;
-
                     Fsm.RF_State      := ROUTE_STS_DONE;
                     Fsm.RF_ResultCode := ROUTE_DONE_OK;
 
