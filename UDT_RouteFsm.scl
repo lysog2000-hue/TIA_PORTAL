@@ -1,0 +1,46 @@
+// ==============================================================================
+// UDT_RouteFsm - Об'єднаний стан FSM маршруту
+// ==============================================================================
+// Версія: 2.0.0
+// Дата: 2026-02-01
+// ==============================================================================
+// Зміни v2.0:
+//   - Злиття UDT_RouteFsmState + UDT_RouteFsmWork у єдину структуру
+//   - NON-RETAIN: маршрути не продовжують після рестарту
+//   - Спрощена архітектура без дублювання даних
+// ==============================================================================
+
+TYPE "UDT_RouteFsm"
+{ S7_Optimized_Access := 'TRUE' }
+STRUCT
+  // === Persistent State (був UDT_RouteFsmState) ===
+  RF_State        : UINT;   // ROUTE_STS_*
+  RF_ResultCode   : UINT;   // REJ_* / ABRT_* / DONE_*
+  RF_ActiveStep   : USINT;  // індекс поточного кроку
+  RF_StepSts      : USINT;  // STEP_STS_* (IDLE/WORK/DONE/TIMEOUT)
+  RF_AbortLatched : UINT;   // latched abort code для STOPPING
+  
+  // === Working Variables (був UDT_RouteFsmWork) ===
+  lastCmd    : USINT;       // для edge detection
+  startEdge  : BOOL;        // TRUE на фронті RT_CMD_START
+  stopOpEdge : BOOL;        // TRUE на фронті RT_CMD_STOP_OP
+
+  stepCnt    : INT;         // кількість кроків (0..64)
+  stepIdx    : INT;         // поточний індекс у циклах
+  i          : INT;         // ітератор циклів FOR
+  slot       : UINT;        // поточний slot
+
+  anyFault   : BOOL;        // є аварія на механізмах?
+  anyLocal   : BOOL;        // є LocalManual на механізмах?
+  allStopped : BOOL;        // всі механізми зупинені?
+  stepOk     : BOOL;        // валідація кроку
+
+  lockOkAll  : BOOL;        // atomic lock OK для всіх
+  lockOkOne  : BOOL;        // lock OK для одного
+
+  cmdOk      : BOOL;        // команда арбітра OK
+  dummyOk    : BOOL;        // для анонімних викликів
+
+  safetyHit  : BOOL;        // GlobalSafetyStop спрацював
+END_STRUCT
+END_TYPE

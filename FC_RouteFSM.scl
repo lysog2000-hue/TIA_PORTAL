@@ -1,11 +1,14 @@
 // ==============================================================================
 // FC_RouteFSM - Керування маршрутом (FSM)
 // ==============================================================================
-// Версія: 2.0.1
+// Версія: 2.0.0
 // Дата: 2026-02-01
 // ==============================================================================
-// Виправлення v2.0.1:
-//   🔧 Виправлено імена полів UDT_RouteFsm (всі поля на верхньому рівні)
+// Зміни v2.0:
+//   ✅ Злиття DB_Plc_RouteFsm + DB_Plc_RouteFsmWork → єдиний Fsm
+//   ✅ Видалено release ownership з DONE (механізми залишаються під Owner=ROUTE)
+//   ✅ Додано підтримку RS_StartParam та RS_StopParam
+//   ✅ Release тільки в STOPPING → ABORTED
 // ==============================================================================
 
 FUNCTION "FC_RouteFSM" : Void
@@ -13,7 +16,7 @@ FUNCTION "FC_RouteFSM" : Void
 VERSION : 2.0
 
 VAR_INPUT
-    RouteIdx          : USINT;
+    RouteIdx          : USINT;         // 1..12
     Cmd               : "UDT_RouteCmd";
     GlobalSafetyStop  : BOOL;
     LocalManualGlobal : BOOL;
@@ -21,7 +24,7 @@ END_VAR
 
 VAR_IN_OUT
     Mechs : ARRAY[0.."MECHS_COUNT"] OF "UDT_BaseMechanism";
-    Fsm   : "UDT_RouteFsm";
+    Fsm   : "UDT_RouteFsm";  // ✅ тепер єдина структура (State + Work)
 END_VAR
 
 VAR_OUTPUT
@@ -29,20 +32,37 @@ VAR_OUTPUT
 END_VAR
 
 BEGIN
+    // Скидання прапора SafetyStop на початку циклу
     Fsm.safetyHit := FALSE;
 
-    Fsm.startEdge  := (Cmd.RC_Cmd = RT_CMD_START) AND (Fsm.lastCmd <> RT_CMD_START);
-    Fsm.stopOpEdge := (Cmd.RC_Cmd = RT_CMD_STOP_OP) AND (Fsm.lastCmd <> RT_CMD_STOP_OP);
+    // =========================================================
+    // Визначення фронтів команд (edge detection)
+    // =========================================================
+    Fsm.startEdge  := (Cmd.RC_Cmd = RT_CMD_START)
+                       AND (Fsm.lastCmd <> RT_CMD_START);
+
+    Fsm.stopOpEdge := (Cmd.RC_Cmd = RT_CMD_STOP_OP)
+                       AND (Fsm.lastCmd <> RT_CMD_STOP_OP);
+
     Fsm.lastCmd := Cmd.RC_Cmd;
 
+    // =========================================================
+    // Нормалізація кількості кроків маршруту (0..64)
+    // =========================================================
     Fsm.stepCnt := USINT_TO_INT(Cmd.RC_StepCount);
     IF Fsm.stepCnt < 0 THEN Fsm.stepCnt := 0; END_IF;
     IF Fsm.stepCnt > 64 THEN Fsm.stepCnt := 64; END_IF;
 
+    // =========================================================
+    // Ініціалізація стану FSM при старті
+    // =========================================================
     IF Fsm.RF_State = 0 THEN
         Fsm.RF_State := ROUTE_STS_IDLE;
     END_IF;
 
+    // =========================================================
+    // Сканування: аварії та локальний режим на механізмах
+    // =========================================================
     Fsm.anyFault := FALSE;
     Fsm.anyLocal := FALSE;
 
@@ -58,13 +78,19 @@ BEGIN
                 Fsm.anyLocal := TRUE;
             END_IF;
 
-            IF Fsm.anyFault AND Fsm.anyLocal THEN EXIT; END_IF;
+            IF Fsm.anyFault AND Fsm.anyLocal THEN
+                EXIT;
+            END_IF;
         END_FOR;
     END_IF;
 
+    // =========================================================
+    // Глобальний Safety Stop (найвищий пріоритет)
+    // =========================================================
     IF GlobalSafetyStop THEN
         Fsm.safetyHit := TRUE;
 
+        // Відпустити ownership на всі механізми
         IF Fsm.stepCnt > 0 THEN
             FOR Fsm.i := 0 TO Fsm.stepCnt - 1 DO
                 Fsm.slot := Cmd.RC_Steps[Fsm.i].RS_Slot;
@@ -86,9 +112,14 @@ BEGIN
         Fsm.RF_ResultCode := ROUTE_ABRT_BY_SAFETY;
     END_IF;
 
+    // =========================================================
+    // Основна FSM-логіка
+    // =========================================================
     IF NOT Fsm.safetyHit THEN
 
+        // ---------------- IDLE ----------------
         IF Fsm.RF_State = ROUTE_STS_IDLE THEN
+
             IF Fsm.startEdge THEN
                 Fsm.RF_ResultCode   := 0;
                 Fsm.RF_AbortLatched := 0;
@@ -97,10 +128,13 @@ BEGIN
                 Fsm.RF_State        := ROUTE_STS_VALIDATING;
             END_IF;
 
+        // ---------------- VALIDATING ----------------
         ELSIF Fsm.RF_State = ROUTE_STS_VALIDATING THEN
+
             IF Fsm.startEdge THEN
                 Fsm.RF_State      := ROUTE_STS_REJECTED;
                 Fsm.RF_ResultCode := ROUTE_REJ_DUPLICATE_START;
+
             ELSE
                 IF Fsm.stepCnt <= 0 THEN
                     Fsm.RF_State      := ROUTE_STS_REJECTED;
@@ -108,6 +142,7 @@ BEGIN
                 ELSE
                     FOR Fsm.i := 0 TO Fsm.stepCnt - 1 DO
                         Fsm.slot := Cmd.RC_Steps[Fsm.i].RS_Slot;
+
                         Fsm.stepOk := TRUE;
 
                         IF (Cmd.RC_Steps[Fsm.i].RS_Action <> RS_ACT_START)
@@ -124,10 +159,12 @@ BEGIN
                             Fsm.RF_State      := ROUTE_STS_REJECTED;
                             Fsm.RF_ResultCode := ROUTE_REJ_BY_CONTRACT;
                             EXIT;
+
                         ELSIF Mechs[Fsm.slot].OwnerCur <> OWNER_NONE THEN
                             Fsm.RF_State      := ROUTE_STS_REJECTED;
                             Fsm.RF_ResultCode := ROUTE_REJ_BY_OWNER;
                             EXIT;
+
                         ELSIF (NOT Mechs[Fsm.slot].Enable_OK)
                               OR LocalManualGlobal
                               OR Mechs[Fsm.slot].LocalManual
@@ -144,7 +181,9 @@ BEGIN
                 END_IF;
             END_IF;
 
+        // ---------------- STARTING (атомарне "lock-all") ----------------
         ELSIF Fsm.RF_State = ROUTE_STS_STARTING THEN
+
             Fsm.lockOkAll := TRUE;
 
             IF Fsm.stepCnt > 0 THEN
@@ -171,6 +210,7 @@ BEGIN
             END_IF;
 
             IF NOT Fsm.lockOkAll THEN
+
                 IF Fsm.stepCnt > 0 THEN
                     FOR Fsm.i := 0 TO Fsm.stepCnt - 1 DO
                         Fsm.slot := Cmd.RC_Steps[Fsm.i].RS_Slot;
@@ -194,32 +234,41 @@ BEGIN
                 Fsm.RF_State := ROUTE_STS_RUNNING;
             END_IF;
 
+        // ---------------- RUNNING ----------------
         ELSIF Fsm.RF_State = ROUTE_STS_RUNNING THEN
+
             IF Fsm.stopOpEdge THEN
                 Fsm.RF_AbortLatched := ROUTE_ABRT_BY_OPERATOR;
                 Fsm.RF_State := ROUTE_STS_STOPPING;
+
             ELSIF Fsm.anyLocal THEN
                 Fsm.RF_AbortLatched := ROUTE_ABRT_BY_LOCAL;
                 Fsm.RF_State := ROUTE_STS_STOPPING;
+
             ELSIF Fsm.anyFault THEN
                 Fsm.RF_AbortLatched := ROUTE_ABRT_BY_FAULT;
                 Fsm.RF_State := ROUTE_STS_STOPPING;
+
             ELSE
                 Fsm.stepIdx := USINT_TO_INT(Fsm.RF_ActiveStep);
 
                 IF Fsm.stepIdx >= Fsm.stepCnt THEN
+                    // ✅ ЗМІНА v2.0: Видалено release ownership з DONE
+                    // Механізми залишаються під Owner=ROUTE після завершення
                     Fsm.RF_State      := ROUTE_STS_DONE;
                     Fsm.RF_ResultCode := ROUTE_DONE_OK;
+
                 ELSE
                     Fsm.slot := Cmd.RC_Steps[Fsm.stepIdx].RS_Slot;
 
+                    // ✅ ЗМІНА v2.0: Використання RS_StartParam
                     IF Cmd.RC_Steps[Fsm.stepIdx].RS_Action = RS_ACT_START THEN
                         Fsm.cmdOk := "FC_ArbiterMech"(
                             LocalManualGlobal := LocalManualGlobal,
                             OwnerReq          := OWNER_ROUTE,
                             OwnerReqId        := USINT_TO_UINT(RouteIdx),
                             ReqCmd            := CMD_START,
-                            ReqParam1         := Cmd.RC_Steps[Fsm.stepIdx].RS_StartParam,
+                            ReqParam1         := Cmd.RC_Steps[Fsm.stepIdx].RS_StartParam,  // 🆕
                             ReleaseOwner      := FALSE,
                             LockOnly          := FALSE,
                             M                 := Mechs[Fsm.slot]
@@ -240,6 +289,7 @@ BEGIN
                     IF NOT Fsm.cmdOk THEN
                         Fsm.RF_AbortLatched := ROUTE_ABRT_BY_OWNER;
                         Fsm.RF_State := ROUTE_STS_STOPPING;
+
                     ELSE
                         Fsm.RF_StepSts := STEP_STS_WORK;
 
@@ -258,23 +308,31 @@ BEGIN
                 END_IF;
             END_IF;
 
+        // ---------------- STOPPING ----------------
         ELSIF Fsm.RF_State = ROUTE_STS_STOPPING THEN
+
+            // ✅ ЗМІНА v2.0: Підтримка RS_StopParam
+            // Якщо StopParam ≠ 0 → надіслати CMD_START з цим параметром
+            // Якщо StopParam = 0 → надіслати CMD_STOP
+            
             IF Fsm.stepCnt > 0 THEN
                 FOR Fsm.i := Fsm.stepCnt - 1 TO 0 BY -1 DO
                     Fsm.slot := Cmd.RC_Steps[Fsm.i].RS_Slot;
 
                     IF Cmd.RC_Steps[Fsm.i].RS_StopParam <> 0 THEN
+                        // 🆕 Зупинка через START з параметром (напр., закрити засувку)
                         Fsm.dummyOk := "FC_ArbiterMech"(
                             LocalManualGlobal := LocalManualGlobal,
                             OwnerReq          := OWNER_ROUTE,
                             OwnerReqId        := USINT_TO_UINT(RouteIdx),
                             ReqCmd            := CMD_START,
-                            ReqParam1         := Cmd.RC_Steps[Fsm.i].RS_StopParam,
+                            ReqParam1         := Cmd.RC_Steps[Fsm.i].RS_StopParam,  // 🆕
                             ReleaseOwner      := FALSE,
                             LockOnly          := FALSE,
                             M                 := Mechs[Fsm.slot]
                         );
                     ELSE
+                        // Стандартна зупинка через CMD_STOP
                         Fsm.dummyOk := "FC_ArbiterMech"(
                             LocalManualGlobal := LocalManualGlobal,
                             OwnerReq          := OWNER_ROUTE,
@@ -289,6 +347,7 @@ BEGIN
                 END_FOR;
             END_IF;
 
+            // Перевірка, що всі механізми зупинились
             Fsm.allStopped := TRUE;
 
             IF Fsm.stepCnt > 0 THEN
@@ -301,6 +360,8 @@ BEGIN
             END_IF;
 
             IF Fsm.allStopped THEN
+
+                // ✅ ЗМІНА v2.0: Release ownership ТІЛЬКИ при ABORTED
                 IF Fsm.stepCnt > 0 THEN
                     FOR Fsm.i := 0 TO Fsm.stepCnt - 1 DO
                         Fsm.slot := Cmd.RC_Steps[Fsm.i].RS_Slot;
@@ -311,7 +372,7 @@ BEGIN
                             OwnerReqId        := USINT_TO_UINT(RouteIdx),
                             ReqCmd            := CMD_NONE,
                             ReqParam1         := 0,
-                            ReleaseOwner      := TRUE,
+                            ReleaseOwner      := TRUE,  // ✅ Release тільки тут
                             LockOnly          := FALSE,
                             M                 := Mechs[Fsm.slot]
                         );
@@ -327,6 +388,7 @@ BEGIN
                 Fsm.RF_ResultCode := Fsm.RF_AbortLatched;
             END_IF;
 
+        // ---------------- FINAL ----------------
         ELSIF (Fsm.RF_State = ROUTE_STS_DONE)
            OR (Fsm.RF_State = ROUTE_STS_REJECTED)
            OR (Fsm.RF_State = ROUTE_STS_ABORTED) THEN
@@ -341,6 +403,9 @@ BEGIN
 
     END_IF;
 
+    // =========================================================
+    // Віддзеркалення станів FSM у структуру статусу
+    // =========================================================
     Sts.RS_State      := Fsm.RF_State;
     Sts.RS_ResultCode := Fsm.RF_ResultCode;
     Sts.RS_ActiveStep := Fsm.RF_ActiveStep;

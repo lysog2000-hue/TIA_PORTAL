@@ -1,6 +1,18 @@
+// ==============================================================================
+// FC_Route_Supervisor - Супервізор маршрутів
+// ==============================================================================
+// Версія: 2.0.0
+// Дата: 2026-02-01
+// ==============================================================================
+// Зміни v2.0:
+//   ✅ Використання об'єднаного DB_Plc_RouteFsm (без окремого Work)
+//   ✅ Підтримка StartParam/StopParam у маршрутах
+//   ✅ Механізми залишаються під Owner=ROUTE після DONE
+// ==============================================================================
+
 FUNCTION "FC_Route_Supervisor" : VOID
 { S7_Optimized_Access := 'TRUE' }
-VERSION : 0.1
+VERSION : 2.0
 
 VAR_TEMP
     i : INT;
@@ -17,7 +29,6 @@ BEGIN
     commitIn  := "DB_ScadaToPlc_RouteCmd".HDR_Commit;
     commitAck := "DB_PlcToScada_RouteStatus".ACK_CommitApplied;
 
-    // Активний буфер (0 або 1), з якого PLC читає маршрути
     activeBuf := "DB_ScadaToPlc_RouteCmd".HDR_ActiveBuf;
     
     // =========================================================
@@ -25,7 +36,7 @@ BEGIN
     // =========================================================
     FOR i := 1 TO 12 DO
         
-        // Вибір активного буфера з маршрутними командами
+        // ✅ ЗМІНА v2.0: Використання об'єднаного Fsm (State + Work)
         IF activeBuf = 0 THEN
             "FC_RouteFSM"(
                 RouteIdx          := INT_TO_USINT(i),
@@ -33,8 +44,7 @@ BEGIN
                 GlobalSafetyStop  := FALSE,
                 LocalManualGlobal := FALSE,
                 Mechs             := "DB_Mechs".Mechs,
-                Fsm               := "DB_Plc_RouteFsm".RoutesFsm[i],
-                Work              := "DB_Plc_RouteFsmWork".RoutesWork[i],
+                Fsm               := "DB_Plc_RouteFsm".RoutesFsm[i],  // ✅ єдина структура
                 Sts               => "DB_PlcToScada_RouteStatus".RoutesSts[i]
             );
         ELSE
@@ -44,8 +54,7 @@ BEGIN
                 GlobalSafetyStop  := FALSE,
                 LocalManualGlobal := FALSE,
                 Mechs             := "DB_Mechs".Mechs,
-                Fsm               := "DB_Plc_RouteFsm".RoutesFsm[i],
-                Work              := "DB_Plc_RouteFsmWork".RoutesWork[i],
+                Fsm               := "DB_Plc_RouteFsm".RoutesFsm[i],  // ✅ єдина структура
                 Sts               => "DB_PlcToScada_RouteStatus".RoutesSts[i]
             );
         END_IF;
@@ -55,8 +64,6 @@ BEGIN
     // =========================================================
     // 3. Підтвердження commit після обробки всіх маршрутів
     // =========================================================
-    // Це означає: PLC повністю прийняв нові маршрути і почав
-    // працювати вже з новою конфігурацією
     IF commitIn <> commitAck THEN
         "DB_PlcToScada_RouteStatus".ACK_CommitApplied := commitIn;
     END_IF;
