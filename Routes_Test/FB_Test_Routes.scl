@@ -1,6 +1,23 @@
+// ==============================================================================
+// FB_Test_Routes - Автоматичне тестування маршрутів
+// ==============================================================================
+// Версія: 2.0.0 (оновлено для FSM v2.0)
+// Дата: 2026-02-01
+// ==============================================================================
+// Зміни v2.0:
+//   ✅ Тести адаптовані під об'єднаний DB_Plc_RouteFsm
+//   ✅ Додані перевірки ownership (DONE vs ABORTED)
+//   ✅ Використання тільки існуючих механізмів (slot 0, 1, 2)
+// ==============================================================================
+// Доступні сценарії:
+//   1. START → DONE (перевірка що owner = ROUTE)
+//   2. START → STOP_OP → ABORTED (перевірка release owner)
+//   3. REJECT_BY_OWNER (механізм зайнятий)
+// ==============================================================================
+
 FUNCTION_BLOCK "FB_Test_Routes"
 { S7_Optimized_Access := 'TRUE' }
-VERSION : 0.1
+VERSION : 2.0
 
 VAR
     // Edge detection
@@ -9,12 +26,17 @@ VAR
     
     // Timing
     lastTick : DINT;
+    
+    // Для перевірок
+    mech0Owner : USINT;
+    mech1Owner : USINT;
 END_VAR
 
 VAR_TEMP
     nowTick : DINT;
     elapsed : DINT;
     stateChanged : BOOL;
+    i : INT;
 END_VAR
 
 BEGIN
@@ -52,6 +74,9 @@ BEGIN
         "DB_Test_Routes_Config".TestStep := 0;
         "DB_Test_Routes_Config".TestTimer := 0;
         "DB_Test_Routes_Config".TransitionCount := 0;
+        "DB_Test_Routes_Config".TestPassed := FALSE;
+        "DB_Test_Routes_Config".TestFailed := FALSE;
+        "DB_Test_Routes_Config".FailReason := '';
         lastTick := TIME_TCK();
     END_IF;
     
@@ -61,8 +86,8 @@ BEGIN
     // Якщо тести вимкнені - очистити команди
     // =========================================================
     IF NOT "DB_Test_Routes_Config".TestEnabled THEN
-        "DB_ScadaToPlc_RouteCmd".BUF0_Routes["DB_Test_Routes_Config".RouteId].RC_Cmd := RT_CMD_NONE;
-        "DB_ScadaToPlc_RouteCmd".BUF1_Routes["DB_Test_Routes_Config".RouteId].RC_Cmd := RT_CMD_NONE;
+        "DB_ScadaToPlc_RouteCmd".BUF0_Routes["DB_Test_Routes_Config".RouteId].RC_Cmd := "RT_CMD_NONE";
+        "DB_ScadaToPlc_RouteCmd".BUF1_Routes["DB_Test_Routes_Config".RouteId].RC_Cmd := "RT_CMD_NONE";
         "DB_Test_Routes_Config".TestStep := 0;
         RETURN;
     END_IF;
@@ -110,17 +135,32 @@ BEGIN
                 2:  // Відправка START
                     "FC_Test_SendRouteCommand"(
                         RouteId := "DB_Test_Routes_Config".RouteId,
-                        Cmd := RT_CMD_START
+                        Cmd := "RT_CMD_START"
                     );
                     "DB_Test_Routes_Config".TestStep := 3;
                     "DB_Test_Routes_Config".TestTimer := 0;
                 
-                3:  // Чекаємо DONE або ABORT
-                    IF ("DB_PlcToScada_RouteStatus".RoutesSts["DB_Test_Routes_Config".RouteId].RS_State = ROUTE_STS_DONE)
-                       OR ("DB_PlcToScada_RouteStatus".RoutesSts["DB_Test_Routes_Config".RouteId].RS_State = ROUTE_STS_ABORTED)
-                       OR ("DB_PlcToScada_RouteStatus".RoutesSts["DB_Test_Routes_Config".RouteId].RS_State = ROUTE_STS_REJECTED) THEN
+                3:  // Чекаємо DONE
+                    IF "DB_PlcToScada_RouteStatus".RoutesSts["DB_Test_Routes_Config".RouteId].RS_State = "ROUTE_STS_DONE" THEN
+                        // ✅ ЗМІНА v2.0: Перевірка що механізми ЩЕ ПІД OWNER=ROUTE
+                        mech0Owner := "DB_Mechs".Mechs[0].OwnerCur;
+                        mech1Owner := "DB_Mechs".Mechs[1].OwnerCur;
+                        
+                        IF (mech0Owner = "OWNER_ROUTE") AND (mech1Owner = "OWNER_ROUTE") THEN
+                            "DB_Test_Routes_Config".TestPassed := TRUE;
+                        ELSE
+                            "DB_Test_Routes_Config".TestFailed := TRUE;
+                            "DB_Test_Routes_Config".FailReason := 'FAIL: Механізми звільнені після DONE (має бути OWNER_ROUTE)';
+                        END_IF;
+                        
                         "DB_Test_Routes_Config".TestStep := 4;
                         "DB_Test_Routes_Config".TestTimer := 0;
+                        
+                    ELSIF ("DB_PlcToScada_RouteStatus".RoutesSts["DB_Test_Routes_Config".RouteId].RS_State = "ROUTE_STS_ABORTED")
+                       OR ("DB_PlcToScada_RouteStatus".RoutesSts["DB_Test_Routes_Config".RouteId].RS_State = "ROUTE_STS_REJECTED") THEN
+                        "DB_Test_Routes_Config".TestFailed := TRUE;
+                        "DB_Test_Routes_Config".FailReason := 'FAIL: Маршрут не DONE, а ABORTED/REJECTED';
+                        "DB_Test_Routes_Config".TestStep := 4;
                     END_IF;
                 
                 4:  // Затримка перед очищенням
@@ -131,14 +171,14 @@ BEGIN
                 5:  // Очищення команди (RT_CMD_NONE)
                     "FC_Test_SendRouteCommand"(
                         RouteId := "DB_Test_Routes_Config".RouteId,
-                        Cmd := RT_CMD_NONE
+                        Cmd := "RT_CMD_NONE"
                     );
                     "DB_Test_Routes_Config".TestStep := 99;  // Завершено
                 
             END_CASE;
         
         // ============================================================
-        // Сценарій 2: START → STOP_OP → ABORTED
+        // Сценарій 2: START → STOP_OP → ABORTED (перевірка release)
         // ============================================================
         2:
             CASE "DB_Test_Routes_Config".TestStep OF
@@ -156,14 +196,14 @@ BEGIN
                     IF "DB_Test_Routes_Config".TestTimer >= 500 THEN
                         "FC_Test_SendRouteCommand"(
                             RouteId := "DB_Test_Routes_Config".RouteId,
-                            Cmd := RT_CMD_START
+                            Cmd := "RT_CMD_START"
                         );
                         "DB_Test_Routes_Config".TestStep := 2;
                         "DB_Test_Routes_Config".TestTimer := 0;
                     END_IF;
                 
                 2:  // Чекаємо RUNNING
-                    IF "DB_PlcToScada_RouteStatus".RoutesSts["DB_Test_Routes_Config".RouteId].RS_State = ROUTE_STS_RUNNING THEN
+                    IF "DB_PlcToScada_RouteStatus".RoutesSts["DB_Test_Routes_Config".RouteId].RS_State = "ROUTE_STS_RUNNING" THEN
                         "DB_Test_Routes_Config".TestStep := 3;
                         "DB_Test_Routes_Config".TestTimer := 0;
                     END_IF;
@@ -176,13 +216,25 @@ BEGIN
                 4:  // Відправка STOP_OP
                     "FC_Test_SendRouteCommand"(
                         RouteId := "DB_Test_Routes_Config".RouteId,
-                        Cmd := RT_CMD_STOP_OP
+                        Cmd := "RT_CMD_STOP_OP"
                     );
                     "DB_Test_Routes_Config".TestStep := 5;
                     "DB_Test_Routes_Config".TestTimer := 0;
                 
                 5:  // Чекаємо ABORTED
-                    IF "DB_PlcToScada_RouteStatus".RoutesSts["DB_Test_Routes_Config".RouteId].RS_State = ROUTE_STS_ABORTED THEN
+                    IF "DB_PlcToScada_RouteStatus".RoutesSts["DB_Test_Routes_Config".RouteId].RS_State = "ROUTE_STS_ABORTED" THEN
+                        
+                        // ✅ ЗМІНА v2.0: Перевірка що механізми ЗВІЛЬНЕНІ при ABORTED
+                        mech0Owner := "DB_Mechs".Mechs[0].OwnerCur;
+                        mech1Owner := "DB_Mechs".Mechs[1].OwnerCur;
+                        
+                        IF (mech0Owner = "OWNER_NONE") AND (mech1Owner = "OWNER_NONE") THEN
+                            "DB_Test_Routes_Config".TestPassed := TRUE;
+                        ELSE
+                            "DB_Test_Routes_Config".TestFailed := TRUE;
+                            "DB_Test_Routes_Config".FailReason := 'FAIL: Механізми НЕ звільнені після ABORTED';
+                        END_IF;
+                        
                         "DB_Test_Routes_Config".TestStep := 6;
                         "DB_Test_Routes_Config".TestTimer := 0;
                     END_IF;
@@ -195,7 +247,7 @@ BEGIN
                 7:  // Очищення
                     "FC_Test_SendRouteCommand"(
                         RouteId := "DB_Test_Routes_Config".RouteId,
-                        Cmd := RT_CMD_NONE
+                        Cmd := "RT_CMD_NONE"
                     );
                     "DB_Test_Routes_Config".TestStep := 99;
                 
@@ -208,7 +260,7 @@ BEGIN
             CASE "DB_Test_Routes_Config".TestStep OF
                 
                 0:  // Захватити механізм вручну (SCADA)
-                    "DB_Mechs".Mechs[0].OwnerCur := OWNER_SCADA;
+                    "DB_Mechs".Mechs[0].OwnerCur := "OWNER_SCADA";
                     "DB_Mechs".Mechs[0].OwnerCurId := 0;
                     "DB_Test_Routes_Config".TestStep := 1;
                     "DB_Test_Routes_Config".TestTimer := 0;
@@ -229,13 +281,22 @@ BEGIN
                 3:  // START (має бути REJECT_BY_OWNER)
                     "FC_Test_SendRouteCommand"(
                         RouteId := "DB_Test_Routes_Config".RouteId,
-                        Cmd := RT_CMD_START
+                        Cmd := "RT_CMD_START"
                     );
                     "DB_Test_Routes_Config".TestStep := 4;
                     "DB_Test_Routes_Config".TestTimer := 0;
                 
                 4:  // Чекаємо REJECTED
-                    IF "DB_PlcToScada_RouteStatus".RoutesSts["DB_Test_Routes_Config".RouteId].RS_State = ROUTE_STS_REJECTED THEN
+                    IF "DB_PlcToScada_RouteStatus".RoutesSts["DB_Test_Routes_Config".RouteId].RS_State = "ROUTE_STS_REJECTED" THEN
+                        
+                        // Перевірка ResultCode
+                        IF "DB_PlcToScada_RouteStatus".RoutesSts["DB_Test_Routes_Config".RouteId].RS_ResultCode = "ROUTE_REJ_BY_OWNER" THEN
+                            "DB_Test_Routes_Config".TestPassed := TRUE;
+                        ELSE
+                            "DB_Test_Routes_Config".TestFailed := TRUE;
+                            "DB_Test_Routes_Config".FailReason := 'FAIL: ResultCode не ROUTE_REJ_BY_OWNER';
+                        END_IF;
+                        
                         "DB_Test_Routes_Config".TestStep := 5;
                         "DB_Test_Routes_Config".TestTimer := 0;
                     END_IF;
@@ -246,15 +307,17 @@ BEGIN
                     END_IF;
                 
                 6:  // Очищення owner + команда
-                    "DB_Mechs".Mechs[0].OwnerCur := OWNER_NONE;
+                    "DB_Mechs".Mechs[0].OwnerCur := "OWNER_NONE";
                     "DB_Mechs".Mechs[0].OwnerCurId := 0;
                     "FC_Test_SendRouteCommand"(
                         RouteId := "DB_Test_Routes_Config".RouteId,
-                        Cmd := RT_CMD_NONE
+                        Cmd := "RT_CMD_NONE"
                     );
                     "DB_Test_Routes_Config".TestStep := 99;
                 
             END_CASE;
+        
+
         
         ELSE
             // Невідомий сценарій - нічого не робимо
