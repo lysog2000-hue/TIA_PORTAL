@@ -1,0 +1,238 @@
+FUNCTION "FC_Test_RouteSupervisor" : Void
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   VAR_INPUT 
+      TestNumber : USInt;   // Номер тесту для виконання
+   END_VAR
+
+   VAR_TEMP 
+      i : Int;
+      testPassed : Bool;
+      testName : String[80];
+   END_VAR
+
+BEGIN
+   // =================================================================
+   // TEST SUITE для FC_Route_Supervisor_v2
+   // =================================================================
+   // Тести перевіряють роботу Supervisor без залучення реальних FSM
+   // Фокус на: Mailbox Protocol, Duplicate Protection, Command Distribution
+   // 
+   // ВАЖЛИВО: Ці тести працюють напряму з глобальними DB:
+   // - "DB_ScadaToPlc_RouteCmd" (Mailbox)
+   // - "DB_PlcToScada_RouteStatus" (Status)
+   // - "DB_Plc_RouteExecutor" (Internal buffer)
+   //
+   // Кожен тест ВИКЛИКАЄ FC_Route_Supervisor() напряму для ізольованого тестування
+   // =================================================================
+   
+   CASE #TestNumber OF
+      
+      // ============================================================
+      // TEST 1: Базовий прийом команди START для Route #1
+      // ============================================================
+      1:
+         #testName := 'TEST 1: Basic START command acceptance';
+         
+         // ARRANGE: Mailbox вільний, Route #1 у стані IDLE
+         "DB_ScadaToPlc_RouteCmd".HDR_Commit := 100;
+         "DB_PlcToScada_RouteStatus".ACK_CommitApplied := 100;
+         "DB_PlcToScada_RouteStatus".RoutesSts[1].RS_State := ROUTE_STS_IDLE;
+         "DB_PlcToScada_RouteStatus".RoutesSts[1].RS_Warning := RS_WARNING_OK;
+         
+         // ACT: SCADA відправляє START для Route #1
+         "DB_ScadaToPlc_RouteCmd".HDR_RouteId := 1;
+         "DB_ScadaToPlc_RouteCmd".CMD_Route.RC_Cmd := RT_CMD_START;
+         "DB_ScadaToPlc_RouteCmd".CMD_Route.RC_StepCount := 3;
+         "DB_ScadaToPlc_RouteCmd".HDR_Commit := 101;
+         
+         // Supervisor обробляє
+         "FC_Route_Supervisor"();
+         
+         // ASSERT: Перевірити що команда прийнята
+         #testPassed := TRUE;
+         IF "DB_PlcToScada_RouteStatus".ACK_CommitApplied <> 101 THEN
+             #testPassed := FALSE;
+         END_IF;
+         IF "DB_PlcToScada_RouteStatus".ACK_RouteId <> 1 THEN
+             #testPassed := FALSE;
+         END_IF;
+         IF "DB_Plc_RouteExecutor".Routes[1].RC_Cmd <> RT_CMD_START THEN
+             #testPassed := FALSE;
+         END_IF;
+         IF "DB_Plc_RouteExecutor".Routes[1].RC_StepCount <> 3 THEN
+             #testPassed := FALSE;
+         END_IF;
+         IF "DB_PlcToScada_RouteStatus".RoutesSts[1].RS_Warning <> RS_WARNING_OK THEN
+             #testPassed := FALSE;
+         END_IF;
+         
+         // Зберегти результат
+         "DB_TestResults_Supervisor".Results[1].TestNumber := 1;
+         "DB_TestResults_Supervisor".Results[1].Passed := #testPassed;
+         
+      
+      // ============================================================
+      // TEST 2: Відхилення дублікату START для активного маршруту
+      // ============================================================
+      2:
+         #testName := 'TEST 2: Duplicate START rejection';
+         
+         // ARRANGE: Route #2 вже у стані RUNNING
+         "DB_ScadaToPlc_RouteCmd".HDR_Commit := 200;
+         "DB_PlcToScada_RouteStatus".ACK_CommitApplied := 200;
+         "DB_PlcToScada_RouteStatus".RoutesSts[2].RS_State := ROUTE_STS_RUNNING;
+         "DB_PlcToScada_RouteStatus".RoutesSts[2].RS_Warning := RS_WARNING_OK;
+         "DB_Plc_RouteExecutor".Routes[2].RC_Cmd := RT_CMD_START;
+         "DB_Plc_RouteExecutor".Routes[2].RC_StepCount := 5;
+         
+         // ACT: SCADA відправляє повторний START
+         "DB_ScadaToPlc_RouteCmd".HDR_RouteId := 2;
+         "DB_ScadaToPlc_RouteCmd".CMD_Route.RC_Cmd := RT_CMD_START;
+         "DB_ScadaToPlc_RouteCmd".CMD_Route.RC_StepCount := 7;
+         "DB_ScadaToPlc_RouteCmd".HDR_Commit := 201;
+         
+         // Supervisor обробляє
+         "FC_Route_Supervisor"();
+         
+         // ASSERT: Команда відхилена
+         #testPassed := TRUE;
+         IF "DB_PlcToScada_RouteStatus".ACK_CommitApplied <> 201 THEN
+             #testPassed := FALSE;
+         END_IF;
+         IF "DB_PlcToScada_RouteStatus".RoutesSts[2].RS_Warning <> RS_WARNING_IGNORED_CMD THEN
+             #testPassed := FALSE;
+         END_IF;
+         IF "DB_Plc_RouteExecutor".Routes[2].RC_StepCount <> 5 THEN
+             #testPassed := FALSE;
+         END_IF;
+         IF "DB_PlcToScada_RouteStatus".RoutesSts[2].RS_State <> ROUTE_STS_RUNNING THEN
+             #testPassed := FALSE;
+         END_IF;
+         
+         "DB_TestResults_Supervisor".Results[2].TestNumber := 2;
+         "DB_TestResults_Supervisor".Results[2].Passed := #testPassed;
+         
+      
+      // ============================================================
+      // TEST 3: Прийом STOP_OP для активного маршруту
+      // ============================================================
+      3:
+         #testName := 'TEST 3: STOP_OP for active route';
+         
+         // ARRANGE
+         "DB_ScadaToPlc_RouteCmd".HDR_Commit := 300;
+         "DB_PlcToScada_RouteStatus".ACK_CommitApplied := 300;
+         "DB_PlcToScada_RouteStatus".RoutesSts[3].RS_State := ROUTE_STS_RUNNING;
+         "DB_PlcToScada_RouteStatus".RoutesSts[3].RS_Warning := RS_WARNING_OK;
+         "DB_Plc_RouteExecutor".Routes[3].RC_Cmd := RT_CMD_START;
+         
+         // ACT
+         "DB_ScadaToPlc_RouteCmd".HDR_RouteId := 3;
+         "DB_ScadaToPlc_RouteCmd".CMD_Route.RC_Cmd := RT_CMD_STOP_OP;
+         "DB_ScadaToPlc_RouteCmd".HDR_Commit := 301;
+         
+         // Supervisor обробляє
+         "FC_Route_Supervisor"();
+         
+         // ASSERT
+         #testPassed := TRUE;
+         IF "DB_PlcToScada_RouteStatus".ACK_CommitApplied <> 301 THEN
+             #testPassed := FALSE;
+         END_IF;
+         IF "DB_Plc_RouteExecutor".Routes[3].RC_Cmd <> RT_CMD_STOP_OP THEN
+             #testPassed := FALSE;
+         END_IF;
+         IF "DB_PlcToScada_RouteStatus".RoutesSts[3].RS_Warning <> RS_WARNING_OK THEN
+             #testPassed := FALSE;
+         END_IF;
+         
+         "DB_TestResults_Supervisor".Results[3].TestNumber := 3;
+         "DB_TestResults_Supervisor".Results[3].Passed := #testPassed;
+         
+      
+      // ============================================================
+      // TEST 4: Валідація RouteId
+      // ============================================================
+      4:
+         #testName := 'TEST 4: Invalid RouteId validation';
+         
+         // ARRANGE
+         "DB_ScadaToPlc_RouteCmd".HDR_Commit := 400;
+         "DB_PlcToScada_RouteStatus".ACK_CommitApplied := 400;
+         
+         // ACT: RouteId = 0
+         "DB_ScadaToPlc_RouteCmd".HDR_RouteId := 0;
+         "DB_ScadaToPlc_RouteCmd".CMD_Route.RC_Cmd := RT_CMD_START;
+         "DB_ScadaToPlc_RouteCmd".HDR_Commit := 401;
+         
+         // Supervisor обробляє
+         "FC_Route_Supervisor"();
+         
+         // ASSERT: Відхилено
+         #testPassed := TRUE;
+         IF "DB_PlcToScada_RouteStatus".ACK_CommitApplied <> 400 THEN
+             #testPassed := FALSE;
+         END_IF;
+         
+         // ACT 2: RouteId = 13
+         "DB_ScadaToPlc_RouteCmd".HDR_RouteId := 13;
+         "DB_ScadaToPlc_RouteCmd".HDR_Commit := 402;
+         
+         // Supervisor обробляє
+         "FC_Route_Supervisor"();
+         
+         // ASSERT 2
+         IF "DB_PlcToScada_RouteStatus".ACK_CommitApplied <> 400 THEN
+             #testPassed := FALSE;
+         END_IF;
+         
+         "DB_TestResults_Supervisor".Results[4].TestNumber := 4;
+         "DB_TestResults_Supervisor".Results[4].Passed := #testPassed;
+         
+      
+      // ============================================================
+      // TEST 5: START після ABORTED
+      // ============================================================
+      5:
+         #testName := 'TEST 5: START after ABORTED state';
+         
+         // ARRANGE
+         "DB_ScadaToPlc_RouteCmd".HDR_Commit := 500;
+         "DB_PlcToScada_RouteStatus".ACK_CommitApplied := 500;
+         "DB_PlcToScada_RouteStatus".RoutesSts[4].RS_State := ROUTE_STS_ABORTED;
+         "DB_PlcToScada_RouteStatus".RoutesSts[4].RS_ResultCode := ROUTE_ABRT_BY_OPERATOR;
+         "DB_Plc_RouteExecutor".Routes[4].RC_Cmd := RT_CMD_NONE;
+         
+         // ACT
+         "DB_ScadaToPlc_RouteCmd".HDR_RouteId := 4;
+         "DB_ScadaToPlc_RouteCmd".CMD_Route.RC_Cmd := RT_CMD_START;
+         "DB_ScadaToPlc_RouteCmd".CMD_Route.RC_StepCount := 2;
+         "DB_ScadaToPlc_RouteCmd".HDR_Commit := 501;
+         
+         // Supervisor обробляє
+         "FC_Route_Supervisor"();
+         
+         // ASSERT
+         #testPassed := TRUE;
+         IF "DB_PlcToScada_RouteStatus".ACK_CommitApplied <> 501 THEN
+             #testPassed := FALSE;
+         END_IF;
+         IF "DB_Plc_RouteExecutor".Routes[4].RC_Cmd <> RT_CMD_START THEN
+             #testPassed := FALSE;
+         END_IF;
+         IF "DB_PlcToScada_RouteStatus".RoutesSts[4].RS_Warning <> RS_WARNING_OK THEN
+             #testPassed := FALSE;
+         END_IF;
+         
+         "DB_TestResults_Supervisor".Results[5].TestNumber := 5;
+         "DB_TestResults_Supervisor".Results[5].Passed := #testPassed;
+         
+     
+         
+      ELSE
+         #testName := 'UNKNOWN TEST';
+         #testPassed := FALSE;
+   END_CASE;
+   
+END_FUNCTION
