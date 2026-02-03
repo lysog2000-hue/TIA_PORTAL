@@ -1,6 +1,6 @@
 FUNCTION_BLOCK "FB_TestRunner_Supervisor"
 { S7_Optimized_Access := 'TRUE' }
-VERSION : 0.1
+VERSION : 0.2
    VAR_INPUT 
       Start : Bool;              // Запустити всі тести
       RunSingleTest : Bool;      // Запустити один тест
@@ -33,15 +33,25 @@ VERSION : 0.1
 BEGIN
    // =================================================================
    // TEST RUNNER для автоматичного виконання всіх тестів Supervisor
+   // Version 0.2: ВИПРАВЛЕНО - додано скидання лічильників
    // =================================================================
    
    // Edge detection для Start
    IF #Start AND NOT #startTrig THEN
       #state := 10;  // Почати виконання всіх тестів
       "DB_TestResults_Supervisor".CurrentTest := 1;
+      
+      // ✅ ВИПРАВЛЕННЯ: Обнулити лічильники перед запуском
       "DB_TestResults_Supervisor".PassedTests := 0;
       "DB_TestResults_Supervisor".FailedTests := 0;
       "DB_TestResults_Supervisor".AllTestsRun := FALSE;
+      
+      // ✅ ВИПРАВЛЕННЯ: Очистити всі попередні результати
+      FOR #i := 1 TO 25 DO
+         "DB_TestResults_Supervisor".Results[#i].Passed := FALSE;
+         "DB_TestResults_Supervisor".Results[#i].ErrorCode := 0;
+      END_FOR;
+      
       #Running := TRUE;
       #Done := FALSE;
    END_IF;
@@ -49,9 +59,14 @@ BEGIN
    
    // Edge detection для RunSingleTest
    IF #RunSingleTest AND NOT #singleTestTrig THEN
-      IF #TestNumber >= 1 AND #TestNumber <= 15 THEN
+      IF #TestNumber >= 1 AND #TestNumber <= 25 THEN
          #state := 20;  // Запустити один тест
          "DB_TestResults_Supervisor".CurrentTest := #TestNumber;
+         
+         // ✅ ВИПРАВЛЕННЯ: Очистити результат тесту перед запуском
+         "DB_TestResults_Supervisor".Results[#TestNumber].Passed := FALSE;
+         "DB_TestResults_Supervisor".Results[#TestNumber].ErrorCode := 0;
+         
          #Running := TRUE;
          #Done := FALSE;
       END_IF;
@@ -108,15 +123,12 @@ BEGIN
       
       
       // ============================================================
-      // STATE 11: Setup тесту
+      // STATE 11: Setup та виконання тесту
       // ============================================================
       11:
          // Виклик тесту
          "FC_Test_RouteSupervisor"(
             TestNumber := #currentTest
-            
-            
-            
          );
          
          #state := 12;  // Перехід до перевірки результату
@@ -126,8 +138,8 @@ BEGIN
       // STATE 12: Перевірка результату тесту
       // ============================================================
       12:
-         // Перевірити результат
-         // В реальності FC_Test_RouteSupervisor має записати результат у DB
+         // ✅ ВИПРАВЛЕННЯ: Коректний підрахунок
+         // Перевірити результат ТІЛЬКИ ОДИН РАЗ для кожного тесту
          
          IF "DB_TestResults_Supervisor".Results[#currentTest].Passed THEN
             "DB_TestResults_Supervisor".PassedTests := 
@@ -152,9 +164,6 @@ BEGIN
          // Виклик тесту
          "FC_Test_RouteSupervisor"(
             TestNumber := #currentTest
-            
-            
-            
          );
          
          #state := 21;
@@ -166,6 +175,14 @@ BEGIN
       21:
          #Running := FALSE;
          #Done := TRUE;
+         
+         // Оновити статистику для одиночного тесту
+         IF "DB_TestResults_Supervisor".Results[#currentTest].Passed THEN
+            #AllPassed := TRUE;
+         ELSE
+            #AllPassed := FALSE;
+         END_IF;
+         
          #state := 0;
       
       
@@ -183,17 +200,6 @@ BEGIN
          ELSE
             #AllPassed := FALSE;
          END_IF;
-         
-         // Обчислити статистику продуктивності
-         #state := 91;
-      
-      
-      // ============================================================
-      // STATE 91: Обчислення статистики
-      // ============================================================
-      91:
-         // Статистика часу недоступна (TIME() не підтримується)
-         // Тільки рахуємо Pass/Fail
          
          #state := 0;  // Повернутись в IDLE
       

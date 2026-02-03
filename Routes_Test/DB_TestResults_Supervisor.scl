@@ -4,14 +4,14 @@ VERSION : 0.1
 NON_RETAIN
    STRUCT
       // Загальна інформація про тести
-      TotalTests : USInt := 15;      // Кількість тестів
+      TotalTests : USInt := 25;      // Кількість тестів
       PassedTests : USInt := 0;       // Скільки пройшло
       FailedTests : USInt := 0;       // Скільки провалено
       CurrentTest : USInt := 0;       // Номер поточного тесту
       AllTestsRun : Bool := FALSE;    // Всі тести виконані
       
       // Результати кожного тесту
-      Results : Array[1..5] of Struct
+      Results : Array[1..25] of Struct
          TestNumber : USInt;
          TestName : String[80];
          Passed : Bool;
@@ -55,7 +55,7 @@ NON_RETAIN
 
 BEGIN
    // Ініціалізація тестів
-   TotalTests := 5;
+   TotalTests := 25;
    
    // Імена тестів (для документації)
    Results[1].TestName := 'Basic START command acceptance';

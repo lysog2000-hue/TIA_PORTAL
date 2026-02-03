@@ -1,30 +1,12 @@
 // ==============================================================================
 // FC_Route_Supervisor - Супервізор маршрутів (Mailbox Pattern v2.0)
 // ==============================================================================
-// Версія: 2.0.1
-// Дата: 2026-02-02
+// Версія: 2.0.4 (FINAL FIX - RS_Warning preservation)
+// Дата: 2026-02-03
 // ==============================================================================
-// MAILBOX PROTOCOL:
-//
-// 1. Детект нової команди: commitIn != commitAck
-// 2. Валідація RouteId (1..12)
-// 3. Перевірка стану маршруту:
-//    - Активний (VALIDATING/STARTING/RUNNING/STOPPING) → тільки STOP_OP дозволено
-//    - Неактивний (IDLE/REJECTED/ABORTED) → START дозволено
-// 4. Копіювання команди: RouteExecutor[RouteId] := Mailbox.CMD_Route
-// 5. Підтвердження: ACK_CommitApplied++, ACK_RouteId = RouteId
-// 6. Виконання: FC_RouteFSM для кожного маршруту
-// 7. Очищення: після ABORTED/IDLE очистити RouteExecutor[RouteId]
-//
-// ЗАХИСТ ВІД ДУБЛІКАТІВ START:
-// - Якщо маршрут у стані RUNNING і прийшов START → RS_Warning = 1, ACK надіслано
-// - Дублікат не призводить до REJECT, а просто ігнорується з попередженням
-//
-// КЛЮЧОВІ ЗМІНИ v2.0:
-// - Єдиний Mailbox замість масиву команд
-// - Послідовна обробка команд
-// - Незалежне виконання маршрутів
-// - RUNNING як кінцевий стан (без DONE)
+// КРИТИЧНЕ ВИПРАВЛЕННЯ:
+// FC_RouteFSM затирає RS_Warning кожного циклу для ВСІХ маршрутів
+// Рішення: Зберігати RS_Warning перед FSM і відновлювати після FSM
 // ==============================================================================
 
 FUNCTION "FC_Route_Supervisor" : VOID
@@ -32,92 +14,104 @@ FUNCTION "FC_Route_Supervisor" : VOID
 VERSION : 2.0
 
 VAR_TEMP
-  i           : INT;
-  commitIn    : UDINT;
-  commitAck   : UDINT;
-  routeId     : USINT;
-  currentState : UINT;
-  isActive    : BOOL;
-  cmdAllowed  : BOOL;
+  i                : INT;
+  commitIn         : UDINT;
+  commitAck        : UDINT;
+  routeId          : USINT;
+  currentState     : UINT;
+  isActive         : BOOL;
+  cmdAllowed       : BOOL;
+  processedRouteId : USINT;
+  pendingWarning   : USINT;
+  savedWarnings    : ARRAY[1..12] OF USINT;  // ✅ Зберегти RS_Warning
 END_VAR
 
 BEGIN
     
+    // Ініціалізація
+    processedRouteId := 0;
+    pendingWarning := RS_WARNING_OK;
+    
     // =========================================================
-    // 1. MAILBOX: Детект нової команди
+    // 1. ЗБЕРЕГТИ RS_Warning перед FSM
+    // =========================================================
+    // ✅ КРИТИЧНО: FSM затирає RS_Warning кожного циклу
+    FOR i := 1 TO 12 DO
+        savedWarnings[i] := "DB_PlcToScada_RouteStatus".RoutesSts[i].RS_Warning;
+    END_FOR;
+    
+    // =========================================================
+    // 2. MAILBOX: Детект нової команди
     // =========================================================
     commitIn  := "DB_ScadaToPlc_RouteCmd".HDR_Commit;
     commitAck := "DB_PlcToScada_RouteStatus".ACK_CommitApplied;
     
-    // Якщо немає нової команди → тільки виконання FSM
     IF commitIn <> commitAck THEN
         
         // =========================================================
-        // 2. MAILBOX: Валідація RouteId
+        // 3. MAILBOX: Валідація RouteId
         // =========================================================
         routeId := "DB_ScadaToPlc_RouteCmd".HDR_RouteId;
         
+        // Невалідний RouteId → RETURN без ACK
         IF (routeId < 1) OR (routeId > 12) THEN
-            // Невалідний RouteId → ACK з відхиленням (через Warning)
-            "DB_PlcToScada_RouteStatus".ACK_CommitApplied := commitIn;
-            "DB_PlcToScada_RouteStatus".ACK_RouteId := 0;  // 0 = invalid
-            // Не змінюємо стан маршруту
+            RETURN;
+        END_IF;
+        
+        // =========================================================
+        // 4. MAILBOX: Перевірка стану маршруту
+        // =========================================================
+        currentState := "DB_PlcToScada_RouteStatus".RoutesSts[routeId].RS_State;
+        
+        isActive := (currentState = ROUTE_STS_VALIDATING) OR
+                    (currentState = ROUTE_STS_STARTING) OR
+                    (currentState = ROUTE_STS_RUNNING) OR
+                    (currentState = ROUTE_STS_STOPPING);
+        
+        cmdAllowed := FALSE;
+        
+        // Перевірка дозволеності команди
+        IF "DB_ScadaToPlc_RouteCmd".CMD_Route.RC_Cmd = RT_CMD_START THEN
+            IF isActive THEN
+                // START для активного → ігнорувати з попередженням
+                pendingWarning := RS_WARNING_IGNORED_CMD;
+                cmdAllowed := FALSE;
+            ELSE
+                // START для неактивного → дозволено
+                pendingWarning := RS_WARNING_OK;
+                cmdAllowed := TRUE;
+            END_IF;
+            
+        ELSIF "DB_ScadaToPlc_RouteCmd".CMD_Route.RC_Cmd = RT_CMD_STOP_OP THEN
+            // STOP_OP завжди дозволено
+            pendingWarning := RS_WARNING_OK;
+            cmdAllowed := TRUE;
             
         ELSE
-            // =========================================================
-            // 3. MAILBOX: Перевірка стану маршруту
-            // =========================================================
-            currentState := "DB_PlcToScada_RouteStatus".RoutesSts[routeId].RS_State;
-            
-            // Визначення активності маршруту
-            isActive := (currentState = ROUTE_STS_VALIDATING) OR
-                        (currentState = ROUTE_STS_STARTING) OR
-                        (currentState = ROUTE_STS_RUNNING) OR
-                        (currentState = ROUTE_STS_STOPPING);
-            
+            // RT_CMD_NONE або невідома команда
             cmdAllowed := FALSE;
-            
-            // Перевірка дозволеності команди
-            IF "DB_ScadaToPlc_RouteCmd".CMD_Route.RC_Cmd = RT_CMD_START THEN
-                IF isActive THEN
-                    // START для активного маршруту → ігнорувати з попередженням
-                    "DB_PlcToScada_RouteStatus".RoutesSts[routeId].RS_Warning := RS_WARNING_IGNORED_CMD;
-                    cmdAllowed := FALSE;  // не копіюємо команду
-                ELSE
-                    // START для неактивного маршруту → дозволено
-                    "DB_PlcToScada_RouteStatus".RoutesSts[routeId].RS_Warning := RS_WARNING_OK;
-                    cmdAllowed := TRUE;
-                END_IF;
-                
-            ELSIF "DB_ScadaToPlc_RouteCmd".CMD_Route.RC_Cmd = RT_CMD_STOP_OP THEN
-                // STOP_OP завжди дозволено (для активних і неактивних)
-                "DB_PlcToScada_RouteStatus".RoutesSts[routeId].RS_Warning := RS_WARNING_OK;
-                cmdAllowed := TRUE;
-                
-            ELSE
-                // RT_CMD_NONE або невідома команда → ігнорувати
-                cmdAllowed := FALSE;
-            END_IF;
-            
-            // =========================================================
-            // 4. MAILBOX: Копіювання команди у RouteExecutor
-            // =========================================================
-            IF cmdAllowed THEN
-                "DB_Plc_RouteExecutor".Routes[routeId] := "DB_ScadaToPlc_RouteCmd".CMD_Route;
-            END_IF;
-            
-            // =========================================================
-            // 5. MAILBOX: Підтвердження (ACK)
-            // =========================================================
-            "DB_PlcToScada_RouteStatus".ACK_CommitApplied := commitIn;
-            "DB_PlcToScada_RouteStatus".ACK_RouteId := routeId;
-            
         END_IF;
+        
+        // =========================================================
+        // 5. MAILBOX: Копіювання команди у RouteExecutor
+        // =========================================================
+        IF cmdAllowed THEN
+            "DB_Plc_RouteExecutor".Routes[routeId] := "DB_ScadaToPlc_RouteCmd".CMD_Route;
+        END_IF;
+        
+        // =========================================================
+        // 6. MAILBOX: Підтвердження (ACK)
+        // =========================================================
+        "DB_PlcToScada_RouteStatus".ACK_CommitApplied := commitIn;
+        "DB_PlcToScada_RouteStatus".ACK_RouteId := routeId;
+        
+        // Запам'ятати який маршрут обробили
+        processedRouteId := routeId;
         
     END_IF;
     
     // =========================================================
-    // 6. FSM: Виконання всіх маршрутів (незалежно від Mailbox)
+    // 7. FSM: Виконання всіх маршрутів
     // =========================================================
     FOR i := 1 TO 12 DO
         
@@ -134,14 +128,31 @@ BEGIN
     END_FOR;
     
     // =========================================================
-    // 7. CLEANUP: Очищення RouteExecutor після завершення
+    // 8. ✅ ВІДНОВИТИ RS_Warning після FSM
     // =========================================================
     FOR i := 1 TO 12 DO
+        IF i = processedRouteId THEN
+            // Для обробленого маршруту → встановити новий Warning
+            "DB_PlcToScada_RouteStatus".RoutesSts[i].RS_Warning := pendingWarning;
+        ELSE
+            // Для інших маршрутів → відновити збережений Warning
+            "DB_PlcToScada_RouteStatus".RoutesSts[i].RS_Warning := savedWarnings[i];
+        END_IF;
+    END_FOR;
+    
+    // =========================================================
+    // 9. CLEANUP: Очищення RouteExecutor після завершення
+    // =========================================================
+    FOR i := 1 TO 12 DO
+        // Пропустити маршрут, який щойно отримав нову команду
+        IF i = processedRouteId THEN
+            CONTINUE;
+        END_IF;
+        
         currentState := "DB_PlcToScada_RouteStatus".RoutesSts[i].RS_State;
         
-        // Після ABORTED або повернення в IDLE очищаємо команду
+        // Очищати тільки маршрути у фінальних станах
         IF (currentState = ROUTE_STS_ABORTED) OR (currentState = ROUTE_STS_IDLE) THEN
-            // Очищення команди (встановлюємо RT_CMD_NONE)
             "DB_Plc_RouteExecutor".Routes[i].RC_Cmd := RT_CMD_NONE;
             "DB_Plc_RouteExecutor".Routes[i].RC_StepCount := 0;
         END_IF;
