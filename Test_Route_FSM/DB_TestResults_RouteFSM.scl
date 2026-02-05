@@ -1,0 +1,136 @@
+DATA_BLOCK "DB_TestResults_RouteFSM"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+NON_RETAIN
+   STRUCT
+      // ===================================================================
+      // Загальна інформація про тести FC_RouteFSM
+      // ===================================================================
+      TotalTests : USInt := 35;      // Кількість тестів
+      PassedTests : USInt := 0;       // Скільки пройшло
+      FailedTests : USInt := 0;       // Скільки провалено
+      CurrentTest : USInt := 0;       // Номер поточного тесту
+      AllTestsRun : Bool := FALSE;    // Всі тести виконані
+      sts : "UDT_RouteStatus";
+      // ===================================================================
+      // Результати кожного тесту
+      // ===================================================================
+      Results : Array[1..35] of Struct
+         TestNumber : USInt;
+         TestName : String[100];
+         Passed : Bool;
+         ErrorCode : UInt;            // Код помилки (якщо є)
+      END_STRUCT;
+      
+      // ===================================================================
+      // Статистика продуктивності
+      // ===================================================================
+      // ПРИМІТКА: Вимірювання часу недоступне в SCL S7-1500
+      // Використовуйте зовнішній таймер якщо потрібно
+      
+      // ===================================================================
+      // Тестові сценарії для перевірки
+      // ===================================================================
+      Scenarios : Struct
+         // Scenario 1: Повний цикл IDLE → DONE
+         FullCycle : Struct
+            IDLE_to_VALIDATING : Bool;
+            VALIDATING_to_STARTING : Bool;
+            STARTING_to_RUNNING : Bool;
+            RUNNING_to_RUNNING : Bool;  // завершення кроків
+            ResultCode_200 : Bool;
+            Success : Bool;
+         END_STRUCT;
+         
+         // Scenario 2: Safety Stop під час RUNNING
+         SafetyAbort : Struct
+            Route_WasRunning : Bool;
+            SafetyStop_Triggered : Bool;
+            Route_InAborted : Bool;
+            ResultCode_SAFETY : Bool;
+            Owner_Released : Bool;
+            Success : Bool;
+         END_STRUCT;
+         
+         // Scenario 3: Duplicate START
+         DuplicateStart : Struct
+            FirstStart_Accepted : Bool;
+            SecondStart_Rejected : Bool;
+            ResultCode_205 : Bool;
+            Success : Bool;
+         END_STRUCT;
+         
+         // Scenario 4: Atomic Lock
+         AtomicLock : Struct
+            LockAll_Success : Bool;
+            OneFail_Rollback : Bool;
+            Success : Bool;
+         END_STRUCT;
+         
+         // Scenario 5: Виконання кроків з параметрами
+         StepExecution : Struct
+            StartParam_Passed : Bool;
+            StopParam_Used : Bool;
+            Success : Bool;
+         END_STRUCT;
+      END_STRUCT;
+   END_STRUCT;
+
+BEGIN
+   // ===================================================================
+   // Ініціалізація тестів (35 шт)
+   // ===================================================================
+   TotalTests := 35;
+   
+   // === GROUP A: Базові переходи станів (8 тестів) ===
+   Results[1].TestName := 'A1: IDLE -> VALIDATING (START edge)';
+   Results[2].TestName := 'A2: VALIDATING -> STARTING (validation OK)';
+   Results[3].TestName := 'A3: VALIDATING -> REJECTED (owner busy)';
+   Results[4].TestName := 'A4: STARTING -> RUNNING (lock OK)';
+   Results[5].TestName := 'A5: STARTING -> REJECTED (lock fail)';
+   Results[6].TestName := 'A6: RUNNING -> RUNNING (all steps done, RC=200)';
+   Results[7].TestName := 'A7: RUNNING -> STOPPING (STOP_OP)';
+   Results[8].TestName := 'A8: STOPPING -> ABORTED (allStopped)';
+   
+   // === GROUP B: Safety Stop (2 тести) ===
+   Results[9].TestName := 'B1: Safety Stop during RUNNING';
+   Results[10].TestName := 'B2: Safety Stop during STARTING';
+   
+   // === GROUP C: Валідація (6 тестів) ===
+   Results[11].TestName := 'C1: Duplicate START -> REJECTED (205)';
+   Results[12].TestName := 'C2: Invalid StepCount=0 -> REJECTED';
+   Results[13].TestName := 'C3: Invalid Action -> REJECTED';
+   Results[14].TestName := 'C4: Invalid Wait -> REJECTED';
+   Results[15].TestName := 'C5: Owner busy -> REJECTED (202)';
+   Results[16].TestName := 'C6: Not ready (Enable_OK=0) -> REJECTED (204)';
+   
+   // === GROUP D: Atomic Lock (3 тести) ===
+   Results[17].TestName := 'D1: Lock all mechs -> RUNNING';
+   Results[18].TestName := 'D2: Lock partial fail -> REJECTED + rollback';
+   Results[19].TestName := 'D3: Lock race condition -> REJECTED';
+   
+   // === GROUP E: Виконання кроків (5 тестів) ===
+   Results[20].TestName := 'E1: START + WAIT_RUNNING -> next step';
+   Results[21].TestName := 'E2: STOP + WAIT_STOPPED -> next step';
+   Results[22].TestName := 'E3: Last step -> RUNNING (RC=200)';
+   Results[23].TestName := 'E4: Step arbiter fail -> STOPPING';
+   Results[24].TestName := 'E5: StartParam passed to arbiter';
+   
+   // === GROUP F: STOPPING логіка (4 тести) ===
+   Results[25].TestName := 'F1: STOPPING -> ABORTED (allStopped)';
+   Results[26].TestName := 'F2: StopParam=0 -> CMD_STOP';
+   Results[27].TestName := 'F3: StopParam!=0 -> CMD_START with param';
+   Results[28].TestName := 'F4: STOPPING reverse order';
+   
+   // === GROUP G: Abort scenarios (4 тести) ===
+   Results[29].TestName := 'G1: ABORT_BY_OPERATOR (stopOpEdge)';
+   Results[30].TestName := 'G2: ABORT_BY_LOCAL (anyLocal)';
+   Results[31].TestName := 'G3: ABORT_BY_FAULT (anyFault)';
+   Results[32].TestName := 'G4: ABORT_BY_SAFETY (global)';
+   
+   // === GROUP H: Edge cases (3 тести) ===
+   Results[33].TestName := 'H1: Route with 0 steps -> REJECTED';
+   Results[34].TestName := 'H2: StepIdx >= StepCnt -> RUNNING (RC=200)';
+   Results[35].TestName := 'H3: START after ABORTED -> new cycle';
+
+END_DATA_BLOCK
