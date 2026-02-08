@@ -19,36 +19,83 @@ END_VAR
 
 BEGIN
 	    
-	    
-	    // ===================================================================
-	    // 1. Читання HAL входів (УСІХ механізмів)
-	    // ===================================================================
-	    "FC_HAL_Read"(
-	                  Redler := "DB_Mechs".Redler,
-	                  Noria := "DB_Mechs".Noria,
-	                  Gate := "DB_Mechs".Gate,
-	                  Fan := "DB_Mechs".Fan
-	    );
-	    
-	    // ===================================================================
-	    // 2. Виконання логіки механізмів
-	    // ===================================================================
-	    "FC_DeviceRunner"(
-	                      Mechs := "DB_Mechs".Mechs,
-	                      Redler := "DB_Mechs".Redler,
-	                      Noria := "DB_Mechs".Noria,
-	                      Gate := "DB_Mechs".Gate,
-	                      Fan := "DB_Mechs".Fan
-	    );
-	    
-	    // ===================================================================
-	    // 3. Запис HAL виходів (УСІХ механізмів)
-	    // ===================================================================
-	    "FC_HAL_Write"(
-	                   Redler := "DB_Mechs".Redler,
-	                   Noria := "DB_Mechs".Noria,
-	                   Gate := "DB_Mechs".Gate,
-	                   Fan := "DB_Mechs".Fan
-	    );
+    // ===================================================================
+    // 4. Симулятори механізмів (якщо симуляція увімкнена)
+    // ===================================================================
+    REGION "Симулятори механізмів"
+        
+        // Симуляція редлерів
+        FOR #i := 0 TO "REDLERS_COUNT" DO
+            IF "DB_SimConfig".Redler[#i].Enable THEN
+                "FC_SimRedler"(
+                               RedlerIdx := #i,
+                               StartupTime_ms := "DB_SimConfig".Redler[#i].StartupTime_ms,
+                               StopTime_ms := "DB_SimConfig".Redler[#i].StopTime_ms,
+                               SimFault_Breaker := "DB_SimConfig".Redler[#i].SimFault_Breaker,
+                               FaultTime_Breaker_ms := "DB_SimConfig".Redler[#i].FaultTime_Breaker_ms,
+                               SimFault_Overflow := "DB_SimConfig".Redler[#i].SimFault_Overflow,
+                               FaultTime_Overflow_ms := "DB_SimConfig".Redler[#i].FaultTime_Overflow_ms,
+                               ManualReset := "DB_SimConfig".Redler[#i].ManualReset
+                );
+            END_IF;
+        END_FOR;
+        
+        // Симуляція норій
+        FOR #i := 0 TO "NORIAS_COUNT" DO
+            IF "DB_SimConfig".Noria[#i].Enable THEN
+                "FC_SimNoria"(
+                              NoriaIdx := #i,
+                              StartupTime_ms := "DB_SimConfig".Noria[#i].StartupTime_ms,
+                              StopTime_ms := "DB_SimConfig".Noria[#i].StopTime_ms,
+                              SimFault_Breaker := "DB_SimConfig".Noria[#i].SimFault_Breaker,
+                              FaultTime_Breaker_ms := "DB_SimConfig".Noria[#i].FaultTime_Breaker_ms,
+                              SimFault_Alignment := "DB_SimConfig".Noria[#i].SimFault_Alignment,
+                              FaultTime_Alignment_ms := "DB_SimConfig".Noria[#i].FaultTime_Alignment_ms,
+                              ManualReset := "DB_SimConfig".Noria[#i].ManualReset
+                );
+            END_IF;
+        END_FOR;
+        
+        // Симуляція вентиляторів
+        FOR #i := 0 TO "FANS_COUNT" DO
+            IF "DB_SimConfig".Fan[#i].Enable THEN
+                "FC_SimFan"(
+                            FanIdx := #i,
+                            StartupTime_ms := "DB_SimConfig".Fan[#i].StartupTime_ms,
+                            StopTime_ms := "DB_SimConfig".Fan[#i].StopTime_ms,
+                            SimFault_Breaker := "DB_SimConfig".Fan[#i].SimFault_Breaker,
+                            FaultTime_Breaker_ms := "DB_SimConfig".Fan[#i].FaultTime_Breaker_ms,
+                            ManualReset := "DB_SimConfig".Fan[#i].ManualReset
+                );
+            END_IF;
+        END_FOR;
+        
+    END_REGION
+    
+    "FC_ManualMechCmdHandler"(LocalManualGlobal := FALSE);
+    
+    // "FB_Test_ManualMechCmdHandler_DB"(Run:="run_ManualHandler",
+    //                                   CaseId:="caseId_ManualHandler",
+    //                                   Passed=>"passed_ManualHandler",
+    //                                   Failed=>"failed_ManualHandler",
+    //                                   FailMask=>"result_ManualHandler");
+    
+    //"FC_Route_Supervisor"();
+    
+    "FC_DeviceRunner"(
+                      Mechs := "DB_Mechs".Mechs,
+                      Redler := "DB_Mechs".Redler,
+                      Noria := "DB_Mechs".Noria,
+                      Gate := "DB_Mechs".Gate2P,
+                      Fan := "DB_Mechs".Fan
+    );
+    
+    "DB_TestRunner_Supervisor"();
+
+    "inst_FB_TestRunner_RouteFSM"(
+                                  Start := "start_test_routeFSM",
+                                  Done => "testsDone_routeFSM",
+                                  AllPassed => "allPassed_routeFSM"
+    );
 END_ORGANIZATION_BLOCK
 

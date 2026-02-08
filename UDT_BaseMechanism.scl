@@ -1,6 +1,7 @@
 TYPE "UDT_BaseMechanism" :
 STRUCT
 
+    SlotId : USINT;  //
     // ===== 0) Мапінг слоту (slot -> typed array) =====
     DeviceType : USINT;  // TYPE_REDLER / TYPE_...
     TypedIndex : UINT;   // індекс у DB_Mechs.<Type>[TypedIndex]
