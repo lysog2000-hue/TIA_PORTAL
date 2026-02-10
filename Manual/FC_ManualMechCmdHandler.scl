@@ -1,8 +1,15 @@
 // ==============================================================================
 // FC_ManualMechCmdHandler - Обробка ручних команд через MailBox
 // ==============================================================================
-// Версія: 3.3 (CMD_SET_FORCE + CMD_RELEASE_OWNER як команди)
-// Дата: 2026-01-27
+// Версія: 4.0.0 (Mailbox Pattern)
+// Дата: 2026-02-08
+// ==============================================================================
+// ЗМІНИ v4.0:
+//   - Видалено DB_ScadaToPlc_ManualMechCmd (не потрібен)
+//   - Видалено DB_PlcToScada_ManualMechStatus (не потрібен)
+//   - Статуси читаються прямо з DB_Mechs
+//   - Команди через DB_PlcScada_MailBox
+//   - Економія пам'яті: ~12KB
 // ==============================================================================
 
 FUNCTION "FC_ManualMechCmdHandler" : VOID
@@ -13,7 +20,6 @@ VAR_INPUT
 END_VAR
 
 VAR_TEMP
-    i          : UINT;
     slot       : UINT;
     commitIn   : UDINT;
     lastAck    : UDINT;
@@ -26,31 +32,7 @@ END_VAR
 
 BEGIN
     // =========================================================
-    // ЧАСТИНА 1: Оновлення статусів для всіх слотів (PLC → SCADA)
-    // =========================================================
-    FOR i := 0 TO "MECHS_COUNT" DO
-        
-        isMapped := ("DB_Mechs".Mechs[i].DeviceType <> "TYPE_NONE")
-                    AND ("DB_Mechs".Mechs[i].TypedIndex <> UINT#16#FFFF);
-        
-        isLocal := LocalManualGlobal OR "DB_Mechs".Mechs[i].LocalManual;
-        
-        IF isMapped THEN
-            allowed := ("DB_Mechs".Mechs[i].OwnerCur = "OWNER_NONE")
-                       AND (NOT isLocal)
-                       AND ("DB_Mechs".Mechs[i].Enable_OK);
-        ELSE
-            allowed := FALSE;
-        END_IF;
-        
-        "DB_PlcToScada_ManualMechStatus".StatusBySlot[i].ManualAllowed := allowed;
-        "DB_PlcToScada_ManualMechStatus".StatusBySlot[i].CurrentOwner  := "DB_Mechs".Mechs[i].OwnerCur;
-        "DB_PlcToScada_ManualMechStatus".StatusBySlot[i].CurrentStatus := "DB_Mechs".Mechs[i].Status;
-        
-    END_FOR;
-    
-    // =========================================================
-    // ЧАСТИНА 2: Обробка MailBox команди (SCADA → PLC)
+    // Обробка MailBox команди (SCADA → PLC)
     // =========================================================
     commitIn := "DB_PlcScada_MailBox".Req.Commit;
     lastAck  := "DB_PlcScada_MailBox".Ack.AckCommit;
@@ -142,7 +124,7 @@ BEGIN
         
         // Зберегти у LastCmd (для історії)
         IF ok THEN
-            "DB_Mechs".Mechs[slot].LastCmd := CMD_RELEASE_OWNER;
+            "DB_Mechs".Mechs[slot].LastCmd := "CMD_RELEASE_OWNER";
         END_IF;
         
         // Підтвердити операцію
@@ -150,9 +132,9 @@ BEGIN
         "DB_PlcScada_MailBox".Ack.AckOk      := ok;
         
         IF ok THEN
-            "DB_PlcScada_MailBox".Ack.RejectCode := MAN_REJ_OK;
+            "DB_PlcScada_MailBox".Ack.RejectCode := "MAN_REJ_OK";
         ELSE
-            "DB_PlcScada_MailBox".Ack.RejectCode := MAN_REJ_ARBITER_FAIL;
+            "DB_PlcScada_MailBox".Ack.RejectCode := "MAN_REJ_ARBITER_FAIL";
         END_IF;
         
         "DB_PlcScada_MailBox".Ack.Slot := slot;

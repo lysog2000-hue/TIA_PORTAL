@@ -4,7 +4,7 @@
 // Project  : Elevator_System
 // Author   : Engineering Team
 // Version  : 2.0.0
-// Generated: 2026-01-14 15:47:36
+// Generated: 2026-02-08
 // ==============================================================================
 
 DATA_BLOCK "DB_Mechs"
@@ -29,19 +29,31 @@ END_VAR
 
 BEGIN
 
-    // Механізм 0 - Редлер 0
+
     Mechs[0].DeviceType := "TYPE_REDLER";
     Mechs[0].TypedIndex := 0;
     Mechs[0].Enable_OK := TRUE;
-    
-    // Механізм 1 - Редлер 1
+
     Mechs[1].DeviceType := "TYPE_REDLER";
     Mechs[1].TypedIndex := 1;
     Mechs[1].Enable_OK := TRUE;
-    
-    // Механізм 2 - Норія 0
-    Mechs[2].DeviceType := "TYPE_NORIA";
-    Mechs[2].TypedIndex := 0;
+
+    Mechs[2].DeviceType := "TYPE_REDLER";
+    Mechs[2].TypedIndex := 2;
     Mechs[2].Enable_OK := TRUE;
+    
+
+
+    Mechs[3].DeviceType := "TYPE_NORIA";
+    Mechs[3].TypedIndex := 0;
+    Mechs[3].Enable_OK := TRUE;
+
+    Mechs[4].DeviceType := "TYPE_NORIA";
+    Mechs[4].TypedIndex := 1;
+    Mechs[4].Enable_OK := TRUE;
+	
+	Mechs[5].DeviceType := "TYPE_NORIA";
+    Mechs[5].TypedIndex := 2;
+    Mechs[5].Enable_OK := TRUE;
 
 END_DATA_BLOCK

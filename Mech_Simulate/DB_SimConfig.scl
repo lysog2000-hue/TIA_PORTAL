@@ -36,9 +36,14 @@ VAR
 END_VAR
 
 BEGIN
-    // === Початкові налаштування (приклади) ===
+
+    // ===========================================================================
+    // НАЛАШТУВАННЯ СИМУЛЯЦІЇ
+    // ===========================================================================
     
-    // Редлер 0 - увімкнено для тестування
+
+	
+    // === Редлер 0 - увімкнено для тестування ===
     Redler[0].Enable := TRUE;
     Redler[0].StartupTime_ms := 3000;
     Redler[0].StopTime_ms := 2000;
@@ -46,9 +51,9 @@ BEGIN
     Redler[0].FaultTime_Breaker_ms := 10000;
     Redler[0].SimFault_Overflow := FALSE;
     Redler[0].FaultTime_Overflow_ms := 15000;
-	
-	
-	// Редлер 1 - увімкнено для тестування
+    Redler[0].ManualReset := FALSE;
+    
+    // === Редлер 1 - увімкнено для тестування ===
     Redler[1].Enable := TRUE;
     Redler[1].StartupTime_ms := 3000;
     Redler[1].StopTime_ms := 2000;
@@ -56,22 +61,50 @@ BEGIN
     Redler[1].FaultTime_Breaker_ms := 10000;
     Redler[1].SimFault_Overflow := FALSE;
     Redler[1].FaultTime_Overflow_ms := 15000;
-	
-	
-	
-    NORIA[0].Enable                 := TRUE;  // увімкнути симуляцію цієї норії
-    NORIA[0].StartupTime_ms         := 4000;   // час розгону до робочої швидкості (мс)
-    NORIA[0].StopTime_ms            := 3000;   // час вибігу після зупинки (мс)
-    NORIA[0].SimFault_Breaker       := FALSE;  // увімкнути симуляцію FLT_BREAKER
-    NORIA[0].FaultTime_Breaker_ms   := 10000;  // час до аварії від пуску мотора (мс)
-    NORIA[0].SimFault_Alignment     := FALSE;  // увімкнути симуляцію FLT_ALIGNMENT
-    NORIA[0].FaultTime_Alignment_ms := 20000; // час до аварії від пуску (мс)
-    NORIA[0].ManualReset            := FALSE;  // кнопка скидання латчованих аварій
-         
-
-	
-	
+    Redler[1].ManualReset := FALSE;
+    
+    // === Редлер 2 - увімкнено для тестування ===
+    Redler[2].Enable := TRUE;
+    Redler[2].StartupTime_ms := 3000;
+    Redler[2].StopTime_ms := 2000;
+    Redler[2].SimFault_Breaker := FALSE;
+    Redler[2].FaultTime_Breaker_ms := 10000;
+    Redler[2].SimFault_Overflow := FALSE;
+    Redler[2].FaultTime_Overflow_ms := 15000;
+    Redler[2].ManualReset := FALSE;
+    
+    // === Норія 0 - увімкнено для тестування ===
+    Noria[0].Enable := TRUE;
+    Noria[0].StartupTime_ms := 4000;
+    Noria[0].StopTime_ms := 3000;
+    Noria[0].SimFault_Breaker := FALSE;
+    Noria[0].FaultTime_Breaker_ms := 10000;
+    Noria[0].SimFault_Alignment := FALSE;
+    Noria[0].FaultTime_Alignment_ms := 20000;
+    Noria[0].ManualReset := FALSE;
+    
+    // === Норія 1 - увімкнено для тестування ===
+    Noria[1].Enable := TRUE;
+    Noria[1].StartupTime_ms := 4000;
+    Noria[1].StopTime_ms := 3000;
+    Noria[1].SimFault_Breaker := FALSE;
+    Noria[1].FaultTime_Breaker_ms := 10000;
+    Noria[1].SimFault_Alignment := FALSE;
+    Noria[1].FaultTime_Alignment_ms := 20000;
+    Noria[1].ManualReset := FALSE;
+    
+    // === Норія 2 - увімкнено для тестування ===
+    Noria[2].Enable := TRUE;
+    Noria[2].StartupTime_ms := 4000;
+    Noria[2].StopTime_ms := 3000;
+    Noria[2].SimFault_Breaker := FALSE;
+    Noria[2].FaultTime_Breaker_ms := 10000;
+    Noria[2].SimFault_Alignment := FALSE;
+    Noria[2].FaultTime_Alignment_ms := 20000;
+    Noria[2].ManualReset := FALSE;
     
     // Решта механізмів за замовчуванням вимкнені (Enable := FALSE)
+    
+
     
 END_DATA_BLOCK
