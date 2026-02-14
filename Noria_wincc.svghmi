@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//SIEMENS//DTD SVG 1.0 TIA-HMI//EN" "http://tia.siemens.com/graphics/svg/1.8/dtd/svg18-hmi.dtd">
+<!-- SIMATIC WINCC Copyright (C) Siemens AG. -->
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     xmlns:hmi="http://svg.siemens.com/hmi/"
+     xmlns:hmi-bind="http://svg.siemens.com/hmi/bind/"
+     xmlns:hmi-event="http://svg.siemens.com/hmi/event/"
+     viewBox="0.0 0.0 800.000 600.000"
+     preserveAspectRatio="none">
+  
+  <hmi:self type="widget" displayName="Noria" name="custom.Noria" version="1.0.0" performanceClass="L">
+    <hmi:paramDef name="LineColor" type="HmiColor" default="0xFF000000"/>
+    <hmi:paramDef name="LineWidth" type="number" default="0.5"/>
+  </hmi:self>
+
+  <defs>
+    <!-- Optional local defs (not strictly required) -->
+  </defs>
+<desc>Produce by Acme CAD Converter</desc>
+<path d="M316.59 260.48L316.59 255.49Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M335.3 255.49L335.3 260.48Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M323.45 225.56L324.7 225.56"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M324.7 225.56L324.7 247.39Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M324.7 247.39L323.45 247.39"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M304.12 244.27L301.01 244.27"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M301.01 244.27L301.01 228.06Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M301.01 228.06L304.12 228.06"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M302.88 248.01L302.88 224.94Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M302.88 224.94L323.45 224.94"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M323.45 224.94L323.45 248.01Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M323.45 248.01L302.88 248.01"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M304.12 246.14L304.12 226.19Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M304.12 226.19L322.21 226.19"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M322.21 226.19L322.21 246.14Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M322.21 246.14L304.12 246.14"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M405.77 338.43L408.26 327.2"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M315.97 255.49L317.22 255.49"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M317.22 255.49L317.22 262.98Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M315.97 257.99L316.59 257.99"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M347.15 264.22L396.41 264.22"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M396.41 264.22L408.26 323.46"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M408.26 323.46L396.41 262.98"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M396.41 262.98L396.41 264.85Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M326.57 226.19L324.7 226.19"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M326.57 234.29L324.7 234.29"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M326.57 242.4L324.7 242.4"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M335.3 255.49L334.68 255.49"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M334.68 255.49L334.68 262.98Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M336.55 257.99L334.68 257.99"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M335.3 260.48L330.94 260.48"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M330.94 260.48L330.94 258.61Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M330.94 258.61L329.07 255.49"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M329.07 255.49L325.32 254.25"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M325.32 254.25L322.83 255.49"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M322.83 255.49L320.96 258.61"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M320.96 258.61L320.96 260.48Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M320.96 260.48L315.97 260.48"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M320.96 260.48L325.32 261.73"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M325.32 261.73L330.94 260.48"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M347.15 266.09L304.12 266.09"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M408.26 323.46L408.26 324.09Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M408.26 325.33L408.26 340.3Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M387.68 325.33L387.68 323.46Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M387.68 323.46L365.86 301.01"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M365.86 301.01L365.86 323.46Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M367.73 325.33L367.73 327.2Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M367.73 327.2L345.28 327.2"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M345.28 327.2L345.28 325.33Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M349.64 264.22L349.64 325.33Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M347.15 325.33L347.15 262.98Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M326.57 252.38L326.57 217.46Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M325.32 216.83L325.32 253.62Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M316.59 252.38L316.59 262.98Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M315.97 262.98L315.97 252.38Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M315.97 252.38L335.3 252.38"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M335.3 252.38L335.3 262.98Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M305.99 325.33L305.99 327.2Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M305.99 327.2L284.17 327.2"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M284.17 327.2L284.17 325.33Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M304.12 325.33L304.12 262.98Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M302.25 264.22L302.25 325.33Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M286.04 322.84L286.04 256.12Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M286.04 256.12L287.91 244.27"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M287.91 244.27L293.52 233.67"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M293.52 233.67L301.01 224.94"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M301.01 224.94L310.98 219.33"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M310.98 219.33L325.32 216.83"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M410.13 325.33L385.81 325.33"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M408.26 338.43L392.05 338.43"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M392.05 338.43L387.68 327.2"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M387.68 327.2L394.54 338.43"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M392.05 338.43L392.05 340.3Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M326.57 217.46L345.28 219.33"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M345.28 219.33L361.49 225.56"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M361.49 225.56L375.83 235.54"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M375.83 235.54L386.43 248.01"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M386.43 248.01L396.41 262.98"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M324.7 256.74L325.32 256.12"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M325.32 256.12L327.2 256.74"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M327.2 256.74L328.44 258.61"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M328.44 258.61L327.2 260.48"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M327.2 260.48L324.7 260.48"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M324.7 260.48L323.45 258.61"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M323.45 258.61L324.7 256.74"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M359.62 262.35L379.58 262.35"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M379.58 262.35L379.58 241.77Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M379.58 241.77L359.62 241.77"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M359.62 241.77L359.62 262.35Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M283.55 322.84L368.35 322.84"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M368.35 322.84L368.35 325.33Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M368.35 325.33L283.55 325.33"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M283.55 325.33L283.55 322.84Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M410.13 327.2L410.13 323.46Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M410.13 323.46L385.81 323.46"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M385.81 323.46L385.81 327.2Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M385.81 327.2L410.13 327.2"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M410.13 341.55L410.13 340.3Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M410.13 340.3L390.8 340.3"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M390.8 340.3L390.8 341.55Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M390.8 341.55L410.13 341.55"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M325.32 226.19L326.57 226.19"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M325.32 234.29L326.57 234.29"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M325.32 242.4L326.57 242.4"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M326.57 250.5L324.7 250.5"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M408.88 339.68L408.88 340.3Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M408.26 339.68L408.26 340.3Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M404.52 339.68L404.52 340.3Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M400.15 339.68L400.15 340.3Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M395.79 339.68L395.79 340.3Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M392.67 339.68L392.67 340.3Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M390.8 339.68L390.8 340.3Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M367.1 324.09L367.1 325.33Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M357.13 325.96L357.13 324.09Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M345.9 324.09L345.9 325.96Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M333.43 324.09L333.43 325.33Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M332.81 264.22L332.81 259.86Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M319.09 264.22L319.09 259.86Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M318.47 324.09L318.47 325.33Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M304.75 325.96L304.75 324.09Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M294.77 325.96L294.77 324.09Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+<path d="M285.42 324.09L285.42 325.33Z"
+fill="none" stroke="black" hmi-bind:stroke="{{Converter.RGBA(ParamProps.LineColor)}}" stroke-width="0.5" hmi-bind:stroke-width="{{ParamProps.LineWidth}}"/>
+</svg>

@@ -3,6 +3,7 @@ STRUCT
     // ===== Дискретні входи/виходи (HAL / залізо) =====
     DI_Speed_OK     : BOOL;    // контроль швидкості
     DI_Breaker_OK   : BOOL;    // автомат захисту
+	DI_Overflow_OK: BOOL; 
     DI_Alingment_OK: BOOL;    // 
     DO_Run          : BOOL;    // вихід на контактор
 

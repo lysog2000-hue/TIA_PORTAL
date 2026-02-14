@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//SIEMENS//DTD SVG 1.0 TIA-HMI//EN" "http://tia.siemens.com/graphics/svg/1.4/dtd/svg14-hmi.dtd">
+<!-- SIMATIC WINCC -->
+
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     xmlns:hmi-bind--xlink="http://svg.siemens.com/hmi/bind/xlink/"
+     xmlns:hmi="http://svg.siemens.com/hmi/"
+     xmlns:hmi-bind="http://svg.siemens.com/hmi/bind/"
+     xmlns:hmi-element="http://svg.siemens.com/hmi/element/"
+     xmlns:hmi-feature="http://svg.siemens.com/hmi/feature/"
+     xmlns:hmi-event="http://svg.siemens.com/hmi/event/"
+     viewBox="0 0 200 200"
+     preserveAspectRatio="none">
+
+  <hmi:self type="widget" displayName="StarBasicColor" name="extended.StarBasicColor" version="1.0.0" performanceClass="L">
+    <hmi:paramDef name="BasicColor" type="HmiColor" default="0xFFFFCC00"/>
+  </hmi:self>
+
+  <defs>
+    <!-- Градієнт для STROKE. Колір керується через stop-color (як у твоєму прикладі) -->
+    <linearGradient id="StrokeG" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="200" y2="0">
+      <stop offset="0" hmi-bind:stop-color="{{Converter.RGBA(Converter.Darker(ParamProps.BasicColor, 0.00))}}"/>
+      <stop offset="1" hmi-bind:stop-color="{{Converter.RGBA(Converter.Darker(ParamProps.BasicColor, 0.00))}}"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Зірка: тільки лінії -->
+  <polyline id="Star"
+            fill="none"
+            stroke="url(#StrokeG)"
+            stroke-width="6"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            points="
+              100,15
+              124,75
+              188,75
+              136,112
+              156,175
+              100,138
+              44,175
+              64,112
+              12,75
+              76,75
+              100,15
+            "/>
+</svg>

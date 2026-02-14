@@ -30,29 +30,39 @@ END_VAR
 BEGIN
 
 
+    // ===================================================================
+    // ІНІЦІАЛІЗАЦІЯ СЛОТІВ (slot 0..5)
+    // ===================================================================
+    
+    // === РЕДЛЕРИ (slot 0..2) ===
+    Mechs[0].SlotId := 0;
     Mechs[0].DeviceType := "TYPE_REDLER";
     Mechs[0].TypedIndex := 0;
     Mechs[0].Enable_OK := TRUE;
 
+    Mechs[1].SlotId := 1;
     Mechs[1].DeviceType := "TYPE_REDLER";
     Mechs[1].TypedIndex := 1;
     Mechs[1].Enable_OK := TRUE;
 
+    Mechs[2].SlotId := 2;
     Mechs[2].DeviceType := "TYPE_REDLER";
     Mechs[2].TypedIndex := 2;
     Mechs[2].Enable_OK := TRUE;
     
-
-
+    // === НОРІЇ (slot 3..5) ===
+    Mechs[3].SlotId := 3;
     Mechs[3].DeviceType := "TYPE_NORIA";
     Mechs[3].TypedIndex := 0;
     Mechs[3].Enable_OK := TRUE;
 
+    Mechs[4].SlotId := 4;
     Mechs[4].DeviceType := "TYPE_NORIA";
     Mechs[4].TypedIndex := 1;
     Mechs[4].Enable_OK := TRUE;
 	
-	Mechs[5].DeviceType := "TYPE_NORIA";
+    Mechs[5].SlotId := 5;
+    Mechs[5].DeviceType := "TYPE_NORIA";
     Mechs[5].TypedIndex := 2;
     Mechs[5].Enable_OK := TRUE;
 

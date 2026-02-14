@@ -34,41 +34,41 @@ BEGIN
     // =========================================================
     // Обробка MailBox команди (SCADA → PLC)
     // =========================================================
-    commitIn := "DB_PlcScada_MailBox".Req.Commit;
-    lastAck  := "DB_PlcScada_MailBox".Ack.AckCommit;
+    #commitIn := "DB_PlcScada_MailBox".Req.Commit;
+    #lastAck := "DB_PlcScada_MailBox".Ack.AckCommit;
     
     // Немає нової команди — виходимо
-    IF commitIn = lastAck THEN
+    IF #commitIn = #lastAck THEN
         RETURN;
     END_IF;
     
     // Читаємо слот з запиту
-    slot := "DB_PlcScada_MailBox".Req.Slot;
+    #slot := "DB_PlcScada_MailBox".Req.Slot;
     
     // =========================================================
     // ВАЛІДАЦІЯ СЛОТУ (базова, для всіх операцій)
     // =========================================================
-    IF slot > "MECHS_COUNT" THEN
-        "DB_PlcScada_MailBox".Ack.AckCommit  := commitIn;
-        "DB_PlcScada_MailBox".Ack.AckOk      := FALSE;
+    IF #slot > "MECHS_COUNT" THEN
+        "DB_PlcScada_MailBox".Ack.AckCommit := #commitIn;
+        "DB_PlcScada_MailBox".Ack.AckOk := FALSE;
         "DB_PlcScada_MailBox".Ack.RejectCode := "MAN_REJ_SLOT_UNMAPPED";
-        "DB_PlcScada_MailBox".Ack.Slot       := slot;
+        "DB_PlcScada_MailBox".Ack.Slot := #slot;
         RETURN;
     END_IF;
     
     // Перевірка мапінгу
-    isMapped := ("DB_Mechs".Mechs[slot].DeviceType <> "TYPE_NONE")
-                AND ("DB_Mechs".Mechs[slot].TypedIndex <> UINT#16#FFFF);
+    #isMapped := ("DB_Mechs".Mechs[#slot].DeviceType <> "TYPE_NONE")
+                AND ("DB_Mechs".Mechs[#slot].TypedIndex <> UINT#16#FFFF);
     
-    IF NOT isMapped THEN
-        "DB_PlcScada_MailBox".Ack.AckCommit  := commitIn;
-        "DB_PlcScada_MailBox".Ack.AckOk      := FALSE;
+    IF NOT #isMapped THEN
+        "DB_PlcScada_MailBox".Ack.AckCommit := #commitIn;
+        "DB_PlcScada_MailBox".Ack.AckOk := FALSE;
         "DB_PlcScada_MailBox".Ack.RejectCode := "MAN_REJ_SLOT_UNMAPPED";
-        "DB_PlcScada_MailBox".Ack.Slot       := slot;
+        "DB_PlcScada_MailBox".Ack.Slot := #slot;
         RETURN;
     END_IF;
     
-    isLocal := LocalManualGlobal OR "DB_Mechs".Mechs[slot].LocalManual;
+    #isLocal := #LocalManualGlobal OR "DB_Mechs".Mechs[#slot].LocalManual;
     
     // =========================================================
     // ГРУПА 1: Meta-команди (не йдуть в механізм)
@@ -77,22 +77,22 @@ BEGIN
     // =========================================================
     // Meta-команда 1: CMD_SET_FORCE
     // =========================================================
-    IF "DB_PlcScada_MailBox".Req.Cmd = "CMD_SET_FORCE" THEN
+    // IF "DB_PlcScada_MailBox".Req.Cmd = "CMD_SET_FORCE" THEN
         
-        // Встановити Force_Code напряму
-        "DB_Mechs".Mechs[slot].Force_Code := "DB_PlcScada_MailBox".Req.Param1;
+    //     // Встановити Force_Code напряму
+    //     "DB_Mechs".Mechs[#slot].Force_Code := "DB_PlcScada_MailBox".Req.Param1;
         
-        // Зберегти у LastCmd (для історії)
-        "DB_Mechs".Mechs[slot].LastCmd := "CMD_SET_FORCE";
+    //     // Зберегти у LastCmd (для історії)
+    //     "DB_Mechs".Mechs[#slot].LastCmd := "CMD_SET_FORCE";
         
-        // Підтвердити успішну операцію
-        "DB_PlcScada_MailBox".Ack.AckCommit  := commitIn;
-        "DB_PlcScada_MailBox".Ack.AckOk      := TRUE;
-        "DB_PlcScada_MailBox".Ack.RejectCode := "MAN_REJ_OK";
-        "DB_PlcScada_MailBox".Ack.Slot       := slot;
+    //     // Підтвердити успішну операцію
+    //     "DB_PlcScada_MailBox".Ack.AckCommit := #commitIn;
+    //     "DB_PlcScada_MailBox".Ack.AckOk := TRUE;
+    //     "DB_PlcScada_MailBox".Ack.RejectCode := "MAN_REJ_OK";
+    //     "DB_PlcScada_MailBox".Ack.Slot := #slot;
         
-        RETURN;  // Meta-команда виконана, виходимо
-    END_IF;
+    //     RETURN;  // Meta-команда виконана, виходимо
+    // END_IF;
     
     // =========================================================
     // Meta-команда 2: CMD_RELEASE_OWNER
@@ -102,42 +102,84 @@ BEGIN
         // =========================================================
         // Перевірка: механізм має бути в IDLE
         // =========================================================
-        IF "DB_Mechs".Mechs[slot].Status <> "STS_IDLE" THEN
-            "DB_PlcScada_MailBox".Ack.AckCommit  := commitIn;
-            "DB_PlcScada_MailBox".Ack.AckOk      := FALSE;
+        IF "DB_Mechs".Mechs[#slot].Status <> "STS_IDLE" THEN
+            "DB_PlcScada_MailBox".Ack.AckCommit := #commitIn;
+            "DB_PlcScada_MailBox".Ack.AckOk := FALSE;
             "DB_PlcScada_MailBox".Ack.RejectCode := "MAN_REJ_NOT_IDLE";
-            "DB_PlcScada_MailBox".Ack.Slot       := slot;
+            "DB_PlcScada_MailBox".Ack.Slot := #slot;
             RETURN;
         END_IF;
         
         // Звільнити ownership через арбітр
-        ok := "FC_ArbiterMech"(
-            LocalManualGlobal := LocalManualGlobal,
-            OwnerReq          := "OWNER_SCADA",
-            OwnerReqId        := UINT#0,
-            ReqCmd            := "CMD_NONE",
-            ReqParam1         := 0,
-            ReleaseOwner      := TRUE,
-            LockOnly          := FALSE,
-            M                 := "DB_Mechs".Mechs[slot]
+        #ok := "FC_ArbiterMech"(
+                                LocalManualGlobal := #LocalManualGlobal,
+                                OwnerReq := "OWNER_SCADA",
+                                OwnerReqId := UINT#0,
+                                ReqCmd := "CMD_NONE",
+                                ReqParam1 := 0,
+                                ReleaseOwner := TRUE,
+                                LockOnly := FALSE,
+                                M := "DB_Mechs".Mechs[#slot]
         );
         
-        // Зберегти у LastCmd (для історії)
-        IF ok THEN
-            "DB_Mechs".Mechs[slot].LastCmd := "CMD_RELEASE_OWNER";
-        END_IF;
         
         // Підтвердити операцію
-        "DB_PlcScada_MailBox".Ack.AckCommit  := commitIn;
-        "DB_PlcScada_MailBox".Ack.AckOk      := ok;
+        "DB_PlcScada_MailBox".Ack.AckCommit := #commitIn;
+        "DB_PlcScada_MailBox".Ack.AckOk := #ok;
         
-        IF ok THEN
+        IF #ok THEN
             "DB_PlcScada_MailBox".Ack.RejectCode := "MAN_REJ_OK";
         ELSE
             "DB_PlcScada_MailBox".Ack.RejectCode := "MAN_REJ_ARBITER_FAIL";
         END_IF;
         
-        "DB_PlcScada_MailBox".Ack.Slot := slot;
+        "DB_PlcScada_MailBox".Ack.Slot := #slot;
+        
+        RETURN;  // Meta-команда виконана, виходимо
+    END_IF;
+    
+    // =========================================================
+    // Meta-команда 3: CMD_SET_OWNER_SCADA
+    // =========================================================
+    IF "DB_PlcScada_MailBox".Req.Cmd = "CMD_SET_OWNER_SCADA" THEN
+        
+        // Валідація: механізм має бути в IDLE
+        IF "DB_Mechs".Mechs[#slot].Status <> "STS_IDLE" THEN
+            "DB_PlcScada_MailBox".Ack.AckCommit := #commitIn;
+            "DB_PlcScada_MailBox".Ack.AckOk := FALSE;
+            "DB_PlcScada_MailBox".Ack.RejectCode := "MAN_REJ_NOT_IDLE";
+            "DB_PlcScada_MailBox".Ack.Slot := #slot;
+            RETURN;
+        END_IF;
+        
+        // Захопити ownership через арбітр (LockOnly=TRUE)
+        #ok := "FC_ArbiterMech"(
+                                LocalManualGlobal := #LocalManualGlobal,
+                                OwnerReq := "OWNER_SCADA",
+                                OwnerReqId := UINT#0,
+                                ReqCmd := "CMD_NONE",
+                                ReqParam1 := 0,
+                                ReleaseOwner := FALSE,
+                                LockOnly := TRUE,
+                                M := "DB_Mechs".Mechs[#slot]
+        );
+        
+        // Зберегти у LastCmd (для історії)
+        IF #ok THEN
+            "DB_Mechs".Mechs[#slot].LastCmd := "CMD_SET_OWNER_SCADA";
+        END_IF;
+        
+        // Підтвердити операцію
+        "DB_PlcScada_MailBox".Ack.AckCommit := #commitIn;
+        "DB_PlcScada_MailBox".Ack.AckOk := #ok;
+        
+        IF #ok THEN
+            "DB_PlcScada_MailBox".Ack.RejectCode := "MAN_REJ_OK";
+        ELSE
+            "DB_PlcScada_MailBox".Ack.RejectCode := "MAN_REJ_ARBITER_FAIL";
+        END_IF;
+        
+        "DB_PlcScada_MailBox".Ack.Slot := #slot;
         
         RETURN;  // Meta-команда виконана, виходимо
     END_IF;
@@ -147,55 +189,56 @@ BEGIN
     // =========================================================
     
     // Валідація команди (CMD_NONE заборонено)
-    rej := "MAN_REJ_OK";
+    #rej := "MAN_REJ_OK";
     
     IF "DB_PlcScada_MailBox".Req.Cmd = "CMD_NONE" THEN
-        rej := "MAN_REJ_CMD_INVALID";
+        #rej := "MAN_REJ_CMD_INVALID";
     END_IF;
     
     // Валідація для команд механізму (START/STOP/RESET)
-    IF rej = "MAN_REJ_OK" THEN
+    IF #rej = "MAN_REJ_OK" THEN
         
-        IF isLocal THEN
-            rej := "MAN_REJ_LOCAL_MANUAL";
+        IF #isLocal THEN
+            #rej := "MAN_REJ_LOCAL_MANUAL";
             
-        ELSIF NOT "DB_Mechs".Mechs[slot].Enable_OK THEN
-            rej := "MAN_REJ_NOT_ENABLED";
+        ELSIF NOT "DB_Mechs".Mechs[#slot].Enable_OK THEN
+            #rej := "MAN_REJ_NOT_ENABLED";
             
-        ELSIF ("DB_Mechs".Mechs[slot].OwnerCur <> "OWNER_NONE")
-              AND ("DB_Mechs".Mechs[slot].OwnerCur <> "OWNER_SCADA") THEN
-            rej := "MAN_REJ_OWNER_BUSY";
+        ELSIF ("DB_Mechs".Mechs[#slot].OwnerCur <> "OWNER_NONE")
+            AND ("DB_Mechs".Mechs[#slot].OwnerCur <> "OWNER_SCADA") THEN
+            #rej := "MAN_REJ_OWNER_BUSY";
         END_IF;
         
     END_IF;
     
     // Виконання команди через арбітр (START/STOP/RESET)
-    IF rej = "MAN_REJ_OK" THEN
-        ok := "FC_ArbiterMech"(
-            LocalManualGlobal := LocalManualGlobal,
-            OwnerReq          := "OWNER_SCADA",
-            OwnerReqId        := UINT#0,
-            ReqCmd            := "DB_PlcScada_MailBox".Req.Cmd,
-            ReqParam1         := "DB_PlcScada_MailBox".Req.Param1,
-            ReleaseOwner      := FALSE,
-            LockOnly          := FALSE,
-            M                 := "DB_Mechs".Mechs[slot]
+    IF #rej = "MAN_REJ_OK" THEN
+        #ok := "FC_ArbiterMech"(
+                                LocalManualGlobal := #LocalManualGlobal,
+                                OwnerReq := "OWNER_SCADA",
+                                OwnerReqId := UINT#0,
+                                ReqCmd := "DB_PlcScada_MailBox".Req.Cmd,
+                                ReqParam1 := "DB_PlcScada_MailBox".Req.Param1,
+                                ReleaseOwner := FALSE,
+                                LockOnly := FALSE,
+                                M := "DB_Mechs".Mechs[#slot]
         );
         
-        IF ok THEN
-            "DB_PlcScada_MailBox".Ack.AckOk      := TRUE;
+        IF #ok THEN
+            "DB_PlcScada_MailBox".Ack.AckOk := TRUE;
             "DB_PlcScada_MailBox".Ack.RejectCode := "MAN_REJ_OK";
         ELSE
-            "DB_PlcScada_MailBox".Ack.AckOk      := FALSE;
+            "DB_PlcScada_MailBox".Ack.AckOk := FALSE;
             "DB_PlcScada_MailBox".Ack.RejectCode := "MAN_REJ_ARBITER_FAIL";
         END_IF;
     ELSE
-        "DB_PlcScada_MailBox".Ack.AckOk      := FALSE;
-        "DB_PlcScada_MailBox".Ack.RejectCode := rej;
+        "DB_PlcScada_MailBox".Ack.AckOk := FALSE;
+        "DB_PlcScada_MailBox".Ack.RejectCode := #rej;
     END_IF;
     
     // Фінальний ACK
-    "DB_PlcScada_MailBox".Ack.AckCommit := commitIn;
-    "DB_PlcScada_MailBox".Ack.Slot      := slot;
+    "DB_PlcScada_MailBox".Ack.AckCommit := #commitIn;
+    "DB_PlcScada_MailBox".Ack.Slot := #slot;
+    
     
 END_FUNCTION
