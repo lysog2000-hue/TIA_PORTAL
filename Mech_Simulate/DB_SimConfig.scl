@@ -1,8 +1,11 @@
 // ==============================================================================
 // DB_SimConfig - Конфігурація симуляторів механізмів
 // ==============================================================================
-// Версія: 2.0.0
-// Дата: 2026-01-29
+// Версія: 2.1.0
+// Дата: 2026-02-15
+// ==============================================================================
+// Зміни v2.1:
+//   + Додано параметри SimFault_Overflow та FaultTime_Overflow_ms для норій
 // ==============================================================================
 // Призначення:
 //   Зберігає налаштування симуляції для всіх типів механізмів
@@ -19,7 +22,7 @@
 
 DATA_BLOCK "DB_SimConfig"
 { S7_Optimized_Access := 'TRUE' }
-VERSION : 2.0
+VERSION : 2.1
     
 VAR
     // === Масиви конфігурацій ===
@@ -81,6 +84,8 @@ BEGIN
     Noria[0].FaultTime_Breaker_ms := 10000;
     Noria[0].SimFault_Alignment := FALSE;
     Noria[0].FaultTime_Alignment_ms := 20000;
+    Noria[0].SimFault_Overflow := FALSE;
+    Noria[0].FaultTime_Overflow_ms := 15000;
     Noria[0].ManualReset := FALSE;
     
     // === Норія 1 - увімкнено для тестування ===
@@ -91,6 +96,8 @@ BEGIN
     Noria[1].FaultTime_Breaker_ms := 10000;
     Noria[1].SimFault_Alignment := FALSE;
     Noria[1].FaultTime_Alignment_ms := 20000;
+    Noria[1].SimFault_Overflow := FALSE;
+    Noria[1].FaultTime_Overflow_ms := 15000;
     Noria[1].ManualReset := FALSE;
     
     // === Норія 2 - увімкнено для тестування ===
@@ -101,6 +108,8 @@ BEGIN
     Noria[2].FaultTime_Breaker_ms := 10000;
     Noria[2].SimFault_Alignment := FALSE;
     Noria[2].FaultTime_Alignment_ms := 20000;
+    Noria[2].SimFault_Overflow := FALSE;
+    Noria[2].FaultTime_Overflow_ms := 15000;
     Noria[2].ManualReset := FALSE;
     
     // Решта механізмів за замовчуванням вимкнені (Enable := FALSE)

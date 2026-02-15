@@ -1,28 +1,33 @@
 // ==============================================================================
 // FC_SimNoria - Симулятор фізики та несправностей норії
 // ==============================================================================
-// Версія: 2.0.0
-// Дата: 2026-01-29
+// Версія: 2.1.0
+// Дата: 2026-02-15
+// ==============================================================================
+// Зміни v2.1:
+//   + Додано симуляцію аварії DI_Overflow_OK (PHASE 5)
+//   + Додано параметри SimFault_Overflow та FaultTime_Overflow_ms
+//   + Додано ManualReset для Overflow_Tripped
 // ==============================================================================
 // Призначення:
 //   Імітує фізичне залізо норії для тестування FC_Noria без обладнання
-//   Версія 2.0: FC з глобальним DB_SimMechs
+//   Версія 2.1: підтримка чотирьох типів аварій (Breaker, Alignment, Overflow, Speed)
 //   
 // Комунікація з FC_Noria ТІЛЬКИ через 5 сигналів:
 //   - Читає:  DB_Mechs.Noria[NoriaIdx].DO_Run
 //   - Пише:   DB_Mechs.Noria[NoriaIdx].DI_Speed_OK
 //             DB_Mechs.Noria[NoriaIdx].DI_Breaker_OK
-//             DB_Mechs.Noria[NoriaIdx].DI_Alingment_OK
-//             (typo "Alingment" збережено для сумісності)
+//             DB_Mechs.Noria[NoriaIdx].DI_Alingment_OK (typo збережено)
+//             DB_Mechs.Noria[NoriaIdx].DI_Overflow_OK
 //
 // Використання в OB1:
-//   // Симуляція норії 0
+//   // Симуляція норії 0 з overflow
 //   "FC_SimNoria"(
 //       NoriaIdx := 0,
 //       StartupTime_ms := 7000,
 //       StopTime_ms := 3000,
-//       SimFault_Breaker := FALSE,
-//       FaultTime_Breaker_ms := 10000
+//       SimFault_Overflow := TRUE,
+//       FaultTime_Overflow_ms := 15000
 //   );
 //   
 //   FC_DeviceRunner(...);  // викликає FC_Noria як зазвичай
@@ -31,7 +36,7 @@
 
 FUNCTION "FC_SimNoria" : VOID
 { S7_Optimized_Access := 'TRUE' }
-VERSION : 2.0
+VERSION : 2.1
 
 VAR_INPUT
     NoriaIdx             : UINT;           // індекс у DB_Mechs.Noria[] (0..N)
@@ -48,8 +53,12 @@ VAR_INPUT
     SimFault_Alignment   : BOOL;           // увімкнути симуляцію FLT_ALIGNMENT
     FaultTime_Alignment_ms: DINT;          // час до аварії від пуску (мс)
     
+    // === Симуляція аварії переповнення ===
+    SimFault_Overflow    : BOOL;           // увімкнути симуляцію FLT_OVERFLOW
+    FaultTime_Overflow_ms: DINT;           // час до аварії від пуску (мс)
+    
     // === Ручний скид аварій ===
-    ManualReset          : BOOL;           // скинути латчовані аварії (Breaker, Alignment)
+    ManualReset          : BOOL;           // скинути латчовані аварії (Breaker, Alignment, Overflow)
 END_VAR
 
 VAR_TEMP
@@ -63,6 +72,7 @@ VAR_TEMP
     stopTimeout       : BOOL;              // флаг завершення вибігу
     breakerTimeout    : BOOL;              // флаг спрацювання breaker
     alignmentTimeout  : BOOL;              // флаг спрацювання alignment
+    overflowTimeout   : BOOL;              // флаг спрацювання overflow
 END_VAR
 
 BEGIN
@@ -82,6 +92,7 @@ BEGIN
     IF ManualReset THEN
         "DB_SimMechs".Noria[idx].Breaker_Tripped := FALSE;
         "DB_SimMechs".Noria[idx].Alignment_Tripped := FALSE;
+        "DB_SimMechs".Noria[idx].Overflow_Tripped := FALSE;
     END_IF;
     
     // =========================================================
@@ -193,5 +204,26 @@ BEGIN
     
     // Запис DI (збережено оригінальний typo "Alingment")
     "DB_Mechs".Noria[idx].DI_Alingment_OK := NOT "DB_SimMechs".Noria[idx].Alignment_Tripped;
+    
+    // =========================================================
+    // PHASE 5: Симуляція аварії OVERFLOW (переповнення)
+    // =========================================================
+    
+    // Перевірка таймера аварії
+    IF SimFault_Overflow AND "DB_SimMechs".Noria[idx].IsMotorRunning AND NOT "DB_SimMechs".Noria[idx].Overflow_Tripped THEN
+        overflowTimeout := "FC_TimeElapsedMs"(
+            StartTck := "DB_SimMechs".Noria[idx].FaultStartTck,
+            TimeoutMs := FaultTime_Overflow_ms,
+            ElapsedMs => elapsedMs,
+            NowTck => nowTck
+        );
+        
+        IF overflowTimeout THEN
+            "DB_SimMechs".Noria[idx].Overflow_Tripped := TRUE;  // латч аварії
+        END_IF;
+    END_IF;
+    
+    // Запис DI
+    "DB_Mechs".Noria[idx].DI_Overflow_OK := NOT "DB_SimMechs".Noria[idx].Overflow_Tripped;
     
 END_FUNCTION
