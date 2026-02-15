@@ -1,17 +1,25 @@
-FUNCTION "FC_ArbiterMech" : BOOL
+FUNCTION "FC_ArbiterMech" : USINT
 { S7_Optimized_Access := 'TRUE' }
+// Повертає RejectCode:
+//   0 = ARB_OK (успішно)
+//   1 = ARB_LOCAL_MANUAL (локальний режим активний)
+//   2 = ARB_OWNER_BUSY (зайнято іншим власником)
+//   3 = ARB_WRONG_STATUS (неправильний статус для операції)
+//   4 = ARB_SLOT_INVALID (невалідний слот/немапований)
+//   5 = ARB_CMD_BLOCKED (команда заблокована, напр. CMD_SET_FORCE)
+//   6 = ARB_CMD_INVALID (невалідна команда, CMD_NONE)
+//
+// Meta-команди (розпізнаються автоматично):
+//   CMD_RELEASE_OWNER - звільняє власника
+//   CMD_SET_OWNER_SCADA - тільки захоплює власника (без виконання команди)
 
 VAR_INPUT
-    LocalManualGlobal : BOOL; // Глобальний дозвіл на ручне керування
 
     OwnerReq   : USINT;   // ID запитувача (DB_Const.OWNER_*)
     OwnerReqId : UINT;    // Додатковий ID (наприклад, Route ID)
 
     ReqCmd      : USINT;  // Команда (DB_Const.CMD_*)
     ReqParam1   : INT;    // Параметр команди
-
-    ReleaseOwner : BOOL;  // TRUE = звільнити ownership
-    LockOnly     : BOOL;  // TRUE = тільки перевірка власника без запису команди
 END_VAR
 
 VAR_IN_OUT
@@ -19,96 +27,117 @@ VAR_IN_OUT
 END_VAR
 
 VAR_TEMP
-    okOwner   : BOOL;
-    isLocal   : BOOL;
-    allowExec : BOOL;
+    rejectCode : USINT;  // Код помилки (0 = OK)
+    okOwner    : BOOL;
 END_VAR
 
 BEGIN
 
 // =========================================================
-// КРИТИЧНА ПЕРЕВІРКА: CMD_SET_FORCE НЕ ПОВИНЕН ЙТИ ЧЕРЕЗ АРБІТР
+// ПЕРЕВІРКА 1: Валідація слоту
 // =========================================================
-IF #ReqCmd = 9 THEN // "CMD_SET_FORCE" згідно констант
-    #FC_ArbiterMech := FALSE;
+IF (#M.SlotId > 255) OR (#M.DeviceType = "TYPE_NONE" ) OR (#M.TypedIndex = UINT#16#FFFF) THEN
+    #FC_ArbiterMech := "ARB_SLOT_INVALID"; 
     RETURN;
 END_IF;
 
 // =========================================================
-// БАЗОВА ПЕРЕВІРКА: Валідація слоту
+// ПЕРЕВІРКА 2: Локальний режим (блокує всі операції)
 // =========================================================
-IF (#M.SlotId > 255) OR (#M.DeviceType = 0) OR (#M.TypedIndex = UINT#16#FFFF) THEN
-    #FC_ArbiterMech := FALSE;
+IF "GlobalLocalManual" OR #M.LocalManual THEN
+    #FC_ArbiterMech := "ARB_LOCAL_MANUAL"; 
     RETURN;
 END_IF;
 
-#allowExec := TRUE;
-
 // =========================================================
-// ПЕРЕВІРКА ЛОКАЛЬНОГО РЕЖИМУ (Пріоритет)
+// META-КОМАНДА: CMD_RELEASE_OWNER (звільнити власника)
 // =========================================================
-#isLocal := #LocalManualGlobal OR #M.LocalManual;
-IF #isLocal THEN
-    #allowExec := FALSE;
-END_IF;
-
-// =========================================================
-// ЛОГІКА ReleaseOwner АБО CMD_RELEASE_OWNER
-// =========================================================
-IF #allowExec AND (#ReleaseOwner OR #ReqCmd = 5) THEN // CMD_RELEASE_OWNER = 5
+IF #ReqCmd = "CMD_RELEASE_OWNER" THEN // CMD_RELEASE_OWNER 
+    
+    // Перевірка: чи запитувач є поточним власником?
     #okOwner := (#M.OwnerCur = #OwnerReq) AND (#M.OwnerCurId = #OwnerReqId);
-    
     IF NOT #okOwner THEN
-        #allowExec := FALSE;
+        #FC_ArbiterMech := "ARB_OWNER_BUSY"; // ARB_OWNER_BUSY
+        RETURN;
     END_IF;
     
-    // ПЕРЕВІРКА СТАНУ ДЛЯ ЗВІЛЬНЕННЯ:
-    // Дозволяємо скинути власника, якщо IDLE (0) АБО FAULT (5)
-    IF #allowExec AND NOT (#M.Status = 0 OR #M.Status = 5) THEN
-        #allowExec := FALSE;
+    // Перевірка: дозволяємо скинути власника тільки в IDLE  АБО FAULT 
+    IF NOT (#M.Status ="STS_IDLE" OR #M.Status = "STS_FAULT") THEN
+        #FC_ArbiterMech := "ARB_WRONG_STATUS"; 
+        RETURN;
     END_IF;
     
-    IF #allowExec THEN
-        #M.OwnerCur := 0;   // OWNER_NONE
-        #M.OwnerCurId := 0;
-    END_IF;
+    // Звільнення власника
+    #M.OwnerCur := "OWNER_NONE";   
+    #M.OwnerCurId := 0;
+	#M.LastCmd := "CMD_RELEASE_OWNER"; // Зберегти в історію
+    #FC_ArbiterMech := "ARB_OK";
+    RETURN;
     
+END_IF;
+
 // =========================================================
-// ЛОГІКА ЗАХОПЛЕННЯ ТА ВИКОНАННЯ КОМАНД
+// META-КОМАНДА: CMD_SET_OWNER_SCADA (тільки захопити)
 // =========================================================
-ELSIF #allowExec THEN
+IF #ReqCmd = "CMD_SET_OWNER_SCADA" THEN 
     
-    // Захват owner (якщо він вільний)
-    IF (#M.OwnerCur = 0) AND (#OwnerReq <> 0) THEN
-        // Дозволяємо захоплення також лише в IDLE або FAULT
-        IF (#M.Status = 0 OR #M.Status = 5) THEN
+    // Захоплення owner (якщо він вільний)
+    IF (#M.OwnerCur = "OWNER_NONE") AND (#OwnerReq <> "OWNER_NONE") THEN
+        // Дозволяємо захоплення тільки в IDLE (0) або FAULT 
+        IF (#M.Status = "STS_IDLE" OR #M.Status = "STS_FAULT") THEN
             #M.OwnerCur := #OwnerReq;
             #M.OwnerCurId := #OwnerReqId;
+            #M.LastCmd := "CMD_SET_OWNER_SCADA"; // Зберегти в історію
+            #FC_ArbiterMech := "ARB_OK"; 
         ELSE
-            #allowExec := FALSE;
+            #FC_ArbiterMech := "ARB_WRONG_STATUS"; 
+        END_IF;
+    ELSE
+        // Перевірка: чи запитувач вже є власником?
+        #okOwner := (#M.OwnerCur = #OwnerReq) AND (#M.OwnerCurId = #OwnerReqId);
+        IF #okOwner THEN
+            #FC_ArbiterMech := "ARB_OK";
+        ELSE
+            #FC_ArbiterMech := "ARB_OWNER_BUSY"; 
         END_IF;
     END_IF;
-    
-    // Перевірка поточного власника
-    #okOwner := (#M.OwnerCur = #OwnerReq) AND (#M.OwnerCurId = #OwnerReqId);
-    IF NOT #okOwner THEN
-        #allowExec := FALSE;
-    END_IF;
-    
-    // Виконання команди (якщо не LockOnly)
-    IF #allowExec AND (NOT #LockOnly) THEN
-        IF #ReqCmd = 0 THEN // CMD_NONE
-            #allowExec := FALSE;
-        END_IF;
-        
-        IF #allowExec THEN
-            #M.Cmd := #ReqCmd;
-            #M.CmdParam1 := #ReqParam1;
-        END_IF;
-    END_IF;
+    RETURN;
     
 END_IF;
 
-#FC_ArbiterMech := #allowExec;
+// =========================================================
+// ЗВИЧАЙНІ КОМАНДИ (захоплення + виконання)
+// =========================================================
 
+// Перевірка: CMD_NONE заборонено
+IF #ReqCmd = "CMD_NONE" THEN 
+    #FC_ArbiterMech := "ARB_CMD_INVALID";
+    RETURN;
+END_IF;
+
+// Захоплення owner (якщо він вільний)
+IF (#M.OwnerCur = "OWNER_NONE" ) AND (#OwnerReq <>  "OWNER_NONE") THEN
+    // Дозволяємо захоплення тільки в IDLE (0) або FAULT 
+    IF (#M.Status = "STS_IDLE" OR #M.Status = "STS_FAULT") THEN
+        #M.OwnerCur := #OwnerReq;
+        #M.OwnerCurId := #OwnerReqId;
+    ELSE
+        #FC_ArbiterMech := "ARB_WRONG_STATUS"; 
+        RETURN;
+    END_IF;
+END_IF;
+
+// Перевірка: чи запитувач є власником?
+#okOwner := (#M.OwnerCur = #OwnerReq) AND (#M.OwnerCurId = #OwnerReqId);
+IF NOT #okOwner THEN
+    #FC_ArbiterMech := "ARB_OWNER_BUSY";
+    RETURN;
+END_IF;
+
+// Виконання команди
+#M.Cmd := #ReqCmd;
+#M.CmdParam1 := #ReqParam1;
+
+
+#FC_ArbiterMech := "ARB_OK";
 END_FUNCTION
