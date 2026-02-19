@@ -74,13 +74,10 @@ BEGIN
                 Fsm.slot := Cmd.RC_Steps[Fsm.i].RS_Slot;
 
                 Fsm.dummyOk := "FC_ArbiterMech"(
-                    LocalManualGlobal := LocalManualGlobal,
                     OwnerReq          := OWNER_ROUTE,
                     OwnerReqId        := USINT_TO_UINT(RouteIdx),
                     ReqCmd            := CMD_NONE,
                     ReqParam1         := 0,
-                    ReleaseOwner      := TRUE,
-                    LockOnly          := FALSE,
                     M                 := Mechs[Fsm.slot]
                 );
             END_FOR;
@@ -156,13 +153,10 @@ BEGIN
                     Fsm.slot := Cmd.RC_Steps[Fsm.i].RS_Slot;
 
                     Fsm.lockOkOne := "FC_ArbiterMech"(
-                        LocalManualGlobal := LocalManualGlobal,
                         OwnerReq          := OWNER_ROUTE,
                         OwnerReqId        := USINT_TO_UINT(RouteIdx),
                         ReqCmd            := CMD_NONE,
                         ReqParam1         := 0,
-                        ReleaseOwner      := FALSE,
-                        LockOnly          := TRUE,
                         M                 := Mechs[Fsm.slot]
                     );
 
@@ -180,13 +174,10 @@ BEGIN
                         Fsm.slot := Cmd.RC_Steps[Fsm.i].RS_Slot;
 
                         Fsm.dummyOk := "FC_ArbiterMech"(
-                            LocalManualGlobal := LocalManualGlobal,
                             OwnerReq          := OWNER_ROUTE,
                             OwnerReqId        := USINT_TO_UINT(RouteIdx),
                             ReqCmd            := CMD_NONE,
                             ReqParam1         := 0,
-                            ReleaseOwner      := TRUE,
-                            LockOnly          := FALSE,
                             M                 := Mechs[Fsm.slot]
                         );
                     END_FOR;
@@ -222,24 +213,18 @@ BEGIN
 
                     IF Cmd.RC_Steps[Fsm.stepIdx].RS_Action = RS_ACT_START THEN
                         Fsm.cmdOk := "FC_ArbiterMech"(
-                            LocalManualGlobal := LocalManualGlobal,
                             OwnerReq          := OWNER_ROUTE,
                             OwnerReqId        := USINT_TO_UINT(RouteIdx),
                             ReqCmd            := CMD_START,
                             ReqParam1         := Cmd.RC_Steps[Fsm.stepIdx].RS_StartParam,
-                            ReleaseOwner      := FALSE,
-                            LockOnly          := FALSE,
                             M                 := Mechs[Fsm.slot]
                         );
                     ELSE
                         Fsm.cmdOk := "FC_ArbiterMech"(
-                            LocalManualGlobal := LocalManualGlobal,
                             OwnerReq          := OWNER_ROUTE,
                             OwnerReqId        := USINT_TO_UINT(RouteIdx),
                             ReqCmd            := CMD_STOP,
                             ReqParam1         := 0,
-                            ReleaseOwner      := FALSE,
-                            LockOnly          := FALSE,
                             M                 := Mechs[Fsm.slot]
                         );
                     END_IF;
@@ -272,24 +257,18 @@ BEGIN
 
                     IF Cmd.RC_Steps[Fsm.i].RS_StopParam <> 0 THEN
                         Fsm.dummyOk := "FC_ArbiterMech"(
-                            LocalManualGlobal := LocalManualGlobal,
                             OwnerReq          := OWNER_ROUTE,
                             OwnerReqId        := USINT_TO_UINT(RouteIdx),
                             ReqCmd            := CMD_START,
                             ReqParam1         := Cmd.RC_Steps[Fsm.i].RS_StopParam,
-                            ReleaseOwner      := FALSE,
-                            LockOnly          := FALSE,
                             M                 := Mechs[Fsm.slot]
                         );
                     ELSE
                         Fsm.dummyOk := "FC_ArbiterMech"(
-                            LocalManualGlobal := LocalManualGlobal,
                             OwnerReq          := OWNER_ROUTE,
                             OwnerReqId        := USINT_TO_UINT(RouteIdx),
                             ReqCmd            := CMD_STOP,
                             ReqParam1         := 0,
-                            ReleaseOwner      := FALSE,
-                            LockOnly          := FALSE,
                             M                 := Mechs[Fsm.slot]
                         );
                     END_IF;
@@ -314,13 +293,10 @@ BEGIN
                         Fsm.slot := Cmd.RC_Steps[Fsm.i].RS_Slot;
 
                         Fsm.dummyOk := "FC_ArbiterMech"(
-                            LocalManualGlobal := LocalManualGlobal,
                             OwnerReq          := OWNER_ROUTE,
                             OwnerReqId        := USINT_TO_UINT(RouteIdx),
                             ReqCmd            := CMD_NONE,
                             ReqParam1         := 0,
-                            ReleaseOwner      := TRUE,
-                            LockOnly          := FALSE,
                             M                 := Mechs[Fsm.slot]
                         );
                     END_FOR;
