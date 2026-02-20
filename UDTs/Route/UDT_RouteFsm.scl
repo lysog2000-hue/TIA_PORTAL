@@ -1,26 +1,27 @@
 // ==============================================================================
 // UDT_RouteFsm - Об'єднаний стан FSM маршруту
 // ==============================================================================
-// Версія: 2.0.0
-// Дата: 2026-02-01
+// Версія: 3.0.0
+// Дата: 2026-02-19
 // ==============================================================================
-// Зміни v2.0:
-//   - Злиття UDT_RouteFsmState + UDT_RouteFsmWork у єдину структуру
-//   - NON-RETAIN: маршрути не продовжують після рестарту
-//   - Спрощена архітектура без дублювання даних
+// Зміни v3.0:
+//   - lockOkOne : BOOL → USINT  (зберігає RejectCode від FC_ArbiterMech)
+//   - cmdOk     : BOOL → USINT  (зберігає RejectCode від FC_ArbiterMech)
+//   - dummyOk   : BOOL → USINT  (зберігає RejectCode від FC_ArbiterMech)
+//   - lockOkAll : BOOL          (залишається BOOL - агрегований результат)
 // ==============================================================================
 
 TYPE "UDT_RouteFsm"
 { S7_Optimized_Access := 'TRUE' }
 STRUCT
-  // === Persistent State (був UDT_RouteFsmState) ===
+  // === Persistent State ===
   RF_State        : UINT;   // ROUTE_STS_*
   RF_ResultCode   : UINT;   // REJ_* / ABRT_* / DONE_*
   RF_ActiveStep   : USINT;  // індекс поточного кроку
   RF_StepSts      : USINT;  // STEP_STS_* (IDLE/WORK/DONE/TIMEOUT)
   RF_AbortLatched : UINT;   // latched abort code для STOPPING
-  
-  // === Working Variables (був UDT_RouteFsmWork) ===
+
+  // === Working Variables ===
   lastCmd    : USINT;       // для edge detection
   startEdge  : BOOL;        // TRUE на фронті RT_CMD_START
   stopOpEdge : BOOL;        // TRUE на фронті RT_CMD_STOP_OP
@@ -35,11 +36,15 @@ STRUCT
   allStopped : BOOL;        // всі механізми зупинені?
   stepOk     : BOOL;        // валідація кроку
 
-  lockOkAll  : BOOL;        // atomic lock OK для всіх
-  lockOkOne  : BOOL;        // lock OK для одного
+  lockOkAll  : BOOL;        // atomic lock OK для всіх (агрегований)
+  lockOkOne  : USINT;       // RejectCode від FC_ArbiterMech для lock одного механізму
+                            // 0 = ARB_OK, інше = відмова
 
-  cmdOk      : BOOL;        // команда арбітра OK
-  dummyOk    : BOOL;        // для анонімних викликів
+  cmdOk      : USINT;       // RejectCode від FC_ArbiterMech для команди (START/STOP)
+                            // 0 = ARB_OK, інше = відмова
+
+  dummyOk    : USINT;       // RejectCode від FC_ArbiterMech (результат ігнорується)
+                            // використовується для release/stop без перевірки
 
   safetyHit  : BOOL;        // GlobalSafetyStop спрацював
 END_STRUCT
