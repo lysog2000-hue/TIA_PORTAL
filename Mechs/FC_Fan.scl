@@ -1,155 +1,135 @@
 FUNCTION "FC_Fan" : Void
 { S7_Optimized_Access := 'TRUE' }
-VERSION : 1.0
-// ============================================================================
-// FC_Fan - Логіка вентилятора (ЗАГЛУШКА)
-// ============================================================================
-// TODO: Реалізувати повну логіку вентилятора аналогічно FC_Redler
-// ============================================================================
-   VAR_IN_OUT 
-      F : "UDT_Fan";   // типізований вентилятор (I/O + таймінги)
-      B : "UDT_BaseMechanism";   // базовий механізм слоту (Cmd/Status/FLT/Owner...)
-   END_VAR
+VERSION : 1.1
+    VAR_IN_OUT 
+      F : "UDT_Fan";
+      B : "UDT_BaseMechanism";
+    END_VAR
 
-   VAR_TEMP 
-      isFault : Bool;
-      isBlocked : Bool;
-      forceBreaker : Bool;
-      forceFeedback : Bool;
-      feedbackTimeout : Bool;
+    VAR_TEMP 
       elapsedMs : DInt;
       nowTck : DInt;
-   END_VAR
-
+      forceBreaker : Bool;
+      forceFeedback : Bool;
+      isFault : Bool;
+      isBlocked : Bool;
+    END_VAR
 
 BEGIN
-	// ============================================================================
-	// FC_Fan (Refactored to CASE)
-	// ============================================================================
-	
-	REGION "Опис та стани форсування"
-	    // BIT1 (2)  - подавити FLT_BREAKER
-	    // BIT3 (8)  - подавити FLT_Feedback
-	    #forceBreaker := (#B.Force_Code AND 2) <> 0;
-	    #forceFeedback := (#B.Force_Code AND 8) <> 0;
-	END_REGION
-	
-	REGION "1) RESET AND FAULT"
-	    IF #B.Cmd = "CMD_RESET" AND #B.Status = "STS_FAULT"  THEN
-	        #B.FLTCode := "FLT_NONE";
-	        #B.Status := "STS_IDLE";
-	        #F.StartMs := 0;
-	        #B.LastCmd := #B.Cmd;
-	    END_IF;
-	    
-	    #isFault := (#B.Status = "STS_FAULT");
-	END_REGION
-	
-	REGION "2) Умови керування Enable / LocalManual"
-	    IF NOT #B.Enable_OK THEN
-	        #B.Status := "STS_DISABLED";
-	        #B.OwnerCur := 0;
-	        #B.OwnerCurId := 0;
-	        #F.StartMs := 0;
-	    ELSIF #B.LocalManual THEN
-	        #B.Status := "STS_LOCAL";
-	        #B.OwnerCur := 0;
-	        #B.OwnerCurId := 0;
-	        #F.StartMs := 0;
-	    ELSIF (#B.Status = "STS_DISABLED") OR (#B.Status = "STS_LOCAL") THEN
-	        // Автоматичний вихід з DISABLED/LOCAL при знятті блокувань
-	        #B.Status := "STS_IDLE";
-	    END_IF;
-	    
-	    #isBlocked := (#B.Status = "STS_DISABLED") OR (#B.Status = "STS_LOCAL");
-	END_REGION
-	
-	REGION "3) Фіксація команди"
-	    IF #B.Cmd <> "CMD_NONE" THEN
-	        #B.LastCmd := #B.Cmd;
-	    END_IF;
-	END_REGION
-	
-	REGION "4) Місцеві аварії"
-	    IF (NOT #isFault) AND (NOT #isBlocked) THEN
-	        IF (NOT #F.DI_Breaker_OK) AND (NOT #forceBreaker) THEN
-	            #B.FLTCode := "FLT_BREAKER";
-	            #B.Status := "STS_FAULT";
-	        END_IF;
-	        #isFault := (#B.Status = "STS_FAULT");
-	    END_IF;
-	END_REGION
-	
-	REGION "5 & 6) Машина станів та обробка команд"
-	    IF (NOT #isFault) AND (NOT #isBlocked) THEN
-	        
-	        CASE #B.Status OF
-	                
-	            "STS_IDLE":
-	                IF #B.Cmd = "CMD_START" THEN
-	                    #B.Status := "STS_STARTING";
-	                    #F.StartMs := TIME_TCK();
-	                END_IF;
-	                
-	            "STS_STARTING":
-	                // Чекаємо зворотний зв'язок (Feedback)
-	                IF #F.DI_Feedback_OK OR #forceFeedback THEN
-	                    #B.Status := "STS_RUNNING";
-	                ELSE
-	                    // Перевірка таймауту на запуск
-	                    #feedbackTimeout := "FC_TimeElapsedMs"(
-	                                                           StartTck := #F.StartMs,
-	                                                           TimeoutMs := "TimeoutMs_Fan_Feedback",
-	                                                           ElapsedMs => #elapsedMs,
-	                                                           NowTck => #nowTck
-	                    );
-	                    
-	                    IF #feedbackTimeout THEN
-	                        #B.FLTCode := "FLT_NO_FEEDBACK";
-	                        #B.Status := "STS_FAULT";
-	                        #isFault := TRUE;
-	                    END_IF;
-	                END_IF;
-	                
-	                // Можливість зупинити під час розгону
-	                IF #B.Cmd = "CMD_STOP" THEN
-	                    #B.Status := "STS_STOPPING";
-	                END_IF;
-	                
-	            "STS_RUNNING":
-	                // Контроль фідбеку під час роботи
-	                IF (NOT #F.DI_Feedback_OK) AND (NOT #forceFeedback) THEN
-	                    #B.FLTCode := "FLT_NO_FEEDBACK";
-	                    #B.Status := "STS_FAULT";
-	                    #isFault := TRUE;
-	                END_IF;
-	                
-	                // Команда на зупинку
-	                IF #B.Cmd = "CMD_STOP" THEN
-	                    #B.Status := "STS_STOPPING";
-	                END_IF;
-	                
-	            "STS_STOPPING":
-	                // Вентилятор вважається зупиненим, коли зник фідбек
-	                IF (NOT #F.DI_Feedback_OK) THEN
-	                    #B.Status := "STS_IDLE";
-	                    #F.StartMs := 0;
-	                END_IF;
-	                
-	            ELSE
-	                #B.Status := "STS_IDLE";
-	        END_CASE;
-	        
-	    END_IF;
-	END_REGION
-	
 
-	REGION "7) Формування виходу DO_Run"
-	    IF (#B.Status =  "STS_RUNNING") OR (#B.Status =  "STS_STARTING") THEN
-	        #F.DO_Run := TRUE;
-	    ELSE
-	        #F.DO_Run := FALSE;
-	    END_IF;
-	END_REGION
+REGION "0) Декодування форсування"
+    // BIT1 (2) - форсування автомата захисту
+    // BIT3 (8) - форсування зворотного зв'язку
+    #forceBreaker   := (#B.Force_Code AND 2) <> 0;
+    #forceFeedback  := (#B.Force_Code AND 8) <> 0;
+END_REGION
+
+REGION "1) RESET (Тільки за умови усунення причини)"
+    // Скидання FLTCode можливе лише якщо фізичний сигнал OK або активоване форсування
+    IF #B.Cmd = "CMD_RESET" THEN
+        CASE #B.FLTCode OF
+            "FLT_BREAKER":
+                IF #F.DI_Breaker_OK OR #forceBreaker THEN #B.FLTCode := "FLT_NONE"; END_IF;
+            "FLT_NO_FEEDBACK":
+                IF #F.DI_Feedback_OK OR #forceFeedback THEN #B.FLTCode := "FLT_NONE"; END_IF;
+        END_CASE;
+
+        IF #B.FLTCode = "FLT_NONE" AND #B.Status = "STS_FAULT" THEN
+            #B.Status := "STS_IDLE";
+            #F.StartMs := 0;
+        END_IF;
+    END_IF;
+END_REGION
+
+REGION "2) Обробка блокувань"
+    IF NOT #B.Enable_OK THEN
+        #B.Status := "STS_DISABLED";
+        #isBlocked := TRUE;
+    ELSIF #B.LocalManual THEN
+        #B.Status := "STS_LOCAL";
+        #isBlocked := TRUE;
+    ELSE
+        #isBlocked := FALSE;
+        IF (#B.Status = "STS_DISABLED") OR (#B.Status = "STS_LOCAL") THEN
+            #B.Status := "STS_IDLE";
+        END_IF;
+    END_IF;
+END_REGION
+
+REGION "3) Моніторинг аварій (Diagnostic Latch)"
+    // Фіксація першої виявленої аварії
+    IF #B.FLTCode = "FLT_NONE" AND NOT #isBlocked THEN
+        IF NOT #F.DI_Breaker_OK THEN
+            #B.FLTCode := "FLT_BREAKER";
+        END_IF;
+    END_IF;
+END_REGION
+
+REGION "4) Визначення виконавчої аварії"
+    #isFault := FALSE;
+    IF #B.FLTCode <> "FLT_NONE" THEN
+        CASE #B.FLTCode OF
+            "FLT_BREAKER":     #isFault := NOT #forceBreaker;
+            "FLT_NO_FEEDBACK":  #isFault := NOT #forceFeedback;
+        END_CASE;
+    END_IF;
+
+    IF #isFault THEN
+        #B.Status := "STS_FAULT";
+    END_IF;
+    #isFault := (#B.Status = "STS_FAULT");
+END_REGION
+
+REGION "5 & 6) Машина станів та виконання команд"
+    IF (NOT #isFault) AND (NOT #isBlocked) THEN
+        // Реєстрація останньої надісланої команди
+        IF #B.Cmd <> "CMD_NONE" THEN #B.LastCmd := #B.Cmd; END_IF;
+
+        CASE #B.Status OF
+            "STS_IDLE":
+                IF #B.Cmd = "CMD_START" THEN
+                    #B.Status := "STS_STARTING";
+                    #F.StartMs := TIME_TCK();
+                END_IF;
+                
+            "STS_STARTING":
+                IF #F.DI_Feedback_OK OR #forceFeedback THEN
+                    #B.Status := "STS_RUNNING";
+                ELSE
+                    IF "FC_TimeElapsedMs"(StartTck := #F.StartMs, TimeoutMs := "TimeoutMs_Fan_Feedback",
+                                          ElapsedMs => #elapsedMs, NowTck => #nowTck) THEN
+                        #B.FLTCode := "FLT_NO_FEEDBACK";
+                        #B.Status := "STS_FAULT";
+                    END_IF;
+                END_IF;
+
+            "STS_RUNNING":
+                // Миттєвий контроль фідбеку під час роботи
+                IF NOT (#F.DI_Feedback_OK OR #forceFeedback) THEN
+                    #B.FLTCode := "FLT_NO_FEEDBACK";
+                    #B.Status := "STS_FAULT";
+                END_IF;
+
+            "STS_STOPPING":
+                // Вентилятор вважається зупиненим при зникненні фідбеку
+                IF (NOT #F.DI_Feedback_OK) OR #forceFeedback THEN
+                    #B.Status := "STS_IDLE";
+                END_IF;
+        END_CASE;
+
+        // Пріоритетна зупинка
+        IF #B.Cmd = "CMD_STOP" AND #B.Status <> "STS_IDLE" THEN
+            #B.Status := "STS_STOPPING";
+        END_IF;
+    END_IF;
+END_REGION
+
+REGION "7) Фіналізація"
+    // Вихід на контактор активний у станах розгону та роботи
+    #F.DO_Run := (#B.Status = "STS_STARTING") OR (#B.Status = "STS_RUNNING");
+    
+    // Скидання поточної команди
+    #B.Cmd := "CMD_NONE";
+END_REGION
 
 END_FUNCTION

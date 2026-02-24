@@ -1,0 +1,66 @@
+// ==============================================================================
+// DB_SimConfig - Конфігурація симуляторів механізмів
+// ==============================================================================
+// Generated: 2026-02-24 11:34:37
+// Source   : graph.json
+// NOTE: Gate2P не включено (симулятор не реалізований)
+// ==============================================================================
+
+DATA_BLOCK "DB_SimConfig"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 2.1
+
+VAR
+    // NOTE: Gate2P виключено — FC_SimGate2P не реалізовано.
+    Redler : ARRAY[0.."REDLERS_COUNT"] OF "UDT_SimRedlerConfig";
+    Noria  : ARRAY[0.."NORIAS_COUNT"] OF "UDT_SimNoriaConfig";
+    Fan    : ARRAY[0.."FANS_COUNT"] OF "UDT_SimFanConfig";
+END_VAR
+
+BEGIN
+    // === Redler ===
+    // redler "Redler" (id=3, TypedIndex=0)
+    Redler[0].Enable := TRUE;
+    Redler[0].StartupTime_ms := 3000;
+    Redler[0].StopTime_ms := 2000;
+    Redler[0].SimFault_Breaker := FALSE;
+    Redler[0].FaultTime_Breaker_ms := 10000;
+    Redler[0].SimFault_Overflow := FALSE;
+    Redler[0].FaultTime_Overflow_ms := 15000;
+    Redler[0].ManualReset := FALSE;
+
+    // === Noria ===
+    // noria "Noria" (id=1, TypedIndex=0)
+    Noria[0].Enable := TRUE;
+    Noria[0].StartupTime_ms := 4000;
+    Noria[0].StopTime_ms := 3000;
+    Noria[0].SimFault_Breaker := FALSE;
+    Noria[0].FaultTime_Breaker_ms := 10000;
+    Noria[0].SimFault_Alignment := FALSE;
+    Noria[0].FaultTime_Alignment_ms := 20000;
+    Noria[0].SimFault_Overflow := FALSE;
+    Noria[0].FaultTime_Overflow_ms := 15000;
+    Noria[0].ManualReset := FALSE;
+
+    // noria "Noria 2" (id=2, TypedIndex=1)
+    Noria[1].Enable := TRUE;
+    Noria[1].StartupTime_ms := 4000;
+    Noria[1].StopTime_ms := 3000;
+    Noria[1].SimFault_Breaker := FALSE;
+    Noria[1].FaultTime_Breaker_ms := 10000;
+    Noria[1].SimFault_Alignment := FALSE;
+    Noria[1].FaultTime_Alignment_ms := 20000;
+    Noria[1].SimFault_Overflow := FALSE;
+    Noria[1].FaultTime_Overflow_ms := 15000;
+    Noria[1].ManualReset := FALSE;
+
+    // === Fan ===
+    // Fan "Fan" (id=5, TypedIndex=0)
+    Fan[0].Enable := TRUE;
+    Fan[0].StartupTime_ms := 3000;
+    Fan[0].StopTime_ms := 2000;
+    Fan[0].SimFault_Breaker := FALSE;
+    Fan[0].FaultTime_Breaker_ms := 10000;
+    Fan[0].ManualReset := FALSE;
+
+END_DATA_BLOCK

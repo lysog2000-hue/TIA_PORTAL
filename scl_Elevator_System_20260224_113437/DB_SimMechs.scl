@@ -1,0 +1,22 @@
+// ==============================================================================
+// DB_SimMechs - Стани симуляторів механізмів (runtime)
+// ==============================================================================
+// Generated: 2026-02-24 11:34:37
+// Source   : graph.json
+// NOTE: Gate2P не включено (симулятор не реалізований)
+// ==============================================================================
+
+DATA_BLOCK "DB_SimMechs"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 2.0
+NON_RETAIN
+
+VAR
+    // NOTE: Gate2P виключено — FC_SimGate2P не реалізовано.
+    Redler : ARRAY[0.."REDLERS_COUNT"] OF "UDT_SimRedlerState";
+    Noria  : ARRAY[0.."NORIAS_COUNT"] OF "UDT_SimNoriaState";
+    Fan    : ARRAY[0.."FANS_COUNT"] OF "UDT_SimFanState";
+END_VAR
+
+BEGIN
+END_DATA_BLOCK
