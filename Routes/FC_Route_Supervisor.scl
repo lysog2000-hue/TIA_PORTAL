@@ -5,8 +5,8 @@
 // Дата: 2026-02-24
 // ==============================================================================
 // ЗМІНИ v3.0.0:
-//   [FIX-1] VAR_INPUT: GlobalSafetyStop, LocalManualGlobal (раніше завжди FALSE)
-//           FC_RouteFSM тепер отримує реальні сигнали безпеки
+//   [FIX-1] FC_RouteFSM читає GlobalSafetyStop, GlobalLocalManual напряму як глобальні теги ПЛК
+//           (раніше параметри завжди передавались як FALSE)
 //   [FIX-2] Невалідний RouteId → ACK + RETURN (раніше RETURN без ACK)
 //           Mailbox більше не блокується назавжди
 //   [FIX-3] REJECTED додано до Cleanup (раніше маршрут застрягав у REJECTED)
