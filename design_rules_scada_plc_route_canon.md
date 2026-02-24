@@ -126,6 +126,6 @@ PLC має віддавати в SCADA мінімальний набір:
 ---
 
 ### Додаток: Канонічні стани Route FSM
-`IDLE → VALIDATING → LOCKING → STARTING → RUNNING → STOPPING → (DONE|ABORTED)`  
-Фінальні: `DONE`, `REJECTED`, `ABORTED` (підпричина в `ResultCode`).
+`IDLE → VALIDATING → LOCKING → STARTING → RUNNING → STOPPING `  
+Фінальні: `RUNNING`, `REJECTED`, `ABORTED` (підпричина в `ResultCode`).
 
