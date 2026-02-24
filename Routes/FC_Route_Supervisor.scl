@@ -1,17 +1,29 @@
 // ==============================================================================
-// FC_Route_Supervisor - Супервізор маршрутів (Mailbox Pattern v2.0)
+// FC_Route_Supervisor - Супервізор маршрутів (Mailbox Pattern v3.0)
 // ==============================================================================
-// Версія: 2.0.4 (FINAL FIX - RS_Warning preservation)
-// Дата: 2026-02-03
+// Версія: 3.0.0
+// Дата: 2026-02-24
 // ==============================================================================
-// КРИТИЧНЕ ВИПРАВЛЕННЯ:
-// FC_RouteFSM затирає RS_Warning кожного циклу для ВСІХ маршрутів
-// Рішення: Зберігати RS_Warning перед FSM і відновлювати після FSM
+// ЗМІНИ v3.0.0:
+//   [FIX-1] VAR_INPUT: GlobalSafetyStop, LocalManualGlobal (раніше завжди FALSE)
+//           FC_RouteFSM тепер отримує реальні сигнали безпеки
+//   [FIX-2] Невалідний RouteId → ACK + RETURN (раніше RETURN без ACK)
+//           Mailbox більше не блокується назавжди
+//   [FIX-3] REJECTED додано до Cleanup (раніше маршрут застрягав у REJECTED)
+//           FSM може вийти з REJECTED → IDLE через RT_CMD_NONE
+//   [FIX-4] STOP_OP для неактивного маршруту → RS_WARNING_IGNORED_CMD
+//           (раніше "завжди дозволено" → сміття у RouteExecutor для REJECTED)
+//
+// v2.0.4:
+//   FC_RouteFSM затирає RS_Warning кожного циклу для ВСІХ маршрутів
+//   Рішення: Зберігати RS_Warning перед FSM і відновлювати після FSM
 // ==============================================================================
 
 FUNCTION "FC_Route_Supervisor" : VOID
 { S7_Optimized_Access := 'TRUE' }
-VERSION : 2.0
+VERSION : 3.0
+
+
 
 VAR_TEMP
   i                : INT;
@@ -53,8 +65,10 @@ BEGIN
         // =========================================================
         routeId := "DB_ScadaToPlc_RouteCmd".HDR_RouteId;
         
-        // Невалідний RouteId → RETURN без ACK
+        // Невалідний RouteId → ACK (mailbox не блокується) + RETURN
         IF (routeId < 1) OR (routeId > 12) THEN
+            "DB_PlcToScada_RouteStatus".ACK_CommitApplied := commitIn;
+            "DB_PlcToScada_RouteStatus".ACK_RouteId := 0;
             RETURN;
         END_IF;
         
@@ -83,9 +97,15 @@ BEGIN
             END_IF;
             
         ELSIF "DB_ScadaToPlc_RouteCmd".CMD_Route.RC_Cmd = RT_CMD_STOP_OP THEN
-            // STOP_OP завжди дозволено
-            pendingWarning := RS_WARNING_OK;
-            cmdAllowed := TRUE;
+            IF isActive THEN
+                // STOP_OP для активного маршруту — дозволено
+                pendingWarning := RS_WARNING_OK;
+                cmdAllowed := TRUE;
+            ELSE
+                // STOP_OP для неактивного (IDLE/REJECTED/ABORTED) — ігнорувати з попередженням
+                pendingWarning := RS_WARNING_IGNORED_CMD;
+                cmdAllowed := FALSE;
+            END_IF;
             
         ELSE
             // RT_CMD_NONE або невідома команда
@@ -118,8 +138,6 @@ BEGIN
         "FC_RouteFSM"(
             RouteIdx          := INT_TO_USINT(i),
             Cmd               := "DB_Plc_RouteExecutor".Routes[i],
-            GlobalSafetyStop  := FALSE,
-            LocalManualGlobal := FALSE,
             Mechs             := "DB_Mechs".Mechs,
             Fsm               := "DB_Plc_RouteFsm".RoutesFsm[i],
             Sts               => "DB_PlcToScada_RouteStatus".RoutesSts[i]
@@ -151,8 +169,9 @@ BEGIN
         
         currentState := "DB_PlcToScada_RouteStatus".RoutesSts[i].RS_State;
         
-        // Очищати тільки маршрути у фінальних станах
-        IF (currentState = ROUTE_STS_ABORTED) OR (currentState = ROUTE_STS_IDLE) THEN
+        // Очищати маршрути у фінальних станах (REJECTED включено — без цього FSM застряє)
+        IF (currentState = ROUTE_STS_ABORTED) OR (currentState = ROUTE_STS_IDLE)
+        OR (currentState = ROUTE_STS_REJECTED) THEN
             "DB_Plc_RouteExecutor".Routes[i].RC_Cmd := RT_CMD_NONE;
             "DB_Plc_RouteExecutor".Routes[i].RC_StepCount := 0;
         END_IF;

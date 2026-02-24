@@ -60,8 +60,6 @@ VERSION : 3.3
 VAR_INPUT
     RouteIdx          : USINT;            // ID маршруту (1..12)
     Cmd               : "UDT_RouteCmd";   // Команда та кроки маршруту
-    GlobalSafetyStop  : BOOL;             // Апаратна аварійна зупинка
-    LocalManualGlobal : BOOL;             // Глобальний локальний режим
 END_VAR
 
 VAR_IN_OUT
@@ -109,7 +107,7 @@ BEGIN
                 Fsm.anyFault := TRUE;
             END_IF;
 
-            IF LocalManualGlobal OR Mechs[Fsm.slot].LocalManual THEN
+            IF GlobalLocalManual OR Mechs[Fsm.slot].LocalManual THEN
                 Fsm.anyLocal := TRUE;
             END_IF;
 
@@ -227,7 +225,7 @@ BEGIN
                             EXIT;
 
                         ELSIF (NOT Mechs[Fsm.slot].Enable_OK)
-                              OR LocalManualGlobal
+                              OR GlobalLocalManual
                               OR Mechs[Fsm.slot].LocalManual
                               OR (Mechs[Fsm.slot].FLTCode <> 0) THEN
                             Fsm.RF_State      := "ROUTE_STS_REJECTED";
