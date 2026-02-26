@@ -1,4 +1,4 @@
-TYPE "UDT_BaseMechanism" :
+﻿TYPE "UDT_BaseMechanism" :
 STRUCT
 
     SlotId : USINT;  //

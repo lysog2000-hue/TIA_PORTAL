@@ -1,4 +1,4 @@
-TYPE "UDT_Noria" :
+﻿TYPE "UDT_Noria" :
 STRUCT
     // ===== Дискретні входи/виходи (HAL / залізо) =====
     DI_Speed_OK     : BOOL;    // контроль швидкості

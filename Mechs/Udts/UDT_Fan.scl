@@ -1,4 +1,4 @@
-TYPE "UDT_Fan" :
+﻿TYPE "UDT_Fan" :
 STRUCT
     // ===== Дискретні входи/виходи (HAL / залізо) =====
     DI_Breaker_OK   : BOOL;    // автомат захисту [cite: 79, 80]

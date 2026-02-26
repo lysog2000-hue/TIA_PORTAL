@@ -1,15 +1,15 @@
 TYPE "UDT_Gate2P" :
 STRUCT
     // ===== Дискретні входи/виходи (HAL / залізо) =====
-    DI_Opened_OK    : BOOL;    // засувка відкрита (кінцевик)
-    DI_Closed_OK    : BOOL;    // засувка закрита (кінцевик)
-	DI_Breaker_OK   : BOOL;    // автомат захисту
+    DI_Pos0_OK      : BOOL;    // засувка в положенні 0 (закрита, кінцевик)
+    DI_Pos1_OK      : BOOL;    // засувка в положенні 1 (відкрита, кінцевик)
+    DI_Breaker_OK   : BOOL;    // автомат захисту
 
-    DO_Open         : BOOL;    // команда відкрити
-    DO_Close        : BOOL;    // команда закрити
+    DO_Pos0         : BOOL;    // команда переміститись в положення 0 (закрити)
+    DO_Pos1         : BOOL;    // команда переміститись в положення 1 (відкрити)
 
     // ===== Стан/таймінги засувки =====
-    MoveStartMs     : DINT;    // час початку руху (мітка)
-    UnknownPositionMs     : DINT;    
+    MoveStartMs           : DINT;    // час початку руху (мітка)
+    UnknownPositionMs     : DINT;    // час початку невизначеної позиції (мітка)
 END_STRUCT;
 END_TYPE

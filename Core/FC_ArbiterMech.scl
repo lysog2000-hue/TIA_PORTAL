@@ -1,4 +1,4 @@
-FUNCTION "FC_ArbiterMech" : USINT
+﻿FUNCTION "FC_ArbiterMech" : USINT
 { S7_Optimized_Access := 'TRUE' }
 // Повертає RejectCode:
 //   0 = ARB_OK (успішно)

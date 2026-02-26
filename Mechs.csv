@@ -1,0 +1,6 @@
+Name;Path;Data Type;Value;Comment
+GATES2P_COUNT;Mechs_;UInt;3;кількість реальних пристроїв 
+REDLERS_COUNT;Mechs_;UInt;3;кількість реальних пристроїв 
+NORIAS_COUNT;Mechs_;UInt;0;кількість реальних пристроїв 
+FANS_COUNT;Mechs_;UInt;0;кількість реальних пристроїв 
+MECHS_COUNT;Mechs_;UInt;6;сума кількості всих механізмів 

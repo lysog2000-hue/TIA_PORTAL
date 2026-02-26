@@ -1,0 +1,188 @@
+// ==============================================================================
+// FC_SimGate2P - Симулятор фізики та несправностей Gate2P
+// ==============================================================================
+// Версія: 1.0.0
+// Дата: 2026-02-26
+// ==============================================================================
+// Призначення:
+//   Імітує фізичне залізо Gate2P для тестування FC_Gate2P без обладнання
+//
+// Комунікація з FC_Gate2P ТІЛЬКИ через 5 сигналів:
+//   - Читає:  DB_Mechs.Gate2P[GateIdx].DO_Pos0
+//             DB_Mechs.Gate2P[GateIdx].DO_Pos1
+//   - Пише:   DB_Mechs.Gate2P[GateIdx].DI_Pos0_OK
+//             DB_Mechs.Gate2P[GateIdx].DI_Pos1_OK
+//             DB_Mechs.Gate2P[GateIdx].DI_Breaker_OK
+//
+// Використання в OB1:
+//   "FC_SimGate2P"(
+//       GateIdx              := 0,
+//       TravelTime_ms        := 5000,
+//       InitAtPos0           := TRUE,
+//       SimFault_Breaker     := FALSE,
+//       FaultTime_Breaker_ms := 10000,
+//       ManualReset          := FALSE
+//   );
+//
+//   FC_DeviceRunner(...);  // викликає FC_Gate2P як зазвичай
+//
+// Особливості Gate2P:
+//   - Два виходи DO_Pos0/DO_Pos1 (замість одного DO_Run)
+//   - Під час руху обидва кінцевики FALSE (засувка між позиціями)
+//   - При зупинці DO до прибуття — засувка у невизначеній позиції
+//   - Ініціалізація позиції при першому скані (InitAtPos0)
+// ==============================================================================
+
+FUNCTION "FC_SimGate2P" : VOID
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 1.0
+
+VAR_INPUT
+    GateIdx              : UINT;           // індекс у DB_Mechs.Gate2P[] (0..N)
+
+    // === Фізика засувки ===
+    TravelTime_ms        : DINT;           // час переміщення між кінцевиками (мс)
+    InitAtPos0           : BOOL;           // початкова позиція (TRUE=Pos0, FALSE=Pos1)
+
+    // === Симуляція аварії автомата ===
+    SimFault_Breaker     : BOOL;           // увімкнути симуляцію FLT_BREAKER
+    FaultTime_Breaker_ms : DINT;           // час до аварії від початку руху (мс)
+
+    // === Ручний скид аварій ===
+    ManualReset          : BOOL;           // скинути латчовані аварії (Breaker)
+END_VAR
+
+VAR_TEMP
+    idx            : UINT;
+    elapsedMs      : DINT;
+    nowTck         : DINT;
+    travelDone     : BOOL;
+    breakerTimeout : BOOL;
+END_VAR
+
+BEGIN
+
+    // =========================================================
+    // VALIDATE INDEX
+    // =========================================================
+    IF GateIdx > "GATES2P_COUNT" THEN
+        RETURN;
+    END_IF;
+
+    idx := GateIdx;
+
+    // =========================================================
+    // PHASE 0: Ініціалізація та ручний скид
+    // =========================================================
+
+    // Перший скан: встановити початкову позицію
+    IF NOT "DB_SimMechs".Gate2P[idx].Initialized THEN
+        "DB_SimMechs".Gate2P[idx].IsAtPos0      := InitAtPos0;
+        "DB_SimMechs".Gate2P[idx].IsAtPos1      := NOT InitAtPos0;
+        "DB_SimMechs".Gate2P[idx].IsMovingToPos0 := FALSE;
+        "DB_SimMechs".Gate2P[idx].IsMovingToPos1 := FALSE;
+        "DB_SimMechs".Gate2P[idx].Initialized   := TRUE;
+    END_IF;
+
+    IF ManualReset THEN
+        "DB_SimMechs".Gate2P[idx].Breaker_Tripped := FALSE;
+    END_IF;
+
+    // =========================================================
+    // PHASE 1: Edge detection DO_Pos0 / DO_Pos1
+    // =========================================================
+
+    // Фронт 0→1 DO_Pos0 (FC_Gate2P починає рух до Pos0)
+    IF "DB_Mechs".Gate2P[idx].DO_Pos0 AND NOT "DB_SimMechs".Gate2P[idx].LastDO_Pos0 THEN
+        "DB_SimMechs".Gate2P[idx].IsAtPos0       := FALSE;  // залишаємо поточну позицію
+        "DB_SimMechs".Gate2P[idx].IsAtPos1       := FALSE;
+        "DB_SimMechs".Gate2P[idx].IsMovingToPos0 := TRUE;
+        "DB_SimMechs".Gate2P[idx].IsMovingToPos1 := FALSE;
+        "DB_SimMechs".Gate2P[idx].MoveStartTck   := TIME_TCK();
+        "DB_SimMechs".Gate2P[idx].FaultStartTck  := TIME_TCK();
+    END_IF;
+
+    // Фронт 0→1 DO_Pos1 (FC_Gate2P починає рух до Pos1)
+    IF "DB_Mechs".Gate2P[idx].DO_Pos1 AND NOT "DB_SimMechs".Gate2P[idx].LastDO_Pos1 THEN
+        "DB_SimMechs".Gate2P[idx].IsAtPos0       := FALSE;
+        "DB_SimMechs".Gate2P[idx].IsAtPos1       := FALSE;
+        "DB_SimMechs".Gate2P[idx].IsMovingToPos0 := FALSE;
+        "DB_SimMechs".Gate2P[idx].IsMovingToPos1 := TRUE;
+        "DB_SimMechs".Gate2P[idx].MoveStartTck   := TIME_TCK();
+        "DB_SimMechs".Gate2P[idx].FaultStartTck  := TIME_TCK();
+    END_IF;
+
+    // Фронт 1→0 DO_Pos0 під час руху (CMD_STOP або аварія — засувка зупиняється між позиціями)
+    IF NOT "DB_Mechs".Gate2P[idx].DO_Pos0 AND "DB_SimMechs".Gate2P[idx].LastDO_Pos0
+       AND "DB_SimMechs".Gate2P[idx].IsMovingToPos0 THEN
+        "DB_SimMechs".Gate2P[idx].IsMovingToPos0 := FALSE;
+        // IsAtPos0=FALSE, IsAtPos1=FALSE → невизначена позиція
+    END_IF;
+
+    // Фронт 1→0 DO_Pos1 під час руху
+    IF NOT "DB_Mechs".Gate2P[idx].DO_Pos1 AND "DB_SimMechs".Gate2P[idx].LastDO_Pos1
+       AND "DB_SimMechs".Gate2P[idx].IsMovingToPos1 THEN
+        "DB_SimMechs".Gate2P[idx].IsMovingToPos1 := FALSE;
+        // IsAtPos0=FALSE, IsAtPos1=FALSE → невизначена позиція
+    END_IF;
+
+    "DB_SimMechs".Gate2P[idx].LastDO_Pos0 := "DB_Mechs".Gate2P[idx].DO_Pos0;
+    "DB_SimMechs".Gate2P[idx].LastDO_Pos1 := "DB_Mechs".Gate2P[idx].DO_Pos1;
+
+    // =========================================================
+    // PHASE 2: Симуляція переміщення (таймер → прибуття)
+    // =========================================================
+
+    IF "DB_SimMechs".Gate2P[idx].IsMovingToPos0 THEN
+        travelDone := "FC_TimeElapsedMs"(
+            StartTck  := "DB_SimMechs".Gate2P[idx].MoveStartTck,
+            TimeoutMs := TravelTime_ms,
+            ElapsedMs => elapsedMs,
+            NowTck    => nowTck
+        );
+        IF travelDone THEN
+            "DB_SimMechs".Gate2P[idx].IsAtPos0       := TRUE;
+            "DB_SimMechs".Gate2P[idx].IsMovingToPos0 := FALSE;
+        END_IF;
+    END_IF;
+
+    IF "DB_SimMechs".Gate2P[idx].IsMovingToPos1 THEN
+        travelDone := "FC_TimeElapsedMs"(
+            StartTck  := "DB_SimMechs".Gate2P[idx].MoveStartTck,
+            TimeoutMs := TravelTime_ms,
+            ElapsedMs => elapsedMs,
+            NowTck    => nowTck
+        );
+        IF travelDone THEN
+            "DB_SimMechs".Gate2P[idx].IsAtPos1       := TRUE;
+            "DB_SimMechs".Gate2P[idx].IsMovingToPos1 := FALSE;
+        END_IF;
+    END_IF;
+
+    // =========================================================
+    // PHASE 3: Симуляція аварії BREAKER
+    // =========================================================
+
+    IF SimFault_Breaker
+       AND ("DB_SimMechs".Gate2P[idx].IsMovingToPos0 OR "DB_SimMechs".Gate2P[idx].IsMovingToPos1)
+       AND NOT "DB_SimMechs".Gate2P[idx].Breaker_Tripped THEN
+        breakerTimeout := "FC_TimeElapsedMs"(
+            StartTck  := "DB_SimMechs".Gate2P[idx].FaultStartTck,
+            TimeoutMs := FaultTime_Breaker_ms,
+            ElapsedMs => elapsedMs,
+            NowTck    => nowTck
+        );
+        IF breakerTimeout THEN
+            "DB_SimMechs".Gate2P[idx].Breaker_Tripped := TRUE;
+        END_IF;
+    END_IF;
+
+    // =========================================================
+    // PHASE 4: Запис DI сигналів
+    // =========================================================
+
+    "DB_Mechs".Gate2P[idx].DI_Pos0_OK   := "DB_SimMechs".Gate2P[idx].IsAtPos0;
+    "DB_Mechs".Gate2P[idx].DI_Pos1_OK   := "DB_SimMechs".Gate2P[idx].IsAtPos1;
+    "DB_Mechs".Gate2P[idx].DI_Breaker_OK := NOT "DB_SimMechs".Gate2P[idx].Breaker_Tripped;
+
+END_FUNCTION

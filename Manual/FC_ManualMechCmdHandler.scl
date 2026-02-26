@@ -1,4 +1,4 @@
-// ==============================================================================
+﻿// ==============================================================================
 // FC_ManualMechCmdHandler - MailBox перекладач для арбітра
 // ==============================================================================
 // Версія: 6.0.0 (Максимальне спрощення)
@@ -53,7 +53,7 @@ BEGIN
     // 3. Пишемо відповідь в MailBox (коди арбітра ARB_*)
     // =========================================================
     "DB_PlcScada_MailBox".Ack.AckCommit := #commitIn;
-    "DB_PlcScada_MailBox".Ack.AckOk := (#rejectCode = 0);
+    "DB_PlcScada_MailBox".Ack.AckOk := (#rejectCode = "ARB_OK");
     "DB_PlcScada_MailBox".Ack.RejectCode := #rejectCode;
     "DB_PlcScada_MailBox".Ack.Slot := #slot;
     

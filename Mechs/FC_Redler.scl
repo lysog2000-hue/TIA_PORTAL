@@ -1,4 +1,4 @@
-FUNCTION "FC_Redler" : Void
+﻿FUNCTION "FC_Redler" : Void
 { S7_Optimized_Access := 'TRUE' }
 VERSION : 0.4
     VAR_IN_OUT 
@@ -19,9 +19,9 @@ VERSION : 0.4
 BEGIN
 
 REGION "0) Декодування форсування"
-    // Уніфікація бітів форсування згідно зі зразком Noria
-    #forceOverflow  := (#B.Force_Code AND 1) <> 0;
-    #forceBreaker   := (#B.Force_Code AND 2) <> 0;
+    // BIT0(1)=forceBreaker, BIT1(2)=forceOverflow, BIT2(4)=forceSpeed — як у Noria
+    #forceBreaker   := (#B.Force_Code AND 1) <> 0;
+    #forceOverflow  := (#B.Force_Code AND 2) <> 0;
     #forceSpeed     := (#B.Force_Code AND 4) <> 0;
 END_REGION
 

@@ -1,4 +1,4 @@
-FUNCTION FC_TimeElapsedMs : BOOL
+﻿FUNCTION FC_TimeElapsedMs : BOOL
 { S7_Optimized_Access := 'TRUE' }
 VAR_INPUT
     StartTck  : DINT;   // мітка старту

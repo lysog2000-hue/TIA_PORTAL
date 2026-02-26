@@ -1,4 +1,4 @@
-FUNCTION_BLOCK "FB_TestRunner_RouteFSM"
+﻿FUNCTION_BLOCK "FB_TestRunner_RouteFSM"
 { S7_Optimized_Access := 'TRUE' }
 VERSION : 0.2
    VAR_INPUT 

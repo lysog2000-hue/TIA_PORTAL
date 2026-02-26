@@ -1,4 +1,4 @@
-TYPE "UDT_Redler" :
+﻿TYPE "UDT_Redler" :
 STRUCT
     // ===== Дискретні входи/виходи (HAL / залізо) =====
     DI_Speed_OK     : BOOL;    // контроль швидкості [cite: 74]

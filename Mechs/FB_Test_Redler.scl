@@ -1,4 +1,4 @@
-FUNCTION_BLOCK "FB_Test_Redler"
+﻿FUNCTION_BLOCK "FB_Test_Redler"
 { S7_Optimized_Access := 'TRUE' }
 
 VAR_INPUT

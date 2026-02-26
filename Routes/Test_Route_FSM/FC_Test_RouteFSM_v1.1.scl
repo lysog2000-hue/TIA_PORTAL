@@ -1,4 +1,4 @@
-FUNCTION "FC_Test_RouteFSM" : Void
+﻿FUNCTION "FC_Test_RouteFSM" : Void
 { S7_Optimized_Access := 'TRUE' }
 VERSION : 1.1
    VAR_INPUT 

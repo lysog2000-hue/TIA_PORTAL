@@ -1,4 +1,4 @@
-DATA_BLOCK "DB_TestResults_RouteFSM"
+﻿DATA_BLOCK "DB_TestResults_RouteFSM"
 { S7_Optimized_Access := 'TRUE' }
 VERSION : 0.1
 NON_RETAIN
