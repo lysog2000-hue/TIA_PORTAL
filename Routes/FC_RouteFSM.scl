@@ -1,9 +1,38 @@
 ﻿// ==============================================================================
-// FC_RouteFSM - Керування маршрутом (Mailbox Pattern v3.7)
+// FC_RouteFSM - Керування маршрутом (Mailbox Pattern v3.9)
 // ==============================================================================
-// Версія: 3.7.0
+// Версія: 3.9.2
 // Дата: 2026-02-27
 // ==============================================================================
+// ЗМІНИ v3.9.2:
+//   [FIX] STOPPING: advance-блок переписано з явним флагом doAdvance (VAR_TEMP).
+//         БУЛО: окремий "NOT stepPause AND stopped" блок — умова могла бути TRUE
+//               в циклах де pause ще не виставлена.
+//         СТАЛО: doAdvance := TRUE ТІЛЬКИ у двох явних випадках:
+//               - Phase A: механізм зупинився AND RS_TimeoutMs = 0
+//               - Phase B: таймер спрацював (timeElapsed = TRUE)
+//         Симетрично з RUNNING (де advance теж всередині Phase B IF timeElapsed).
+//
+// ЗМІНИ v3.9.1:
+//   [FIX] TIA Portal SCL не дозволяє виклик функції з VAR_OUTPUT в IF-виразі.
+//         FC_TimeElapsedMs (має VAR_OUTPUT ElapsedMs, NowTck) → результат
+//         тепер зберігається у VAR_TEMP timeElapsed : BOOL перед IF.
+//         Додано VAR_TEMP секцію.
+//
+// ЗМІНИ v3.9.0:
+//   [FEAT-3] RUNNING: пауза між кроками через RS_TimeoutMs (аналогічно STOPPING).
+//            Фаза A: видати команду → чекаємо цільового стану (RUNNING або IDLE).
+//            Фаза B (stepPause=TRUE): чекаємо RS_TimeoutMs мс, потім advance.
+//            RS_TimeoutMs = 0 → Фаза B відсутня (поведінка як раніше).
+//            Перейменовано: stopPause→stepPause, stopPauseTck→stepPauseTck.
+//
+// ЗМІНИ v3.8.0:
+//   [FEAT-2] STOPPING: пауза між кроками через RS_TimeoutMs.
+//            Фаза A: CMD_STOP кожен цикл → чекаємо зупинки механізму.
+//            Фаза B (stepPause=TRUE): чекаємо RS_TimeoutMs мс після зупинки.
+//            RS_TimeoutMs = 0 → Фаза B відсутня (поведінка як у v3.7).
+//            Нові поля UDT_RouteFsm: stepPause : BOOL, stepPauseTck : DINT.
+//
 // ЗМІНИ v3.7.0:
 //   [FEAT-1] STOPPING: послідовна зупинка у зворотньому порядку.
 //            БУЛО: CMD_STOP до всіх механізмів одночасно (FOR по всіх кроках),
@@ -133,6 +162,13 @@ END_VAR
 
 VAR_OUTPUT
     Sts : "UDT_RouteStatus";
+END_VAR
+
+VAR_TEMP
+    timeElapsed : BOOL;   // проміжний результат FC_TimeElapsedMs
+    elapsedMs   : DINT;   // допоміжний вихід FC_TimeElapsedMs (ігнорується)
+    nowTck      : DINT;   // допоміжний вихід FC_TimeElapsedMs (ігнорується)
+    doAdvance   : BOOL;   // TRUE = виконати advance у STOPPING (після Phase A або Phase B)
 END_VAR
 
 BEGIN
@@ -376,42 +412,172 @@ BEGIN
             IF Fsm.stopOpEdge THEN
                 Fsm.RF_AbortLatched := "ROUTE_ABRT_BY_OPERATOR";
                 Fsm.RF_ActiveStep   := INT_TO_USINT(Fsm.stepCnt - 1);
+                Fsm.stepPause       := FALSE;
                 Fsm.RF_State        := "ROUTE_STS_STOPPING";
 
             ELSIF Fsm.anyLocal THEN
                 Fsm.RF_AbortLatched := "ROUTE_ABRT_BY_LOCAL";
                 Fsm.RF_ActiveStep   := INT_TO_USINT(Fsm.stepCnt - 1);
+                Fsm.stepPause       := FALSE;
                 Fsm.RF_State        := "ROUTE_STS_STOPPING";
 
             ELSIF Fsm.anyFault THEN
                 Fsm.RF_AbortLatched := "ROUTE_ABRT_BY_FAULT";
                 Fsm.RF_ActiveStep   := INT_TO_USINT(Fsm.stepCnt - 1);
+                Fsm.stepPause       := FALSE;
                 Fsm.RF_State        := "ROUTE_STS_STOPPING";
 
             ELSE
-                // --- Виконання поточного кроку ---
-                Fsm.stepIdx := USINT_TO_INT(Fsm.RF_ActiveStep);
-
-                IF Fsm.stepIdx >= Fsm.stepCnt THEN
-                    // Всі кроки виконано — залишаємось у RUNNING.
-                    // Механізми залишаються під Owner=ROUTE.
-                    // SCADA бачить ResultCode=200 → маршрут активний.
-                    Fsm.RF_ResultCode := "ROUTE_OK_RUNNING";  // 200
+                // --- Фаза B паузи або виконання поточного кроку ---
+                IF Fsm.stepPause THEN
+                    // ── Фаза B: пауза між кроками ────────────────────────────
+                    // Крок виконано, механізм досягнув цільового стану.
+                    // Нових команд не надсилаємо — чекаємо RS_TimeoutMs.
+                    Fsm.stepIdx := USINT_TO_INT(Fsm.RF_ActiveStep);
+                    timeElapsed := "FC_TimeElapsedMs"(
+                            StartTck  := Fsm.stepPauseTck,
+                            TimeoutMs := Cmd.RC_Steps[Fsm.stepIdx].RS_TimeoutMs,
+                            ElapsedMs => elapsedMs,
+                            NowTck    => nowTck);
+                    IF timeElapsed THEN
+                        Fsm.stepPause     := FALSE;
+                        Fsm.RF_ActiveStep := Fsm.RF_ActiveStep + 1;
+                        Fsm.RF_StepSts    := "STEP_STS_DONE";
+                    END_IF;
 
                 ELSE
-                    Fsm.slot := Cmd.RC_Steps[Fsm.stepIdx].RS_Slot;
+                    // ── Фаза A: виконання поточного кроку ────────────────────
+                    Fsm.stepIdx := USINT_TO_INT(Fsm.RF_ActiveStep);
 
-                    // Видати команду поточного кроку через арбітр
-                    IF Cmd.RC_Steps[Fsm.stepIdx].RS_Action = "RS_ACT_START" THEN
-                        Fsm.cmdOk := "FC_ArbiterMech"(
+                    IF Fsm.stepIdx >= Fsm.stepCnt THEN
+                        // Всі кроки виконано — залишаємось у RUNNING.
+                        // Механізми залишаються під Owner=ROUTE.
+                        // SCADA бачить ResultCode=200 → маршрут активний.
+                        Fsm.RF_ResultCode := "ROUTE_OK_RUNNING";  // 200
+
+                    ELSE
+                        Fsm.slot := Cmd.RC_Steps[Fsm.stepIdx].RS_Slot;
+
+                        // Видати команду поточного кроку через арбітр
+                        IF Cmd.RC_Steps[Fsm.stepIdx].RS_Action = "RS_ACT_START" THEN
+                            Fsm.cmdOk := "FC_ArbiterMech"(
+                                OwnerReq   := "OWNER_ROUTE",
+                                OwnerReqId := USINT_TO_UINT(RouteIdx),
+                                ReqCmd     := "CMD_START",
+                                ReqParam1  := Cmd.RC_Steps[Fsm.stepIdx].RS_StartParam,
+                                M          := Mechs[Fsm.slot]
+                            );
+                        ELSE
+                            Fsm.cmdOk := "FC_ArbiterMech"(
+                                OwnerReq   := "OWNER_ROUTE",
+                                OwnerReqId := USINT_TO_UINT(RouteIdx),
+                                ReqCmd     := "CMD_STOP",
+                                ReqParam1  := 0,
+                                M          := Mechs[Fsm.slot]
+                            );
+                        END_IF;
+
+                        IF Fsm.cmdOk <> "ARB_OK" THEN
+                            // Арбітр відхилив команду → аварійна зупинка маршруту
+                            Fsm.RF_AbortLatched := "ROUTE_ABRT_BY_OWNER";
+                            Fsm.RF_ActiveStep   := INT_TO_USINT(Fsm.stepCnt - 1);
+                            Fsm.stepPause       := FALSE;
+                            Fsm.RF_State        := "ROUTE_STS_STOPPING";
+
+                        ELSE
+                            Fsm.RF_StepSts := "STEP_STS_WORK";
+
+                            // Перевірити умову завершення кроку.
+                            // RS_TimeoutMs > 0 → Фаза B (пауза), інакше advance одразу.
+                            IF Cmd.RC_Steps[Fsm.stepIdx].RS_Wait = "RS_WAIT_RUNNING" THEN
+                                IF Mechs[Fsm.slot].Status = "STS_RUNNING" THEN
+                                    IF Cmd.RC_Steps[Fsm.stepIdx].RS_TimeoutMs > 0 THEN
+                                        timeElapsed := "FC_TimeElapsedMs"(
+                                                           StartTck  := 0,
+                                                           TimeoutMs := 0,
+                                                           ElapsedMs => elapsedMs,
+                                                           NowTck    => Fsm.stepPauseTck);
+                                        Fsm.stepPause := TRUE;
+                                    ELSE
+                                        Fsm.RF_ActiveStep := Fsm.RF_ActiveStep + 1;
+                                        Fsm.RF_StepSts    := "STEP_STS_DONE";
+                                    END_IF;
+                                END_IF;
+                            ELSE  // RS_WAIT_STOPPED
+                                IF Mechs[Fsm.slot].Status = "STS_IDLE" THEN
+                                    IF Cmd.RC_Steps[Fsm.stepIdx].RS_TimeoutMs > 0 THEN
+                                        timeElapsed := "FC_TimeElapsedMs"(
+                                                           StartTck  := 0,
+                                                           TimeoutMs := 0,
+                                                           ElapsedMs => elapsedMs,
+                                                           NowTck    => Fsm.stepPauseTck);
+                                        Fsm.stepPause := TRUE;
+                                    ELSE
+                                        Fsm.RF_ActiveStep := Fsm.RF_ActiveStep + 1;
+                                        Fsm.RF_StepSts    := "STEP_STS_DONE";
+                                    END_IF;
+                                END_IF;
+                            END_IF;
+                        END_IF;
+                    END_IF;
+                END_IF;
+            END_IF;
+
+        // --------------------------------------------------------
+        // STOPPING — покрокова зупинка у зворотньому порядку з паузою
+        // --------------------------------------------------------
+        // RF_ActiveStep = поточний крок зупинки (stepCnt-1 → 0).
+        // Ініціалізується при вході з RUNNING (= stepCnt - 1).
+        //
+        // Дві фази для кожного кроку:
+        //   Фаза A (stepPause=FALSE): CMD_STOP кожен цикл → чекаємо зупинки.
+        //     Зупинився + RS_TimeoutMs > 0 → stepPause:=TRUE (перейти у Фазу B).
+        //     Зупинився + RS_TimeoutMs = 0 → doAdvance:=TRUE (advance одразу).
+        //   Фаза B (stepPause=TRUE): чекаємо RS_TimeoutMs мс, CMD_STOP не надсилаємо.
+        //     Час вийшов → stepPause:=FALSE, doAdvance:=TRUE.
+        //
+        //   Advance (doAdvance=TRUE):
+        //     stepIdx > 0 → RF_ActiveStep-- (наступний крок у Фазі A)
+        //     stepIdx = 0 → CMD_RELEASE_OWNER для всіх → ABORTED
+        //
+        // "Зупинений": STS_IDLE / STS_FAULT / STS_DISABLED / STS_LOCAL
+        // "НЕ зупинений": STS_STARTING / STS_RUNNING / STS_STOPPING
+        // --------------------------------------------------------
+        ELSIF Fsm.RF_State = "ROUTE_STS_STOPPING" THEN
+
+            IF Fsm.stepCnt > 0 THEN
+                Fsm.stepIdx := USINT_TO_INT(Fsm.RF_ActiveStep);
+                Fsm.slot    := Cmd.RC_Steps[Fsm.stepIdx].RS_Slot;
+                doAdvance   := FALSE;
+
+                IF Fsm.stepPause THEN
+                    // ── Фаза B: пауза між кроками ────────────────────────────
+                    // CMD_STOP не надсилаємо — механізм вже зупинений.
+                    // Чекаємо RS_TimeoutMs мс. Час вийшов → doAdvance.
+                    timeElapsed := "FC_TimeElapsedMs"(
+                            StartTck  := Fsm.stepPauseTck,
+                            TimeoutMs := Cmd.RC_Steps[Fsm.stepIdx].RS_TimeoutMs,
+                            ElapsedMs => elapsedMs,
+                            NowTck    => nowTck);
+                    IF timeElapsed THEN
+                        Fsm.stepPause := FALSE;
+                        doAdvance     := TRUE;
+                    END_IF;
+
+                ELSE
+                    // ── Фаза A: зупинка поточного механізму ─────────────────
+                    // CMD_STOP (або StopParam) кожен цикл (рівневе керування)
+                    IF Cmd.RC_Steps[Fsm.stepIdx].RS_StopParam <> 0 THEN
+                        // Параметрична зупинка (напр., засувка у позицію CLOSED)
+                        Fsm.dummyOk := "FC_ArbiterMech"(
                             OwnerReq   := "OWNER_ROUTE",
                             OwnerReqId := USINT_TO_UINT(RouteIdx),
                             ReqCmd     := "CMD_START",
-                            ReqParam1  := Cmd.RC_Steps[Fsm.stepIdx].RS_StartParam,
+                            ReqParam1  := Cmd.RC_Steps[Fsm.stepIdx].RS_StopParam,
                             M          := Mechs[Fsm.slot]
                         );
                     ELSE
-                        Fsm.cmdOk := "FC_ArbiterMech"(
+                        Fsm.dummyOk := "FC_ArbiterMech"(
                             OwnerReq   := "OWNER_ROUTE",
                             OwnerReqId := USINT_TO_UINT(RouteIdx),
                             ReqCmd     := "CMD_STOP",
@@ -420,80 +586,33 @@ BEGIN
                         );
                     END_IF;
 
-                    IF Fsm.cmdOk <> "ARB_OK" THEN
-                        // Арбітр відхилив команду → аварійна зупинка маршруту
-                        Fsm.RF_AbortLatched := "ROUTE_ABRT_BY_OWNER";
-                        Fsm.RF_ActiveStep   := INT_TO_USINT(Fsm.stepCnt - 1);
-                        Fsm.RF_State        := "ROUTE_STS_STOPPING";
+                    // Перевірка: чи поточний механізм зупинився
+                    IF (Mechs[Fsm.slot].Status <> "STS_STARTING")
+                    AND (Mechs[Fsm.slot].Status <> "STS_RUNNING")
+                    AND (Mechs[Fsm.slot].Status <> "STS_STOPPING") THEN
 
-                    ELSE
-                        Fsm.RF_StepSts := "STEP_STS_WORK";
-
-                        // Перевірити умову завершення кроку
-                        IF Cmd.RC_Steps[Fsm.stepIdx].RS_Wait = "RS_WAIT_RUNNING" THEN
-                            IF Mechs[Fsm.slot].Status = "STS_RUNNING" THEN
-                                Fsm.RF_ActiveStep := Fsm.RF_ActiveStep + 1;
-                                Fsm.RF_StepSts    := "STEP_STS_DONE";
-                            END_IF;
-                        ELSE  // RS_WAIT_STOPPED
-                            IF Mechs[Fsm.slot].Status = "STS_IDLE" THEN
-                                Fsm.RF_ActiveStep := Fsm.RF_ActiveStep + 1;
-                                Fsm.RF_StepSts    := "STEP_STS_DONE";
-                            END_IF;
+                        IF Cmd.RC_Steps[Fsm.stepIdx].RS_TimeoutMs > 0 THEN
+                            // Запустити паузу (Фаза B): захопити поточний час
+                            timeElapsed := "FC_TimeElapsedMs"(
+                                               StartTck  := 0,
+                                               TimeoutMs := 0,
+                                               ElapsedMs => elapsedMs,
+                                               NowTck    => Fsm.stepPauseTck);
+                            Fsm.stepPause := TRUE;
+                        ELSE
+                            doAdvance := TRUE;  // RS_TimeoutMs = 0: advance одразу
                         END_IF;
+
                     END_IF;
                 END_IF;
-            END_IF;
 
-        // --------------------------------------------------------
-        // STOPPING — покрокова зупинка у зворотньому порядку
-        // --------------------------------------------------------
-        // RF_ActiveStep = поточний крок зупинки (stepCnt-1 → 0).
-        // Ініціалізується при вході з RUNNING (= stepCnt - 1).
-        //
-        // Кожен цикл:
-        //   1. CMD_STOP до Mechs[RC_Steps[RF_ActiveStep].RS_Slot] (рівневе)
-        //   2. Якщо механізм зупинився (не STARTING/RUNNING/STOPPING):
-        //        RF_ActiveStep > 0 → RF_ActiveStep-- → наступний цикл зупиняє попередній
-        //        RF_ActiveStep = 0 → всі зупинено → CMD_RELEASE_OWNER → ABORTED
-        //
-        // "Зупинений" (DO_Run гарантовано FALSE):
-        //   STS_IDLE / STS_FAULT / STS_DISABLED / STS_LOCAL
-        // "НЕ зупинений": STS_STARTING / STS_RUNNING / STS_STOPPING
-        // --------------------------------------------------------
-        ELSIF Fsm.RF_State = "ROUTE_STS_STOPPING" THEN
-
-            IF Fsm.stepCnt > 0 THEN
-                Fsm.stepIdx := USINT_TO_INT(Fsm.RF_ActiveStep);
-                Fsm.slot    := Cmd.RC_Steps[Fsm.stepIdx].RS_Slot;
-
-                // Видавати команду зупинки поточного кроку кожен цикл (рівневе керування)
-                IF Cmd.RC_Steps[Fsm.stepIdx].RS_StopParam <> 0 THEN
-                    // Параметрична зупинка (напр., засувка у позицію CLOSED)
-                    Fsm.dummyOk := "FC_ArbiterMech"(
-                        OwnerReq   := "OWNER_ROUTE",
-                        OwnerReqId := USINT_TO_UINT(RouteIdx),
-                        ReqCmd     := "CMD_START",
-                        ReqParam1  := Cmd.RC_Steps[Fsm.stepIdx].RS_StopParam,
-                        M          := Mechs[Fsm.slot]
-                    );
-                ELSE
-                    Fsm.dummyOk := "FC_ArbiterMech"(
-                        OwnerReq   := "OWNER_ROUTE",
-                        OwnerReqId := USINT_TO_UINT(RouteIdx),
-                        ReqCmd     := "CMD_STOP",
-                        ReqParam1  := 0,
-                        M          := Mechs[Fsm.slot]
-                    );
-                END_IF;
-
-                // Перевірка: чи поточний механізм зупинився
-                IF (Mechs[Fsm.slot].Status <> "STS_STARTING")
-                AND (Mechs[Fsm.slot].Status <> "STS_RUNNING")
-                AND (Mechs[Fsm.slot].Status <> "STS_STOPPING") THEN
-
+                // ── Advance ───────────────────────────────────────────────────
+                // Виконується ТІЛЬКИ коли явно встановлено doAdvance:
+                //   - Phase A: механізм зупинився + RS_TimeoutMs = 0
+                //   - Phase B: таймер спрацював
+                IF doAdvance THEN
                     IF Fsm.stepIdx > 0 THEN
-                        // Перейти до попереднього кроку
+                        // Перейти до попереднього кроку (Фаза A)
                         Fsm.RF_ActiveStep := Fsm.RF_ActiveStep - 1;
 
                     ELSE
@@ -516,7 +635,6 @@ BEGIN
                         Fsm.RF_ResultCode := Fsm.RF_AbortLatched;
                         Fsm.RF_State      := "ROUTE_STS_ABORTED";
                     END_IF;
-
                 END_IF;
 
             ELSE

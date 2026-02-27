@@ -47,5 +47,9 @@ STRUCT
                             // використовується для release/stop без перевірки
 
   safetyHit  : BOOL;        // GlobalSafetyStop спрацював
+
+  // === Step pause (RUNNING та STOPPING) ===
+  stepPause    : BOOL;      // TRUE = у паузі між кроками (чекаємо RS_TimeoutMs)
+  stepPauseTck : DINT;      // мітка старту паузи (від TIME_TCK, мс)
 END_STRUCT
 END_TYPE
