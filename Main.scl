@@ -9,7 +9,7 @@ VAR_INPUT
 END_VAR
 
 VAR_TEMP
-
+    i : INT;
 END_VAR
 
 VAR CONSTANT
@@ -80,7 +80,7 @@ BEGIN
     //                                   Failed=>"failed_ManualHandler",
     //                                   FailMask=>"result_ManualHandler");
     
-    //"FC_Route_Supervisor"();
+    "FC_Route_Supervisor"();
     
     "FC_DeviceRunner"(
                       Mechs := "DB_Mechs".Mechs,

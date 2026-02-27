@@ -1,9 +1,49 @@
 ﻿// ==============================================================================
-// FC_Route_Supervisor - Супервізор маршрутів (Mailbox Pattern v3.0)
+// FC_Route_Supervisor - Супервізор маршрутів (Mailbox Pattern v3.1)
 // ==============================================================================
-// Версія: 3.0.0
-// Дата: 2026-02-24
+// Версія: 3.2.1
+// Дата: 2026-02-27
 // ==============================================================================
+// ЗМІНИ v3.2.1:
+//   [FIX-11] Cleanup: цикл FOR j обмежено MIN(RC_StepCount, 64).
+//            RC_StepCount : USINT (0..255), RC_Steps : ARRAY[0..63].
+//            FSM клампує stepCnt внутрішньо, але RC_StepCount у RouteExecutor
+//            не змінює. Cleanup читав RC_StepCount напряму → j міг досягти 64+
+//            → RC_Steps[j] виходив за межі масиву → потенційний OOB.
+//
+// ЗМІНИ v3.2.0:
+//   [FIX-6] STOP_OP дозволено тільки з STARTING/RUNNING/STOPPING (не з VALIDATING).
+//
+//           ПРОБЛЕМА: VALIDATING входив до isActive → Supervisor копіював STOP_OP
+//           у RouteExecutor → lastCmd ставав RT_CMD_STOP_OP ще до RUNNING.
+//           Коли маршрут досягав RUNNING, stopOpEdge = FALSE (edge вже "спалений").
+//           Повторні натискання STOP_OP також не давали ефекту — значення не змінювалось.
+//           Зупинити маршрут можна було тільки через fault або GlobalSafetyStop.
+//
+//           РІШЕННЯ: окремий прапор isStoppable = STARTING OR RUNNING OR STOPPING.
+//           У VALIDATING механізми ще не захоплені → STOP_OP там беззмістовний.
+//           VALIDATING триває 1 скан-цикл → ігнорування STOP_OP непомітне для оператора.
+//
+// ЗМІНИ v3.1.0:
+//   [FIX-5] Cleanup: не знуляє RC_StepCount поки механізми ще захоплені маршрутом.
+//
+//           ПРОБЛЕМА (v3.0): Cleanup знуляв RC_StepCount одразу після входу у ABORTED.
+//           Це знищувало єдиний спосіб знайти механізми для retry CMD_RELEASE_OWNER:
+//             - FSM ABORTED-retry: stepCnt = 0 → loop не запускався
+//             - GlobalSafetyStop block: stepCnt = 0 → loop не запускався
+//           Механізми залишались OWNER_ROUTE назавжди → deadlock (REJECT_BY_OWNER).
+//
+//           РІШЕННЯ: перед очищенням перевіряємо чи є ще OWNER_ROUTE в цього маршруту.
+//           Якщо є — пропускаємо очищення; GlobalSafetyStop block або FSM ABORTED-retry
+//           продовжують ретраювати CMD_RELEASE_OWNER кожен цикл (stepCnt збережено).
+//           Коли всі механізми звільнені → Cleanup очищає → FSM → IDLE.
+//
+//           Сценарії що виправляє:
+//             GlobalSafetyStop: механізм STS_STOPPING (секунди) → retry кожен цикл
+//                               → STS_IDLE → ARB_OK → звільнено → Cleanup → IDLE ✓
+//             STS_DISABLED під час STOPPING: Enable_OK відновлено → STS_IDLE
+//                               → ARB_OK → звільнено → Cleanup → IDLE ✓
+//
 // ЗМІНИ v3.0.0:
 //   [FIX-1] FC_RouteFSM читає GlobalSafetyStop, GlobalLocalManual напряму як глобальні теги ПЛК
 //           (раніше параметри завжди передавались як FALSE)
@@ -21,7 +61,7 @@
 
 FUNCTION "FC_Route_Supervisor" : VOID
 { S7_Optimized_Access := 'TRUE' }
-VERSION : 3.0
+VERSION : 3.1
 
 
 
@@ -32,10 +72,15 @@ VAR_TEMP
   routeId          : USINT;
   currentState     : UINT;
   isActive         : BOOL;
+  isStoppable      : BOOL;   // [FIX-6] STARTING OR RUNNING OR STOPPING (не VALIDATING)
   cmdAllowed       : BOOL;
   processedRouteId : USINT;
   pendingWarning   : USINT;
-  savedWarnings    : ARRAY[1..12] OF USINT;  // ✅ Зберегти RS_Warning
+  savedWarnings    : ARRAY[1..12] OF USINT;  // Зберегти RS_Warning
+  j                : INT;                    // [FIX-5] ітератор кроків у Cleanup
+  stepBound        : INT;                    // [FIX-11] верхня межа циклу (≤63)
+  innerSlot        : UINT;                   // [FIX-5] слот механізму у Cleanup
+  routeAllReleased : BOOL;                   // [FIX-5] чи всі механізми звільнені
 END_VAR
 
 BEGIN
@@ -81,7 +126,13 @@ BEGIN
                     (currentState = "ROUTE_STS_STARTING") OR
                     (currentState = "ROUTE_STS_RUNNING") OR
                     (currentState = "ROUTE_STS_STOPPING");
-        
+
+        // [FIX-6] STOP_OP дозволено тільки з STARTING/RUNNING/STOPPING
+        // У VALIDATING механізми ще не захоплені → STOP_OP беззмістовний
+        isStoppable := (currentState = "ROUTE_STS_STARTING") OR
+                       (currentState = "ROUTE_STS_RUNNING")  OR
+                       (currentState = "ROUTE_STS_STOPPING");
+
         cmdAllowed := FALSE;
         
         // Перевірка дозволеності команди
@@ -97,12 +148,12 @@ BEGIN
             END_IF;
             
         ELSIF "DB_ScadaToPlc_RouteCmd".CMD_Route.RC_Cmd = "RT_CMD_STOP_OP" THEN
-            IF isActive THEN
-                // STOP_OP для активного маршруту — дозволено
+            IF isStoppable THEN
+                // STOP_OP для STARTING/RUNNING/STOPPING — дозволено
                 pendingWarning := "RS_WARNING_OK";
                 cmdAllowed := TRUE;
             ELSE
-                // STOP_OP для неактивного (IDLE/REJECTED/ABORTED) — ігнорувати з попередженням
+                // STOP_OP для VALIDATING/IDLE/REJECTED/ABORTED — ігнорувати з попередженням
                 pendingWarning := "RS_WARNING_IGNORED_CMD";
                 cmdAllowed := FALSE;
             END_IF;
@@ -166,14 +217,43 @@ BEGIN
         IF i = processedRouteId THEN
             CONTINUE;
         END_IF;
-        
+
         currentState := "DB_PlcToScada_RouteStatus".RoutesSts[i].RS_State;
-        
+
         // Очищати маршрути у фінальних станах (REJECTED включено — без цього FSM застряє)
         IF (currentState = "ROUTE_STS_ABORTED") OR (currentState = "ROUTE_STS_IDLE")
         OR (currentState = "ROUTE_STS_REJECTED") THEN
-            "DB_Plc_RouteExecutor".Routes[i].RC_Cmd := "RT_CMD_NONE";
-            "DB_Plc_RouteExecutor".Routes[i].RC_StepCount := 0;
+
+            // [FIX-5] Перевірити чи є ще механізми що належать цьому маршруту.
+            //
+            // Якщо є — НЕ очищати RC_StepCount. Це зберігає список слотів живим для:
+            //   - GlobalSafetyStop block: ретраює CMD_RELEASE_OWNER кожен цикл
+            //     (поки GlobalSafetyStop активний і safetyHit = TRUE блокує FSM)
+            //   - FSM ABORTED retry: ретраює коли safetyHit = FALSE
+            //   Обидва варіанти завершаться успішно коли механізм досягне STS_IDLE/FAULT.
+            //
+            // Після того як всі механізми звільнені → Cleanup нулює → FSM → IDLE.
+            //
+            // Захист: innerSlot > MECHS_COUNT → пропускаємо (невалідний слот не читаємо).
+            routeAllReleased := TRUE;
+            stepBound := USINT_TO_INT("DB_Plc_RouteExecutor".Routes[i].RC_StepCount);
+            IF stepBound > 64 THEN stepBound := 64; END_IF;
+            FOR j := 0 TO stepBound - 1 DO
+                innerSlot := "DB_Plc_RouteExecutor".Routes[i].RC_Steps[j].RS_Slot;
+                IF innerSlot <= "MECHS_COUNT" THEN
+                    IF ("DB_Mechs".Mechs[innerSlot].OwnerCur   = "OWNER_ROUTE") AND
+                       ("DB_Mechs".Mechs[innerSlot].OwnerCurId = INT_TO_UINT(i)) THEN
+                        routeAllReleased := FALSE;
+                        EXIT;
+                    END_IF;
+                END_IF;
+            END_FOR;
+
+            IF routeAllReleased THEN
+                "DB_Plc_RouteExecutor".Routes[i].RC_Cmd       := "RT_CMD_NONE";
+                "DB_Plc_RouteExecutor".Routes[i].RC_StepCount := 0;
+            END_IF;
+
         END_IF;
     END_FOR;
     

@@ -1,85 +1,26 @@
 ﻿// ==============================================================================
 // DB_SimConfig - Конфігурація симуляторів механізмів
 // ==============================================================================
-// Версія: 2.1.0
-// Дата: 2026-02-15
-// ==============================================================================
-// Зміни v2.1:
-//   + Додано параметри SimFault_Overflow та FaultTime_Overflow_ms для норій
-// ==============================================================================
-// Призначення:
-//   Зберігає налаштування симуляції для всіх типів механізмів
-//   RETAIN - налаштування зберігаються після перезавантаження CPU
-//   
-// Розділення відповідальності:
-//   - DB_SimMechs (NON_RETAIN) - runtime стан (мотор працює, розгін, аварії)
-//   - DB_SimConfig (RETAIN) - налаштування (часи, увімкнення симуляції)
-//
-// Використання:
-//   1. Налаштуйте параметри у DB_SimConfig через HMI або онлайн-редагування
-//   2. Викликайте FC_Sim<Type>, передаючи параметри з конфігу
+// Generated: 2026-02-26 16:22:16
+// Source   : graph.json
 // ==============================================================================
 
 DATA_BLOCK "DB_SimConfig"
 { S7_Optimized_Access := 'TRUE' }
 VERSION : 2.1
-    
+
 VAR
-    // === Масиви конфігурацій ===
-    
-    // Редлери
     Redler : ARRAY[0.."REDLERS_COUNT"] OF "UDT_SimRedlerConfig";
-    
-    // Норії
-    Noria : ARRAY[0.."NORIAS_COUNT"] OF "UDT_SimNoriaConfig";
-    
-    // Вентилятори
-    Fan : ARRAY[0.."FANS_COUNT"] OF "UDT_SimFanConfig";
-
-    // Засувки двопозиційні
+    Noria  : ARRAY[0.."NORIAS_COUNT"] OF "UDT_SimNoriaConfig";
     Gate2P : ARRAY[0.."GATES2P_COUNT"] OF "UDT_SimGate2PConfig";
-
+    Fan    : ARRAY[0.."FANS_COUNT"] OF "UDT_SimFanConfig";
 END_VAR
 
 BEGIN
 
-    // ===========================================================================
-    // НАЛАШТУВАННЯ СИМУЛЯЦІЇ
-    // ===========================================================================
-    
 
-	
-    // === Редлер 0 - увімкнено для тестування ===
-    Redler[0].Enable := TRUE;
-    Redler[0].StartupTime_ms := 3000;
-    Redler[0].StopTime_ms := 2000;
-    Redler[0].SimFault_Breaker := FALSE;
-    Redler[0].FaultTime_Breaker_ms := 10000;
-    Redler[0].SimFault_Overflow := FALSE;
-    Redler[0].FaultTime_Overflow_ms := 15000;
-    Redler[0].ManualReset := FALSE;
-    
-    // === Редлер 1 - увімкнено для тестування ===
-    Redler[1].Enable := TRUE;
-    Redler[1].StartupTime_ms := 3000;
-    Redler[1].StopTime_ms := 2000;
-    Redler[1].SimFault_Breaker := FALSE;
-    Redler[1].FaultTime_Breaker_ms := 10000;
-    Redler[1].SimFault_Overflow := FALSE;
-    Redler[1].FaultTime_Overflow_ms := 15000;
-    Redler[1].ManualReset := FALSE;
-    
-    // === Редлер 2 - увімкнено для тестування ===
-    Redler[2].Enable := TRUE;
-    Redler[2].StartupTime_ms := 3000;
-    Redler[2].StopTime_ms := 2000;
-    Redler[2].SimFault_Breaker := FALSE;
-    Redler[2].FaultTime_Breaker_ms := 10000;
-    Redler[2].SimFault_Overflow := FALSE;
-    Redler[2].FaultTime_Overflow_ms := 15000;
-    Redler[2].ManualReset := FALSE;
-    
-    // === Норія 0 - увімкнено для тестування ===
+    // === Noria ===
+    // Noria "Noria" (id=0, TypedIndex=0)
     Noria[0].Enable := TRUE;
     Noria[0].StartupTime_ms := 4000;
     Noria[0].StopTime_ms := 3000;
@@ -90,8 +31,9 @@ BEGIN
     Noria[0].SimFault_Overflow := FALSE;
     Noria[0].FaultTime_Overflow_ms := 15000;
     Noria[0].ManualReset := FALSE;
-    
-    // === Норія 1 - увімкнено для тестування ===
+
+    // === Noria ===
+    // Noria "Noria" (id=1, TypedIndex=1)
     Noria[1].Enable := TRUE;
     Noria[1].StartupTime_ms := 4000;
     Noria[1].StopTime_ms := 3000;
@@ -102,8 +44,9 @@ BEGIN
     Noria[1].SimFault_Overflow := FALSE;
     Noria[1].FaultTime_Overflow_ms := 15000;
     Noria[1].ManualReset := FALSE;
-    
-    // === Норія 2 - увімкнено для тестування ===
+
+    // === Noria ===
+    // Noria "Noria" (id=2, TypedIndex=2)
     Noria[2].Enable := TRUE;
     Noria[2].StartupTime_ms := 4000;
     Noria[2].StopTime_ms := 3000;
@@ -114,9 +57,7 @@ BEGIN
     Noria[2].SimFault_Overflow := FALSE;
     Noria[2].FaultTime_Overflow_ms := 15000;
     Noria[2].ManualReset := FALSE;
-    
-    // Решта механізмів за замовчуванням вимкнені (Enable := FALSE)
-    
 
-    
+
+
 END_DATA_BLOCK

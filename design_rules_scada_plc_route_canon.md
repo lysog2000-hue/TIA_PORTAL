@@ -1,5 +1,5 @@
 # Design Rules — SCADA ↔ PLC Route Control (Canon)
-**Версія:** 1.0 (зафіксовано в чаті, 2026-01-09)  
+**Версія:** 1.1 (оновлено 2026-02-27)
 **Контекст:** Contract v2.0.0-system-contract fileciteturn0file0
 
 > Мета документа — зафіксувати “залізобетонні” правила архітектури, щоб код і SCADA-логіка залишались детермінованими, тестованими та без двозначностей.
@@ -57,6 +57,10 @@
 - **REJECT**: маршрут *не почався* (без команд), **без side-effects**, без lock.
 - **ABORT**: маршрут *почався* (були команди/власність), потрібен STOP, і далі фінальний стан `ABORTED_*`.
 
+**Виняток — GlobalSafetyStop:** якщо `GlobalSafetyStop` спрацьовує під час `VALIDATING`
+(коли команд ще не видано і lock не захоплено), маршрут все одно переходить у `ABORTED_BY_SAFETY`.
+Safety-шлях є однаковим для **всіх** не-IDLE станів — це спрощує логіку і є детермінованим.
+
 ---
 
 ## DR-07. Ownership: атомарність і простота
@@ -77,9 +81,9 @@
 В PLC формується `GlobalSafetyStop = HW_ESTOP OR SCADA_ESTOP`.
 
 Дія:
-- **негайний STOP усього** (глобально),
+- **негайний STOP усього** (глобально), для **всіх** не-IDLE станів включно з `VALIDATING`,
 - маршрут → `ABORTED_BY_SAFETY`,
-- owner звільняється **одразу**.
+- owner звільняється **одразу** (або через retry у `ABORTED` якщо механізм ще рухається).
 
 ### DR-08b. Operator STOP (контрольований)
 Джерело:
@@ -93,10 +97,9 @@
 ---
 
 ## DR-09. Правила START
-- `START` при активному `GlobalSafetyStop=1` → **REJECT_BY_SAFETY**.
-- Дубль `START` того ж `RouteId` → **REJECT_DUPLICATE_START**.
-- `START`, коли маршрут ще не завершився (стан не фінальний)  → **REJECT_DUPLICATE_START**.
-- `START` після `ABORTED_*` → дозволений як **новий запуск** (через `VALIDATING → LOCKING → STARTING`).
+- `START` при активному `GlobalSafetyStop=1` → **REJECT_BY_SAFETY** (Supervisor блокує на рівні Mailbox).
+- `START` для активного маршруту (`VALIDATING/STARTING/RUNNING/STOPPING`) → **ігнорується** Supervisor'ом з `RS_WARNING_IGNORED_CMD` (команда не копіюється у RouteExecutor).
+- `START` після `ABORTED_*` або `REJECTED` → дозволений як **новий запуск** (напряму у `VALIDATING`, без проміжного IDLE).
 
 ---
 
@@ -126,6 +129,6 @@ PLC має віддавати в SCADA мінімальний набір:
 ---
 
 ### Додаток: Канонічні стани Route FSM
-`IDLE → VALIDATING → LOCKING → STARTING → RUNNING → STOPPING `  
-Фінальні: `RUNNING`, `REJECTED`, `ABORTED` (підпричина в `ResultCode`).
+`IDLE → VALIDATING → STARTING → RUNNING → STOPPING`
+Фінальні: `REJECTED`, `ABORTED` (підпричина в `ResultCode`). `RUNNING` — стійкий робочий стан.
 

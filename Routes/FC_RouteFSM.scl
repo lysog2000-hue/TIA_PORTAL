@@ -1,8 +1,62 @@
 ﻿// ==============================================================================
-// FC_RouteFSM - Керування маршрутом (Mailbox Pattern v3.3)
+// FC_RouteFSM - Керування маршрутом (Mailbox Pattern v3.6)
 // ==============================================================================
-// Версія: 3.3.0
-// Дата: 2026-02-19
+// Версія: 3.6.2
+// Дата: 2026-02-27
+// ==============================================================================
+// ЗМІНИ v3.6.2:
+//   [FIX-12] VALIDATING: додано перевірку сумісності RS_Action + RS_Wait.
+//            RS_ACT_STOP + RS_WAIT_RUNNING → ROUTE_REJ_BY_CONTRACT.
+//            До виправлення: ця комбінація проходила валідацію, але у RUNNING
+//            механізм після CMD_STOP ніколи не досягав STS_RUNNING →
+//            крок зависав нескінченно (до зовнішнього fault або SafetyStop).
+//
+// ЗМІНИ v3.6.1:
+//   [FIX-10] Ранній скан anyFault/anyLocal + GlobalSafetyStop блок:
+//            додано IF slot > MECHS_COUNT THEN CONTINUE перед Mechs[slot].
+//            До виправлення: у першому циклі нової команди з невалідним RS_Slot
+//            обидва цикли зверталися до Mechs[invalid] до того, як VALIDATING
+//            встигав відхилити крок → потенційний OOB і зупинка CPU (OB121).
+//
+// ЗМІНИ v3.6.0:
+//   [FIX-8] Виправлено хибний коментар у STOPPING → CMD_RELEASE_OWNER.
+//           БУЛО:   "STS_DISABLED → OwnerCur вже NONE → ARB_OWNER_BUSY"
+//           ФАКТ:   OwnerCur залишається OWNER_ROUTE після переходу у STS_DISABLED
+//                   (механізм не скидає OwnerCur самостійно).
+//                   CMD_RELEASE_OWNER → ARB_WRONG_STATUS (DISABLED ≠ IDLE/FAULT).
+//                   dummyOk → ABORTED → retry кожен цикл → Enable_OK відновлено
+//                   → STS_IDLE → ARB_OK → звільнено ✓   (FIX-5 зберігає StepCount).
+//
+//   [FIX-9] Видалено недосяжний код у VALIDATING (перевірка startEdge).
+//           startEdge завжди FALSE у циклі VALIDATING:
+//             Цикл N (IDLE):       lastCmd=RT_CMD_NONE → startEdge=TRUE → lastCmd:=RT_CMD_START
+//             Цикл N+1 (VALID.):   lastCmd=RT_CMD_START, Cmd=RT_CMD_START → startEdge=FALSE
+//           Supervisor блокує новий START поки isActive → RouteExecutor не змінюється.
+//           Константа ROUTE_REJ_DUPLICATE_START більше не використовується.
+//
+// ЗМІНИ v3.5.0:
+//   [FIX-7] ABORTED/REJECTED: startEdge → прямий перехід у VALIDATING.
+//
+//           ПРОБЛЕМА: маршрут у ABORTED, SCADA надсилає RT_CMD_START.
+//           Цикл N:   Supervisor копіює START → RouteExecutor (processedRouteId захищає).
+//                     FSM ABORTED: RC_Cmd ≠ RT_CMD_NONE → лишається ABORTED.
+//           Цикл N+1: Cleanup бачить ABORTED + allReleased → RC_Cmd=RT_CMD_NONE, StepCount=0.
+//                     FSM ABORTED: RT_CMD_NONE → IDLE.
+//           Цикл N+2: FSM IDLE: RC_Cmd=RT_CMD_NONE → startEdge=FALSE → нічого.
+//           START мовчки загублено.
+//
+//           РІШЕННЯ: у ABORTED/REJECTED перевіряємо startEdge першим.
+//           Якщо startEdge → VALIDATING (скидаємо ResultCode/ActiveStep/StepSts).
+//           Цикл N+1: стан вже VALIDATING → Cleanup не чіпає → кроки збережені ✓
+//           Механізми ще OWNER_ROUTE (ABORTED-retry) → VALIDATING відкидає REJ_BY_OWNER
+//           (коректна поведінка; оператор бачить REJECTED, а не мовчазний IDLE).
+//
+// ЗМІНИ v3.4.0:
+//   - VALIDATING: додано перевірку RS_Slot > MECHS_COUNT → ROUTE_REJ_BY_CONTRACT.
+//   - Захист від виходу за межі масиву Mechs[] при невалідному слоті від SCADA.
+//   - Перевірка стоїть першою у циклі — до будь-якого звернення до Mechs[slot].
+//   - Всі наступні стани (STARTING/RUNNING/STOPPING) отримують гарантовано валідний слот.
+//
 // ==============================================================================
 // ЗМІНИ v3.0.0:
 //   - FC_ArbiterMech: повертає USINT (RejectCode) замість BOOL
@@ -55,7 +109,7 @@
 
 FUNCTION "FC_RouteFSM" : Void
 { S7_Optimized_Access := 'TRUE' }
-VERSION : 3.3
+VERSION : 3.7
 
 VAR_INPUT
     RouteIdx          : USINT;            // ID маршруту (1..12)
@@ -102,6 +156,7 @@ BEGIN
     IF Fsm.stepCnt > 0 THEN
         FOR Fsm.i := 0 TO Fsm.stepCnt - 1 DO
             Fsm.slot := Cmd.RC_Steps[Fsm.i].RS_Slot;
+            IF Fsm.slot > "MECHS_COUNT" THEN CONTINUE; END_IF;
 
             IF Mechs[Fsm.slot].FLTCode <> 0 THEN
                 Fsm.anyFault := TRUE;
@@ -137,6 +192,7 @@ BEGIN
         IF Fsm.stepCnt > 0 THEN
             FOR Fsm.i := 0 TO Fsm.stepCnt - 1 DO
                 Fsm.slot := Cmd.RC_Steps[Fsm.i].RS_Slot;
+                IF Fsm.slot > "MECHS_COUNT" THEN CONTINUE; END_IF;
 
                 // КРОК 1: Зупинити механізм
                 Fsm.dummyOk := "FC_ArbiterMech"(
@@ -187,57 +243,64 @@ BEGIN
         // --------------------------------------------------------
         ELSIF Fsm.RF_State = "ROUTE_STS_VALIDATING" THEN
 
-            IF Fsm.startEdge THEN
-                // Дублікат START (нова хвиля команди поки у VALIDATING)
+            IF Fsm.stepCnt <= 0 THEN
                 Fsm.RF_State      := "ROUTE_STS_REJECTED";
-                Fsm.RF_ResultCode := "ROUTE_REJ_DUPLICATE_START";
+                Fsm.RF_ResultCode := "ROUTE_REJ_BY_CONTRACT";
 
             ELSE
-                IF Fsm.stepCnt <= 0 THEN
-                    Fsm.RF_State      := "ROUTE_STS_REJECTED";
-                    Fsm.RF_ResultCode := "ROUTE_REJ_BY_CONTRACT";
+                FOR Fsm.i := 0 TO Fsm.stepCnt - 1 DO
+                    Fsm.slot   := Cmd.RC_Steps[Fsm.i].RS_Slot;
+                    Fsm.stepOk := TRUE;
 
-                ELSE
-                    FOR Fsm.i := 0 TO Fsm.stepCnt - 1 DO
-                        Fsm.slot   := Cmd.RC_Steps[Fsm.i].RS_Slot;
-                        Fsm.stepOk := TRUE;
-
-                        // Контракт: RS_Action
-                        IF (Cmd.RC_Steps[Fsm.i].RS_Action <> "RS_ACT_START")
-                           AND (Cmd.RC_Steps[Fsm.i].RS_Action <> "RS_ACT_STOP") THEN
-                            Fsm.stepOk := FALSE;
-                        END_IF;
-
-                        // Контракт: RS_Wait
-                        IF (Cmd.RC_Steps[Fsm.i].RS_Wait <> "RS_WAIT_RUNNING")
-                           AND (Cmd.RC_Steps[Fsm.i].RS_Wait <> "RS_WAIT_STOPPED") THEN
-                            Fsm.stepOk := FALSE;
-                        END_IF;
-
-                        IF NOT Fsm.stepOk THEN
-                            Fsm.RF_State      := "ROUTE_STS_REJECTED";
-                            Fsm.RF_ResultCode := "ROUTE_REJ_BY_CONTRACT";
-                            EXIT;
-
-                        ELSIF Mechs[Fsm.slot].OwnerCur <> "OWNER_NONE" THEN
-                            Fsm.RF_State      := "ROUTE_STS_REJECTED";
-                            Fsm.RF_ResultCode := "ROUTE_REJ_BY_OWNER";
-                            EXIT;
-
-                        ELSIF (NOT Mechs[Fsm.slot].Enable_OK)
-                              OR GlobalLocalManual
-                              OR Mechs[Fsm.slot].LocalManual
-                              OR (Mechs[Fsm.slot].FLTCode <> 0) THEN
-                            Fsm.RF_State      := "ROUTE_STS_REJECTED";
-                            Fsm.RF_ResultCode := "ROUTE_REJ_NOT_READY";
-                            EXIT;
-                        END_IF;
-
-                    END_FOR;
-
-                    IF Fsm.RF_State = "ROUTE_STS_VALIDATING" THEN
-                        Fsm.RF_State := "ROUTE_STS_STARTING";
+                    // Контракт: RS_Slot (перша перевірка — до будь-якого Mechs[slot])
+                    IF Fsm.slot > "MECHS_COUNT" THEN
+                        Fsm.stepOk := FALSE;
                     END_IF;
+
+                    // Контракт: RS_Action
+                    IF (Cmd.RC_Steps[Fsm.i].RS_Action <> "RS_ACT_START")
+                       AND (Cmd.RC_Steps[Fsm.i].RS_Action <> "RS_ACT_STOP") THEN
+                        Fsm.stepOk := FALSE;
+                    END_IF;
+
+                    // Контракт: RS_Wait
+                    IF (Cmd.RC_Steps[Fsm.i].RS_Wait <> "RS_WAIT_RUNNING")
+                       AND (Cmd.RC_Steps[Fsm.i].RS_Wait <> "RS_WAIT_STOPPED") THEN
+                        Fsm.stepOk := FALSE;
+                    END_IF;
+
+                    // Контракт: RS_Action + RS_Wait сумісність
+                    // RS_ACT_STOP + RS_WAIT_RUNNING: після CMD_STOP механізм іде
+                    // STOPPING→IDLE і ніколи не повернеться у STS_RUNNING →
+                    // крок ніколи не завершиться → маршрут зависає в RUNNING.
+                    IF (Cmd.RC_Steps[Fsm.i].RS_Action = "RS_ACT_STOP")
+                       AND (Cmd.RC_Steps[Fsm.i].RS_Wait = "RS_WAIT_RUNNING") THEN
+                        Fsm.stepOk := FALSE;
+                    END_IF;
+
+                    IF NOT Fsm.stepOk THEN
+                        Fsm.RF_State      := "ROUTE_STS_REJECTED";
+                        Fsm.RF_ResultCode := "ROUTE_REJ_BY_CONTRACT";
+                        EXIT;
+
+                    ELSIF Mechs[Fsm.slot].OwnerCur <> "OWNER_NONE" THEN
+                        Fsm.RF_State      := "ROUTE_STS_REJECTED";
+                        Fsm.RF_ResultCode := "ROUTE_REJ_BY_OWNER";
+                        EXIT;
+
+                    ELSIF (NOT Mechs[Fsm.slot].Enable_OK)
+                          OR GlobalLocalManual
+                          OR Mechs[Fsm.slot].LocalManual
+                          OR (Mechs[Fsm.slot].FLTCode <> 0) THEN
+                        Fsm.RF_State      := "ROUTE_STS_REJECTED";
+                        Fsm.RF_ResultCode := "ROUTE_REJ_NOT_READY";
+                        EXIT;
+                    END_IF;
+
+                END_FOR;
+
+                IF Fsm.RF_State = "ROUTE_STS_VALIDATING" THEN
+                    Fsm.RF_State := "ROUTE_STS_STARTING";
                 END_IF;
             END_IF;
 
@@ -431,8 +494,14 @@ BEGIN
                 // Звільнити власника:
                 //   STS_IDLE     → CMD_RELEASE_OWNER → ARB_OK ✓
                 //   STS_FAULT    → CMD_RELEASE_OWNER → ARB_OK ✓
-                //   STS_DISABLED → OwnerCur вже NONE → ARB_OWNER_BUSY → dummyOk ✓
-                //   STS_LOCAL    → аналогічно STS_DISABLED ✓
+                //   STS_DISABLED → OwnerCur ще OWNER_ROUTE (механізм не скидає сам)
+                //                  → ARB_WRONG_STATUS → dummyOk
+                //                  → ABORTED retry (FIX-5 зберігає StepCount)
+                //                  → Enable_OK відновлено → STS_IDLE → ARB_OK ✓
+                //   STS_LOCAL    → FC_ArbiterMech перевіряє M.LocalManual першим (до CMD_RELEASE_OWNER)
+                //                  → ARB_LOCAL_MANUAL → dummyOk
+                //                  → ABORTED retry кожен цикл поки LocalManual активний
+                //                  → LocalManual знято → ARB_OK → звільнено ✓
                 IF Fsm.stepCnt > 0 THEN
                     FOR Fsm.i := 0 TO Fsm.stepCnt - 1 DO
                         Fsm.slot := Cmd.RC_Steps[Fsm.i].RS_Slot;
@@ -494,8 +563,19 @@ BEGIN
                 END_FOR;
             END_IF;
 
-            // Перехід у IDLE тільки коли Supervisor очистить команду (RT_CMD_NONE)
-            IF Cmd.RC_Cmd = "RT_CMD_NONE" THEN
+            // [FIX-7] Re-start: startEdge → прямо у VALIDATING (без проміжного IDLE).
+            // Supervisor вже скопіював кроки у RouteExecutor (Cleanup захищений processedRouteId).
+            // Якщо механізми ще OWNER_ROUTE (ABORTED-retry не завершено) →
+            //   VALIDATING поверне ROUTE_REJ_BY_OWNER (коректна поведінка).
+            IF Fsm.startEdge THEN
+                Fsm.RF_ResultCode   := 0;
+                Fsm.RF_AbortLatched := 0;
+                Fsm.RF_ActiveStep   := 0;
+                Fsm.RF_StepSts      := "STEP_STS_IDLE";
+                Fsm.RF_State        := "ROUTE_STS_VALIDATING";
+
+            // Перехід у IDLE коли Supervisor очистить команду (RT_CMD_NONE)
+            ELSIF Cmd.RC_Cmd = "RT_CMD_NONE" THEN
                 Fsm.RF_State := "ROUTE_STS_IDLE";
             END_IF;
 

@@ -43,7 +43,29 @@ VAR
 END_VAR
 
 BEGIN
-  // Ініціалізація
-  HDR_Commit := 0;
-  HDR_RouteId := 0;  // 0 = mailbox порожній
+  // === СИМУЛЯЦІЯ: Послідовний запуск 3-х норій (слоти 0..2) ===
+  // Маршрут 1, команда RT_CMD_START (1), 3 кроки
+  // Кожен крок: RS_Action=RS_ACT_START(1), RS_Wait=RS_WAIT_RUNNING(1)
+  // HDR_Commit=1, ACK_CommitApplied=0 → PLC детектує нову команду при старті
+  HDR_RouteId := 1;
+
+  CMD_Route.RC_Cmd       := 1;  // RT_CMD_START
+  CMD_Route.RC_StepCount := 3;
+
+  // Крок 0 — Норія у слоті 0
+  CMD_Route.RC_Steps[0].RS_Slot   := 0;
+  CMD_Route.RC_Steps[0].RS_Action := 1;  // RS_ACT_START
+  CMD_Route.RC_Steps[0].RS_Wait   := 1;  // RS_WAIT_RUNNING
+
+  // Крок 1 — Норія у слоті 1
+  CMD_Route.RC_Steps[1].RS_Slot   := 1;
+  CMD_Route.RC_Steps[1].RS_Action := 1;
+  CMD_Route.RC_Steps[1].RS_Wait   := 1;
+
+  // Крок 2 — Норія у слоті 2
+  CMD_Route.RC_Steps[2].RS_Slot   := 2;
+  CMD_Route.RC_Steps[2].RS_Action := 1;
+  CMD_Route.RC_Steps[2].RS_Wait   := 1;
+
+  HDR_Commit := 1;  // Тригер mailbox (ACK_CommitApplied=0 після старту → нова команда)
 END_DATA_BLOCK
