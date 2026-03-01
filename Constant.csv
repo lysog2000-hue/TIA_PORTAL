@@ -80,3 +80,6 @@ TYPE_NONE;Constant;USInt;0;Тип механізму — не визначено
 TYPE_NORIA;Constant;USInt;1;Тип механізму — норія
 TYPE_REDLER;Constant;USInt;2;Тип механізму — редлер
 TYPE_VALVE3P;Constant;USInt;5;Тип механізму — клапан трипозиційний
+ROUTES_COUNT;Constant;USInt;12;Кількість паралельних маршрутів
+ROUTE_MAX_STEPS;Constant;USInt;64;Максимальна кількість кроків у маршруті
+

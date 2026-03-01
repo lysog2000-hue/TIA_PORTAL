@@ -1,19 +1,22 @@
 ﻿// ==============================================================================
 // DB_PlcToScada_RouteStatus - Статуси маршрутів та ACK (v2.0)
 // ==============================================================================
-// Версія: 2.0.1 (Mailbox Pattern)
-// Дата: 2026-02-02
+// Версія: 2.0.2 (Mailbox Pattern)
+// Дата: 2026-03-01
+// ==============================================================================
+// Зміни v2.0.2:
+//   - RoutesSts: ARRAY[1.."ROUTES_COUNT"] - винесено магічне число 12
 // ==============================================================================
 // ПРИЗНАЧЕННЯ:
-// 
+//
 // PLC повідомляє SCADA про:
-// 1. Статус кожного з 12 маршрутів (RoutesSts[1..12])
+// 1. Статус кожного з "ROUTES_COUNT" маршрутів (RoutesSts[1.."ROUTES_COUNT"])
 // 2. Підтвердження прийняття команди з Mailbox (ACK_*)
 //
 // ACK PROTOCOL:
 // - ACK_CommitApplied: останній commit, який PLC обробив
 // - ACK_RouteId: який маршрут був оброблений
-// 
+//
 // SCADA перевіряє:
 //   HDR_Commit == ACK_CommitApplied → Mailbox вільний, можна писати
 //   HDR_Commit != ACK_CommitApplied → Mailbox зайнятий, чекати або timeout
@@ -37,10 +40,10 @@ NON_RETAIN
 VAR
   // === ACK: Підтвердження Mailbox ===
   ACK_CommitApplied : UDINT;  // Останній оброблений commit
-  ACK_RouteId       : USINT;  // Який маршрут був оброблений (1..12, 0=none)
-  
-  // === STATUSES: Статуси 12 маршрутів ===
-  RoutesSts : ARRAY[1..12] OF "UDT_RouteStatus";
+  ACK_RouteId       : USINT;  // Який маршрут був оброблений (1.."ROUTES_COUNT", 0=none)
+
+  // === STATUSES: Статуси маршрутів ===
+  RoutesSts : ARRAY[1.."ROUTES_COUNT"] OF "UDT_RouteStatus";
 END_VAR
 
 BEGIN

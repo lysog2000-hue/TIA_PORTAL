@@ -228,12 +228,12 @@ RouteId = 1
 RC_Cmd = RT_CMD_START
 RC_StepCount = 2
 
-Крок 0:
+Крок 1:  // 1-based індексація
   RS_Slot = 5       // Редлер 1
   RS_Action = START
   RS_Wait = RUNNING // Чекати поки запуститься
 
-Крок 1:
+Крок 2:
   RS_Slot = 12      // Норія 1
   RS_Action = START
   RS_Wait = RUNNING // Чекати поки запуститься
@@ -251,23 +251,23 @@ RC_StepCount = 2
   → Захоплення ownership на Slot 5 і 12
 
 Цикл 3:
-  State = RUNNING, ActiveStep = 0
+  State = RUNNING, ActiveStep = 1
   → CMD_START(Slot 5)
 
 Цикл 4-10:
-  State = RUNNING, ActiveStep = 0
+  State = RUNNING, ActiveStep = 1
   → Чекаємо поки Slot 5 стане RUNNING
 
 Цикл 11:
-  State = RUNNING, ActiveStep = 1
+  State = RUNNING, ActiveStep = 2
   → CMD_START(Slot 12)
 
 Цикл 12-20:
-  State = RUNNING, ActiveStep = 1
+  State = RUNNING, ActiveStep = 2
   → Чекаємо поки Slot 12 стане RUNNING
 
 Цикл 21:
-  State = RUNNING, ActiveStep = 2 (>= StepCount)
+  State = RUNNING, ActiveStep = 3 (>= StepCount)
   → ResultCode = 200 (OK_RUNNING)
   → Маршрут виконано, механізми працюють
 ```

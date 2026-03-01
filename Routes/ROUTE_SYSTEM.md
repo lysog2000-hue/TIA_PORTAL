@@ -174,13 +174,13 @@ DB_ScadaToPlc_RouteCmd
 ```
 RC_Cmd       = RT_CMD_START
 RC_StepCount = 2
-RC_Steps[0]:
+RC_Steps[1]:  // 1-based індексація
   RS_Slot      = 0        // редлер slot 0
   RS_Action    = RS_ACT_START
   RS_StartParam = 0
   RS_StopParam  = 0       // 0 → CMD_STOP при зупинці маршруту
   RS_Wait      = RS_WAIT_RUNNING
-RC_Steps[1]:
+RC_Steps[2]:
   RS_Slot      = 50       // норія slot 50
   RS_Action    = RS_ACT_START
   RS_StartParam = 0
@@ -426,12 +426,12 @@ SCADA                    FC_Route_Supervisor          FC_RouteFSM
   │                             │                     (lock всіх)
   │                             │                         ▼
   │                             │                     RUNNING
-  │                             │                     крок 0: CMD_START
-  │  RS_State=RUNNING           │                     чекати STS_RUNNING
-  │  RS_ActiveStep=0            │◄────────────────────────│
-  │◄────────────────────────────│                         │
   │                             │                     крок 1: CMD_START
+  │  RS_State=RUNNING           │                     чекати STS_RUNNING
   │  RS_ActiveStep=1            │◄────────────────────────│
+  │◄────────────────────────────│                         │
+  │                             │                     крок 2: CMD_START
+  │  RS_ActiveStep=2            │◄────────────────────────│
   │◄────────────────────────────│                         │
   │                             │                         │
   │  RS_ResultCode=200          │◄──── всі кроки ─────────│

@@ -26,7 +26,7 @@ STRUCT
   startEdge  : BOOL;        // TRUE на фронті RT_CMD_START
   stopOpEdge : BOOL;        // TRUE на фронті RT_CMD_STOP_OP
 
-  stepCnt    : INT;         // кількість кроків (0..64)
+  stepCnt    : INT;         // кількість кроків (0.."ROUTE_MAX_STEPS")
   stepIdx    : INT;         // поточний індекс у циклах
   i          : INT;         // ітератор циклів FOR
   slot       : UINT;        // поточний slot
