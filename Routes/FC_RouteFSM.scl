@@ -449,7 +449,7 @@ BEGIN
                     // ── Фаза A: виконання поточного кроку ────────────────────
                     Fsm.stepIdx := USINT_TO_INT(Fsm.RF_ActiveStep);
 
-                    IF Fsm.stepIdx >= Fsm.stepCnt THEN
+                    IF Fsm.stepIdx > Fsm.stepCnt THEN
                         // Всі кроки виконано — залишаємось у RUNNING.
                         // Механізми залишаються під Owner=ROUTE.
                         // SCADA бачить ResultCode=200 → маршрут активний.
