@@ -22,6 +22,8 @@ FLT_GATE_POS_UNKNOWN;Constant;UInt;17;Невідома позиція засув
 FLT_NO_RUNFB;Constant;UInt;12;Немає зворотного зв'язку роботи (норія/редлер/вентилятор)
 FLT_NONE;Constant;UInt;0;Немає аварії
 FLT_OVERFLOW;Constant;UInt;10;Аварія переповнення
+GATE_AT_POS0;Constant;Int;6;Status_Param засувки — знаходиться в положенні 0
+GATE_AT_POS1;Constant;Int;7;Status_Param засувки — знаходиться в положенні 1
 LIMITS_MAX_ROUTES;Constant;USInt;12;Максимальна кількість паралельних маршрутів
 LIMITS_MAX_STEPS;Constant;USInt;64;Максимальна кількість кроків у маршруті
 OWNER_NONE;Constant;USInt;0;Власник відсутній

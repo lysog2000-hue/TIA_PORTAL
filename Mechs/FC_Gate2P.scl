@@ -1,6 +1,6 @@
 FUNCTION "FC_Gate2P" : Void
 { S7_Optimized_Access := 'TRUE' }
-VERSION : 1.3
+VERSION : 1.4
    VAR_IN_OUT
       G : "UDT_Gate2P";
       B : "UDT_BaseMechanism";
@@ -164,13 +164,22 @@ REGION "5 & 6) Машина станів (FSM) та обробка команд"
     END_IF;
 END_REGION
 
-REGION "7) Формування виходів DO"
+REGION "7) Формування виходів DO та Status_Param"
     IF (#B.Status = "STS_STARTING") OR (#B.Status = "STS_RUNNING") THEN
         #G.DO_Pos0 := (#B.CmdParam1 = "CMD_GATE_POS0");
         #G.DO_Pos1 := (#B.CmdParam1 = "CMD_GATE_POS1");
     ELSE
         #G.DO_Pos0 := FALSE;
         #G.DO_Pos1 := FALSE;
+    END_IF;
+
+    // Поточна фізична позиція (оновлюється щосканово за кінцевиками)
+    IF #G.DI_Pos0_OK THEN
+        #B.Status_Param := "GATE_AT_POS0";    // = 6
+    ELSIF #G.DI_Pos1_OK THEN
+        #B.Status_Param := "GATE_AT_POS1";    // = 7
+    ELSE
+        #B.Status_Param := 0;                 // невідома (засувка в русі або не ініціалізована)
     END_IF;
 
     #B.Cmd := "CMD_NONE";
