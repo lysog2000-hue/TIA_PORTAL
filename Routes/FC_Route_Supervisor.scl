@@ -9,7 +9,7 @@
 //
 // ЗМІНИ v3.2.1:
 //   [FIX-11] Cleanup: цикл FOR j обмежено MIN(RC_StepCount, 64).
-//            RC_StepCount : USINT (0..255), RC_Steps : ARRAY[0..63].
+//            RC_StepCount : USINT (0..255), RC_Steps : ARRAY[1..64].
 //            FSM клампує stepCnt внутрішньо, але RC_StepCount у RouteExecutor
 //            не змінює. Cleanup читав RC_StepCount напряму → j міг досягти 64+
 //            → RC_Steps[j] виходив за межі масиву → потенційний OOB.

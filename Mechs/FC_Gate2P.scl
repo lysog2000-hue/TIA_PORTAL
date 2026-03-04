@@ -174,12 +174,13 @@ REGION "7) Формування виходів DO та Status_Param"
     END_IF;
 
     // Поточна фізична позиція (оновлюється щосканово за кінцевиками)
-    IF #G.DI_Pos0_OK THEN
+    // Обидва датчики активні = аварія FLT_BOTH_SENSORS → позиція невідома
+    IF #G.DI_Pos0_OK AND NOT #G.DI_Pos1_OK THEN
         #B.Status_Param := "GATE_AT_POS0";    // = 6
-    ELSIF #G.DI_Pos1_OK THEN
+    ELSIF #G.DI_Pos1_OK AND NOT #G.DI_Pos0_OK THEN
         #B.Status_Param := "GATE_AT_POS1";    // = 7
     ELSE
-        #B.Status_Param := 0;                 // невідома (засувка в русі або не ініціалізована)
+        #B.Status_Param := 0;                 // невідома (в русі, обидва датчики, або не ініціалізована)
     END_IF;
 
     #B.Cmd := "CMD_NONE";

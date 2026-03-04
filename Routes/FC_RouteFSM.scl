@@ -37,11 +37,11 @@
 //   [FEAT-1] STOPPING: послідовна зупинка у зворотньому порядку.
 //            БУЛО: CMD_STOP до всіх механізмів одночасно (FOR по всіх кроках),
 //                  потім очікування allStopped.
-//            СТАЛО: зупинка крок-за-кроком від stepCnt-1 до 0.
+//            СТАЛО: зупинка крок-за-кроком від stepCnt до 1 (1-based).
 //                   Кожен цикл — CMD_STOP до поточного кроку (RF_ActiveStep).
 //                   Коли поточний зупинився → RF_ActiveStep-- → наступний крок.
-//                   Коли крок 0 зупинився → CMD_RELEASE_OWNER для всіх → ABORTED.
-//            RF_ActiveStep ініціалізується = stepCnt-1 при вході з RUNNING.
+//                   Коли крок 1 зупинився → CMD_RELEASE_OWNER для всіх → ABORTED.
+//            RF_ActiveStep ініціалізується = stepCnt при вході з RUNNING (1-based).
 //
 // ЗМІНИ v3.6.2:
 //   [FIX-12] VALIDATING: додано перевірку сумісності RS_Action + RS_Wait.
