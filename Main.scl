@@ -69,7 +69,21 @@ BEGIN
                 );
             END_IF;
         END_FOR;
-        
+
+        // Симуляція засувок двопозиційних
+        FOR #i := 0 TO "GATES2P_COUNT" DO
+            IF "DB_SimConfig".Gate2P[#i].Enable THEN
+                "FC_SimGate2P"(
+                              GateIdx := #i,
+                              TravelTime_ms := "DB_SimConfig".Gate2P[#i].TravelTime_ms,
+                              InitAtPos0 := "DB_SimConfig".Gate2P[#i].InitAtPos0,
+                              SimFault_Breaker := "DB_SimConfig".Gate2P[#i].SimFault_Breaker,
+                              FaultTime_Breaker_ms := "DB_SimConfig".Gate2P[#i].FaultTime_Breaker_ms,
+                              ManualReset := "DB_SimConfig".Gate2P[#i].ManualReset
+                );
+            END_IF;
+        END_FOR;
+
     END_REGION
     
     "FC_ManualMechCmdHandler"(LocalManualGlobal := FALSE);

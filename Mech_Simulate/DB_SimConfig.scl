@@ -58,6 +58,14 @@ BEGIN
     Noria[2].FaultTime_Overflow_ms := 15000;
     Noria[2].ManualReset := FALSE;
 
+    // === Gate2P ===
+    // Gate2P "Gate2P" (id=3, TypedIndex=0)
+    Gate2P[0].Enable := TRUE;
+    Gate2P[0].InitAtPos0 := TRUE;
+    Gate2P[0].TravelTime_ms := 5000;
+    Gate2P[0].SimFault_Breaker := FALSE;
+    Gate2P[0].FaultTime_Breaker_ms := 10000;
+    Gate2P[0].ManualReset := FALSE;
 
 
 END_DATA_BLOCK

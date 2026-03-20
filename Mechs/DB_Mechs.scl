@@ -41,7 +41,7 @@ BEGIN
     Mechs[2].Enable_OK  := TRUE;
 
 
-    Mechs[3].SlotId     := 0;
+    Mechs[3].SlotId     := 3;
     Mechs[3].DeviceType := "TYPE_GATE2P";
     Mechs[3].TypedIndex := 0;
     Mechs[3].Enable_OK  := TRUE;
