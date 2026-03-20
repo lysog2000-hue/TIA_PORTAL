@@ -1,0 +1,15 @@
+﻿TYPE "UDT_Sushka" :
+STRUCT
+    // ===== Дискретні входи/виходи (HAL / залізо) =====
+    DI_Breaker_OK   : BOOL;    // автомат захисту
+    DI_Feedback_OK  : BOOL;    // зворотний зв'язок контактора
+    DO_Run          : BOOL;    // вихід на контактор
+
+    // ===== Аналогові входи =====
+    AI_TempIn       : INT;     // температура на вході (raw)
+    AI_TempOut      : INT;     // температура на виході (raw)
+
+    // ===== Стан/таймінги =====
+    StartMs         : DINT;    // час старту (мітка)
+END_STRUCT;
+END_TYPE

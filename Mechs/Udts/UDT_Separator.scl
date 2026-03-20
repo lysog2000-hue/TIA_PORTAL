@@ -1,0 +1,11 @@
+﻿TYPE "UDT_Separator" :
+STRUCT
+    // ===== Дискретні входи/виходи (HAL / залізо) =====
+    DI_Breaker_OK   : BOOL;    // автомат захисту
+    DI_Feedback_OK  : BOOL;    // зворотний зв'язок контактора
+    DO_Run          : BOOL;    // вихід на контактор
+
+    // ===== Стан/таймінги =====
+    StartMs         : DINT;    // час старту (мітка)
+END_STRUCT;
+END_TYPE

@@ -1,0 +1,15 @@
+﻿TYPE "UDT_Valve3P" :
+STRUCT
+    // ===== Дискретні входи/виходи (HAL / залізо) =====
+    DI_Breaker_OK   : BOOL;    // автомат захисту
+    DI_Pos0_OK      : BOOL;    // датчик позиції 0
+    DI_Pos1_OK      : BOOL;    // датчик позиції 1
+    DI_Pos2_OK      : BOOL;    // датчик позиції 2
+    DO_Pos0         : BOOL;    // привід позиції 0
+    DO_Pos1         : BOOL;    // привід позиції 1
+    DO_Pos2         : BOOL;    // привід позиції 2
+
+    // ===== Стан/таймінги =====
+    MoveMs          : DINT;    // мітка початку руху
+END_STRUCT;
+END_TYPE

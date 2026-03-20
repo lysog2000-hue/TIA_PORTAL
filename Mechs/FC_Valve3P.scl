@@ -1,0 +1,108 @@
+﻿FUNCTION "FC_Valve3P" : Void
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+    VAR_IN_OUT
+      F : "UDT_Valve3P";
+      B : "UDT_BaseMechanism";
+    END_VAR
+
+    VAR_TEMP
+      forceBreaker : Bool;
+      isFault      : Bool;
+      isBlocked    : Bool;
+    END_VAR
+
+BEGIN
+
+REGION "0) Декодування форсування"
+    // BIT0(1)=forceBreaker
+    #forceBreaker := (#B.Force_Code AND 1) <> 0;
+END_REGION
+
+REGION "1) RESET (Тільки за умови усунення причини)"
+    IF #B.Cmd = "CMD_RESET" THEN
+        CASE #B.FLTCode OF
+            "FLT_BREAKER":
+                IF #F.DI_Breaker_OK OR #forceBreaker THEN #B.FLTCode := "FLT_NONE"; END_IF;
+        END_CASE;
+
+        IF #B.FLTCode = "FLT_NONE" AND #B.Status = "STS_FAULT" THEN
+            #B.Status := "STS_IDLE";
+            #F.MoveMs := 0;
+        END_IF;
+    END_IF;
+END_REGION
+
+REGION "2) Обробка блокувань"
+    IF NOT #B.Enable_OK THEN
+        #B.Status := "STS_DISABLED";
+        #isBlocked := TRUE;
+    ELSIF #B.LocalManual THEN
+        #B.Status := "STS_LOCAL";
+        #isBlocked := TRUE;
+    ELSE
+        #isBlocked := FALSE;
+        IF (#B.Status = "STS_DISABLED") OR (#B.Status = "STS_LOCAL") THEN
+            #B.Status := "STS_IDLE";
+        END_IF;
+    END_IF;
+END_REGION
+
+REGION "3) Моніторинг аварій (Diagnostic Latch)"
+    IF #B.FLTCode = "FLT_NONE" AND NOT #isBlocked THEN
+        IF NOT #F.DI_Breaker_OK THEN
+            #B.FLTCode := "FLT_BREAKER";
+        END_IF;
+    END_IF;
+END_REGION
+
+REGION "4) Визначення виконавчої аварії"
+    #isFault := FALSE;
+    IF #B.FLTCode <> "FLT_NONE" THEN
+        CASE #B.FLTCode OF
+            "FLT_BREAKER": #isFault := NOT #forceBreaker;
+        END_CASE;
+    END_IF;
+
+    IF #isFault THEN
+        #B.Status := "STS_FAULT";
+    END_IF;
+    #isFault := (#B.Status = "STS_FAULT");
+END_REGION
+
+REGION "5 & 6) Машина станів та виконання команд"
+    IF (NOT #isFault) AND (NOT #isBlocked) THEN
+        IF #B.Cmd <> "CMD_NONE" THEN #B.LastCmd := #B.Cmd; END_IF;
+
+        CASE #B.Status OF
+            "STS_IDLE":
+                // TODO: обробка CMD_GATE_POS0 / CMD_GATE_POS1 / CMD_GATE_POS2
+                ;
+
+            "STS_STARTING":
+                // TODO: очікування позиції або таймаут
+                ;
+
+            "STS_RUNNING":
+                // TODO: підтвердження позиції
+                ;
+
+            "STS_STOPPING":
+                #B.Status := "STS_IDLE";
+        END_CASE;
+
+        IF #B.Cmd = "CMD_STOP" AND #B.Status <> "STS_IDLE" THEN
+            #B.Status := "STS_STOPPING";
+        END_IF;
+    END_IF;
+END_REGION
+
+REGION "7) Фіналізація"
+    // TODO: виставлення DO_Pos0 / DO_Pos1 / DO_Pos2 згідно стану
+    #F.DO_Pos0 := FALSE;
+    #F.DO_Pos1 := FALSE;
+    #F.DO_Pos2 := FALSE;
+    #B.Cmd := "CMD_NONE";
+END_REGION
+
+END_FUNCTION
