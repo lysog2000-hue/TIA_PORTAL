@@ -1,60 +1,60 @@
-﻿// ==============================================================================
-// FC_ManualMechCmdHandler - MailBox перекладач для арбітра
-// ==============================================================================
-// Версія: 6.0.0 (Максимальне спрощення)
-// Дата: 2026-02-15
-// ==============================================================================
-// КОНЦЕПЦІЯ:
-//   Хендлер = MailBox перекладач між SCADA і Арбітром
-//   - Читає команди з MailBox (мова SCADA)
-//   - Викликає арбітр (мова механізмів)
-//   - Пише відповідь в MailBox (коди арбітра ARB_*)
-// ==============================================================================
-
-FUNCTION "FC_ManualMechCmdHandler" : VOID
+﻿FUNCTION "FC_ManualMechCmdHandler" : Void
 { S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+// ==============================================================================
+// FC_ManualMechCmdHandler - MailBox Ð¿ÐµÑ€ÐµÐºÐ»Ð°Ð´Ð°Ñ‡ Ð´Ð»Ñ Ð°Ñ€Ð±Ñ–Ñ‚Ñ€Ð°
+// ==============================================================================
+// Ð’ÐµÑ€ÑÑ–Ñ: 6.0.0 (ÐœÐ°ÐºÑÐ¸Ð¼Ð°Ð»ÑŒÐ½Ðµ ÑÐ¿Ñ€Ð¾Ñ‰ÐµÐ½Ð½Ñ)
+// Ð”Ð°Ñ‚Ð°: 2026-02-15
+// ==============================================================================
+// ÐšÐžÐÐ¦Ð•ÐŸÐ¦Ð†Ð¯:
+//   Ð¥ÐµÐ½Ð´Ð»ÐµÑ€ = MailBox Ð¿ÐµÑ€ÐµÐºÐ»Ð°Ð´Ð°Ñ‡ Ð¼Ñ–Ð¶ SCADA Ñ– ÐÑ€Ð±Ñ–Ñ‚Ñ€Ð¾Ð¼
+//   - Ð§Ð¸Ñ‚Ð°Ñ” ÐºÐ¾Ð¼Ð°Ð½Ð´Ð¸ Ð· MailBox (Ð¼Ð¾Ð²Ð° SCADA)
+//   - Ð’Ð¸ÐºÐ»Ð¸ÐºÐ°Ñ” Ð°Ñ€Ð±Ñ–Ñ‚Ñ€ (Ð¼Ð¾Ð²Ð° Ð¼ÐµÑ…Ð°Ð½Ñ–Ð·Ð¼Ñ–Ð²)
+//   - ÐŸÐ¸ÑˆÐµ Ð²Ñ–Ð´Ð¿Ð¾Ð²Ñ–Ð´ÑŒ Ð² MailBox (ÐºÐ¾Ð´Ð¸ Ð°Ñ€Ð±Ñ–Ñ‚Ñ€Ð° ARB_*)
+// ==============================================================================
+   VAR_TEMP 
+      slot : UInt;
+      commitIn : UDInt;
+      lastAck : UDInt;
+      rejectCode : USInt;
+   END_VAR
 
-VAR_INPUT
-END_VAR
-
-VAR_TEMP
-    slot       : UINT;
-    commitIn   : UDINT;
-    lastAck    : UDINT;
-    rejectCode : USINT;
-END_VAR
 
 BEGIN
-    // =========================================================
-    // 1. Читаємо MailBox (мова SCADA)
-    // =========================================================
-    #commitIn := "DB_PlcScada_MailBox".Req.Commit;
-    #lastAck := "DB_PlcScada_MailBox".Ack.AckCommit;
-    
-    IF #commitIn = #lastAck THEN
-        RETURN; // Немає нової команди
-    END_IF;
-    
-    #slot := "DB_PlcScada_MailBox".Req.Slot;
-    
-    // =========================================================
-    // 2. Викликаємо арбітр (мова механізмів)
-    //    Арбітр сам розбереться з командою (meta чи звичайна)
-    // =========================================================
-    #rejectCode := "FC_ArbiterMech"(
-        OwnerReq := "OWNER_SCADA",
-        OwnerReqId := UINT#0,
-        ReqCmd := "DB_PlcScada_MailBox".Req.Cmd,
-        ReqParam1 := "DB_PlcScada_MailBox".Req.Param1,
-        M := "DB_Mechs".Mechs[#slot]
-    );
-    
-    // =========================================================
-    // 3. Пишемо відповідь в MailBox (коди арбітра ARB_*)
-    // =========================================================
-    "DB_PlcScada_MailBox".Ack.AckCommit := #commitIn;
-    "DB_PlcScada_MailBox".Ack.AckOk := (#rejectCode = "ARB_OK");
-    "DB_PlcScada_MailBox".Ack.RejectCode := #rejectCode;
-    "DB_PlcScada_MailBox".Ack.Slot := #slot;
-    
+	
+	// =========================================================
+	// 1. Ð§Ð¸Ñ‚Ð°Ñ”Ð¼Ð¾ MailBox (Ð¼Ð¾Ð²Ð° SCADA)
+	// =========================================================
+	#commitIn := "DB_PlcScada_MailBox".Req.Commit;
+	#lastAck := "DB_PlcScada_MailBox".Ack.AckCommit;
+	
+	IF #commitIn = #lastAck THEN
+	    RETURN; // ÐÐµÐ¼Ð°Ñ” Ð½Ð¾Ð²Ð¾Ñ— ÐºÐ¾Ð¼Ð°Ð½Ð´Ð¸
+	END_IF;
+	
+	#slot := "DB_PlcScada_MailBox".Req.Slot;
+	
+	// =========================================================
+	// 2. Ð’Ð¸ÐºÐ»Ð¸ÐºÐ°Ñ”Ð¼Ð¾ Ð°Ñ€Ð±Ñ–Ñ‚Ñ€ (Ð¼Ð¾Ð²Ð° Ð¼ÐµÑ…Ð°Ð½Ñ–Ð·Ð¼Ñ–Ð²)
+	//    ÐÑ€Ð±Ñ–Ñ‚Ñ€ ÑÐ°Ð¼ Ñ€Ð¾Ð·Ð±ÐµÑ€ÐµÑ‚ÑŒÑÑ Ð· ÐºÐ¾Ð¼Ð°Ð½Ð´Ð¾ÑŽ (meta Ñ‡Ð¸ Ð·Ð²Ð¸Ñ‡Ð°Ð¹Ð½Ð°)
+	// =========================================================
+	#rejectCode := "FC_ArbiterMech"(
+	                                OwnerReq := "OWNER_SCADA",
+	                                OwnerReqId := UINT#0,
+	                                ReqCmd := "DB_PlcScada_MailBox".Req.Cmd,
+	                                ReqParam1 := "DB_PlcScada_MailBox".Req.Param1,
+	                                M := "DB_Mechs".Mechs[#slot]
+	);
+	
+	// =========================================================
+	// 3. ÐŸÐ¸ÑˆÐµÐ¼Ð¾ Ð²Ñ–Ð´Ð¿Ð¾Ð²Ñ–Ð´ÑŒ Ð² MailBox (ÐºÐ¾Ð´Ð¸ Ð°Ñ€Ð±Ñ–Ñ‚Ñ€Ð° ARB_*)
+	// =========================================================
+	"DB_PlcScada_MailBox".Ack.AckCommit := #commitIn;
+	"DB_PlcScada_MailBox".Ack.AckOk := (#rejectCode = 0);
+	"DB_PlcScada_MailBox".Ack.RejectCode := #rejectCode;
+	"DB_PlcScada_MailBox".Ack.Slot := #slot;
+	
+	
 END_FUNCTION
+

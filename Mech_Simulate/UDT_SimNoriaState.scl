@@ -33,12 +33,12 @@ VERSION : 2.1
         Breaker_Tripped   : BOOL;              // автомат спрацював (до ручного скидання)
         Alignment_Tripped : BOOL;              // аварія вирівнювання стрічки (до ручного скидання)
         Overflow_Tripped  : BOOL;              // аварія переповнення (до ручного скидання)
+        Feedback_Tripped  : BOOL;              // втрата фідбеку контактора (до ручного скидання)
         
         // === Резерв для майбутніх фіч ===
         Reserved1         : BOOL;
         Reserved2         : BOOL;
-        Reserved3         : BOOL;
+        Reserved3         : DINT;
         Reserved4         : DINT;
-        Reserved5         : DINT;
     END_STRUCT;
 END_TYPE

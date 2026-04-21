@@ -1,96 +1,127 @@
-﻿// ==============================================================================
-// FC_DeviceRunner - Виконання механізмів
+﻿FUNCTION "FC_DeviceRunner" : Void
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 3.0
+// ==============================================================================
+// FC_DeviceRunner - Ð’Ð¸ÐºÐ¾Ð½Ð°Ð½Ð½Ñ Ð¼ÐµÑ…Ð°Ð½Ñ–Ð·Ð¼Ñ–Ð²
 // ==============================================================================
 // Project  : Elevator_System
 // Author   : Engineering Team
-// Version  : 3.0.0
-// Generated: 2026-01-29
+// Version  : 3.1.0
+// Generated: 2026-03-24
 // ==============================================================================
-// Зміни v3.0.0:
-//   - Використання констант MECHS_COUNT замість жорстко закодованих діапазонів
-//   - Динамічне визначення типу механізму через DeviceType
-//   - Підтримка всіх типів механізмів: Redler, Noria, Gate2P, Fan
+// Ð—Ð¼Ñ–Ð½Ð¸ v3.1.0:
+//   - Ð Ð¾Ð·ÐºÐ¾Ð¼ÐµÐ½Ñ‚Ð¾Ð²Ð°Ð½Ð¾ Ð²Ð¸ÐºÐ»Ð¸ÐºÐ¸ FC_Valve3P, FC_Silos, FC_Sushka, FC_ReceivingPit, FC_Separator
 // ==============================================================================
+   VAR_IN_OUT 
+      Mechs : Array[*] of "UDT_BaseMechanism";
+      Redler : Array[*] of "UDT_Redler";
+      Noria : Array[*] of "UDT_Noria";
+      Gate : Array[*] of "UDT_Gate2P";
+      Fan : Array[*] of "UDT_Fan";
+      ReceivingPit : Array[*] of "UDT_ReceivingPit";
+      Separator : Array[*] of "UDT_Separator";
+      Valve3P : Array[*] of "UDT_Valve3P";
+      Silos : Array[*] of "UDT_Silos";
+      Sushka : Array[*] of "UDT_Sushka";
+      Feeder : Array[*] of "UDT_Feeder";
+   END_VAR
 
-FUNCTION "FC_DeviceRunner" : VOID
-{ S7_Optimized_Access := 'TRUE' }
-VERSION : 3.0
+   VAR_TEMP 
+      slot : Int;
+      idx : UInt;
+   END_VAR
 
-VAR_IN_OUT
-    Mechs  : ARRAY[*] OF "UDT_BaseMechanism";
-    Redler : ARRAY[*] OF "UDT_Redler";
-    Noria  : ARRAY[*] OF "UDT_Noria";
-    Gate   : ARRAY[*] OF "UDT_Gate2P";
-    Fan    : ARRAY[*] OF "UDT_Fan";
-END_VAR
-
-VAR_TEMP
-    slot : UINT;  // Змінено на UINT для відповідності константі MECHS_COUNT
-    idx  : UINT;
-END_VAR
 
 BEGIN
-    // ==============================================================================
-    // Проходимо через всі слоти базової шини механізмів
-    // ==============================================================================
-    FOR slot := 0 TO "MECHS_COUNT" DO
-        
-        // Пропускаємо порожні слоти
-        IF Mechs[slot].DeviceType = "TYPE_NONE" THEN
-            CONTINUE;
-        END_IF;
-        
-        // Отримуємо індекс у типізованому масиві
-        idx := Mechs[slot].TypedIndex;
-        
-        // ==============================================================================
-        // Виконуємо механізм відповідного типу
-        // ==============================================================================
-        
-        CASE Mechs[slot].DeviceType OF
-            
-            // === РЕДЛЕРИ ===
-            "TYPE_REDLER":
-                IF idx <= "REDLERS_COUNT" THEN
-                    "FC_Redler"(
-                        R := Redler[idx],
-                        B := Mechs[slot]
-                    );
-                END_IF;
-            
-            // === НОРІЇ ===
-            "TYPE_NORIA":
-                IF idx <= "NORIAS_COUNT" THEN
-                    "FC_Noria"(
-                        N := Noria[idx],
-                        B := Mechs[slot]
-                    );
-                END_IF;
-            
-            // === ШИБЕРИ (2-позиційні) ===
-            "TYPE_GATE2P":
-                IF idx <= "GATES2P_COUNT" THEN
-                    "FC_Gate2P"(
-                        G := Gate[idx],
-                        B := Mechs[slot]
-                    );
-                END_IF;
-            
-            // === ВЕНТИЛЯТОРИ ===
-            "TYPE_FAN":
-                IF idx <= "FANS_COUNT" THEN
-                    "FC_Fan"(
-                        F := Fan[idx],
-                        B := Mechs[slot]
-                    );
-                END_IF;
-            
-            // === Невідомий тип (не повинно статися) ===
-            ELSE
-                ; // Нічого не робимо
-                
-        END_CASE;
-        
-    END_FOR;
-    
+	    // === REDLERS (slot 1..39) ===
+	    FOR #slot := 1 TO 39 DO
+	        IF #Mechs[#slot].DeviceType = "TYPE_REDLER" THEN
+	            #idx := #Mechs[#slot].TypedIndex;
+	            "FC_Redler"(R := #Redler[#idx],
+	                        B := #Mechs[#slot]);
+	        END_IF;
+	    END_FOR;
+	    
+	    // === NORIAS (slot 51..62) ===
+	    FOR #slot := 51 TO 62 DO
+	        IF #Mechs[#slot].DeviceType = "TYPE_NORIA" THEN
+	            #idx := #Mechs[#slot].TypedIndex;
+	            "FC_Noria"(N := #Noria[#idx],
+	                       B := #Mechs[#slot]);
+	        END_IF;
+	    END_FOR;
+	    
+	    // === GATES (slot 116..182) ===
+	    FOR #slot := 116 TO 182 DO
+	        IF #Mechs[#slot].DeviceType = "TYPE_GATE2P" THEN
+	            #idx := #Mechs[#slot].TypedIndex;
+	            "FC_Gate2P"(G := #Gate[#idx],
+	                        B := #Mechs[#slot]);
+	        END_IF;
+	    END_FOR;
+	    
+	    // === FANS (slot 317..319) ===
+	    FOR #slot := 317 TO 319 DO
+	        IF #Mechs[#slot].DeviceType = "TYPE_FAN" THEN
+	            #idx := #Mechs[#slot].TypedIndex;
+	            "FC_Fan"(F := #Fan[#idx],
+	                     B := #Mechs[#slot]);
+	        END_IF;
+	    END_FOR;
+	    
+	    // === RECEIVING_PIT (slot 305..306) ===
+	    FOR #slot := 305 TO 306 DO
+	        IF #Mechs[#slot].DeviceType = "TYPE_Receiving_PIT" THEN
+	            #idx := #Mechs[#slot].TypedIndex;
+	            // "FC_ReceivingPit"(P := #ReceivingPit[#idx],
+	            //  B := #Mechs[#slot]);
+	        END_IF;
+	    END_FOR;
+	    
+	    // === SEPARATOR (slot 311..313) ===
+	    FOR #slot := 311 TO 313 DO
+	        IF #Mechs[#slot].DeviceType = "TYPE_SEPARATOR" THEN
+	            #idx := #Mechs[#slot].TypedIndex;
+	            "FC_Separator"(S := #Separator[#idx],
+	                           B := #Mechs[#slot]);
+	        END_IF;
+	    END_FOR;
+	    
+	    // === VALVE3P (slot 201..229) ===
+	    FOR #slot := 201 TO 229 DO
+	        IF #Mechs[#slot].DeviceType = "TYPE_VALVE3P" THEN
+	            #idx := #Mechs[#slot].TypedIndex;
+	            "FC_Valve3P"(F := #Valve3P[#idx],
+	                         B := #Mechs[#slot]);
+	        END_IF;
+	    END_FOR;
+	    
+	    // === SILOS (slot 251..278) ===
+	    FOR #slot := 251 TO 278 DO
+	        IF #Mechs[#slot].DeviceType = "TYPE_SILOS" THEN
+	            #idx := #Mechs[#slot].TypedIndex;
+	            //"FC_Silos"(S := #Silos[#idx],
+	            //B := #Mechs[#slot]);
+	        END_IF;
+	    END_FOR;
+	    
+	    // === SUSHKA (slot 281..284) ===
+	    FOR #slot := 281 TO 284 DO
+	        IF #Mechs[#slot].DeviceType = "TYPE_SUSHKA" THEN
+	            #idx := #Mechs[#slot].TypedIndex;
+	            // "FC_Sushka"(S := #Sushka[#idx],
+	            //  B := #Mechs[#slot]);
+	        END_IF;
+	    END_FOR;
+	    
+	    // === FEEDER (slot 314..316) ===
+	    FOR #slot := 314 TO 316 DO
+	        IF #Mechs[#slot].DeviceType = "TYPE_FEEDER" THEN
+	            #idx := #Mechs[#slot].TypedIndex;
+	            "FC_Feeder"(F := #Feeder[#idx],
+	                        B := #Mechs[#slot]);
+	        END_IF;
+	    END_FOR;
+	    
 END_FUNCTION
+

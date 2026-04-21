@@ -1,13 +1,21 @@
-﻿TYPE "UDT_Redler" :
+﻿TYPE "UDT_Redler"
+VERSION : 0.3
 STRUCT
     // ===== Дискретні входи/виходи (HAL / залізо) =====
-    DI_Speed_OK     : BOOL;    // контроль швидкості [cite: 74]
-    DI_Breaker_OK   : BOOL;    // автомат захисту [cite: 75]
-    DI_Overflow_OK  : BOOL;    // датчик переповнення [cite: 76]
-    DO_Run          : BOOL;    // вихід на контактор [cite: 77]
+    DI_Speed_OK     : BOOL;    // контроль швидкості (тахо)
+    DI_Breaker_OK   : BOOL;    // автомат захисту
+    DI_Overflow_OK  : BOOL;    // датчик переповнення
+    DI_Feedback_OK  : BOOL;    // зворотний зв'язок контактора
+    DO_Run          : BOOL;    // вихід на контактор
 
     // ===== Стан/таймінги редлера =====
-    StartMs         : DINT;    // час старту (мітка) [cite: 78]
-    SpeedLostMs     : DINT;    // мітка втрати Speed_OK [cite: 78]
+    StartMs         : DINT;    // час старту (мітка)
+    SpeedLostMs     : DINT;    // мітка втрати Speed_OK
+    FeedbackLostMs  : DINT;    // мітка втрати Feedback_OK
+    StopMs          : DINT;    // мітка початку зупинки (для таймауту вибігу)
+
+    // ===== Індивідуальні задержки (мс) =====
+    StartDelayMs    : DINT;    // задержка после запуска перед следующим шагом
+    StopDelayMs     : DINT;    // задержка после остановки перед следующим шагом
 END_STRUCT;
 END_TYPE

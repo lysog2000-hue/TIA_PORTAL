@@ -1,3 +1,27 @@
-.vci/
-OLD_NOT_USE/
-.claude/
+# Excel файлы (генерируются скриптами, не нужны в репозитории)
+*.xlsx
+HMIAlarms_All.xlsx
+HMIAlarms.xlsx
+HMIAlarms23.xlsx
+HMITags*.xlsx
+Alarms.xlsx
+
+# Исключение — Constant.xlsx нужен как источник истины
+!Constant.xlsx
+!Mechs.xlsx
+
+# Python кэш
+__pycache__/
+*.pyc
+*.pyo
+
+# VSCode
+.vscode/
+
+# Другие редакторы
+.idea/
+*.swp
+
+# OS файлы
+.DS_Store
+Thumbs.db

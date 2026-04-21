@@ -1,4 +1,5 @@
-﻿TYPE "UDT_Sushka" :
+﻿TYPE "UDT_Sushka"
+VERSION : 0.3
 STRUCT
     // ===== Дискретні входи/виходи (HAL / залізо) =====
     DI_Breaker_OK   : BOOL;    // автомат захисту

@@ -1,4 +1,5 @@
-﻿TYPE "UDT_Separator" :
+﻿TYPE "UDT_Separator"
+VERSION : 0.2
 STRUCT
     // ===== Дискретні входи/виходи (HAL / залізо) =====
     DI_Breaker_OK   : BOOL;    // автомат захисту
@@ -7,5 +8,13 @@ STRUCT
 
     // ===== Стан/таймінги =====
     StartMs         : DINT;    // час старту (мітка)
+    FeedbackLostMs  : DINT;	// час втрати фідбеку
+    StopMs          : DINT;    // мітка початку зупинки (для таймауту вибігу)
+
+
+    // ===== Індивідуальні задержки (мс) =====
+    StartDelayMs    : DINT;    // задержка после запуска перед следующим шагом
+    StopDelayMs     : DINT;    // задержка после остановки перед следующим шагом
+
 END_STRUCT;
 END_TYPE

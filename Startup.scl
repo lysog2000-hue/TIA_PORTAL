@@ -1,0 +1,75 @@
+ORGANIZATION_BLOCK "Startup"
+TITLE = "Complete Restart"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.2
+   VAR_TEMP 
+      i : Int;
+   END_VAR
+
+
+BEGIN
+	// === Redler ===
+	FOR #i := 0 TO "REDLERS_COUNT" DO
+	    "DB_Mechs".Redler[#i].DI_Breaker_OK   := FALSE;
+	    "DB_Mechs".Redler[#i].DI_Overflow_OK  := FALSE;
+	    "DB_Mechs".Redler[#i].DI_Speed_OK     := FALSE;
+	    "DB_Mechs".Redler[#i].DI_Feedback_OK  := FALSE;
+	    "DB_Mechs".Redler[#i].DO_Run          := FALSE;
+	    "DB_Mechs".Redler[#i].StartMs         := 0;
+	    "DB_Mechs".Redler[#i].SpeedLostMs     := 0;
+	    "DB_Mechs".Redler[#i].FeedbackLostMs  := 0;
+	    "DB_Mechs".Redler[#i].StopMs          := 0;
+	END_FOR;
+	
+	// === Noria ===
+	FOR #i := 0 TO "NORIAS_COUNT" DO
+	    "DB_Mechs".Noria[#i].DI_Breaker_OK   := FALSE;
+	    "DB_Mechs".Noria[#i].DI_Overflow_OK  := FALSE;
+	    "DB_Mechs".Noria[#i].DI_Alingment_OK := FALSE;
+	    "DB_Mechs".Noria[#i].DI_Speed_OK     := FALSE;
+	    "DB_Mechs".Noria[#i].DI_Feedback_OK  := FALSE;
+	    "DB_Mechs".Noria[#i].DO_Run          := FALSE;
+	    "DB_Mechs".Noria[#i].StartMs         := 0;
+	    "DB_Mechs".Noria[#i].SpeedLostMs     := 0;
+	    "DB_Mechs".Noria[#i].FeedbackLostMs  := 0;
+	    "DB_Mechs".Noria[#i].StopMs          := 0;
+	END_FOR;
+	
+	// === Fan ===
+	FOR #i := 0 TO "FANS_COUNT" DO
+	    "DB_Mechs".Fan[#i].DI_Breaker_OK  := FALSE;
+	    "DB_Mechs".Fan[#i].DI_Feedback_OK := FALSE;
+	    "DB_Mechs".Fan[#i].DO_Run         := FALSE;
+	    "DB_Mechs".Fan[#i].StartMs        := 0;
+	    "DB_Mechs".Fan[#i].FeedbackLostMs := 0;
+	    "DB_Mechs".Fan[#i].StopMs         := 0;
+	END_FOR;
+	
+	// === Separator ===
+	FOR #i := 0 TO "SEPARATORS_COUNT" DO
+	    "DB_Mechs".Separator[#i].DI_Breaker_OK  := FALSE;
+	    "DB_Mechs".Separator[#i].DI_Feedback_OK := FALSE;
+	    "DB_Mechs".Separator[#i].DO_Run         := FALSE;
+	    "DB_Mechs".Separator[#i].StartMs        := 0;
+	    "DB_Mechs".Separator[#i].FeedbackLostMs := 0;
+	    "DB_Mechs".Separator[#i].StopMs         := 0;
+	END_FOR;
+	
+	// === Feeder ===
+	FOR #i := 0 TO "FEEDERS_COUNT" DO
+	    "DB_Mechs".Feeder[#i].DI_Breaker_OK  := FALSE;
+	    "DB_Mechs".Feeder[#i].DI_Feedback_OK := FALSE;
+	    "DB_Mechs".Feeder[#i].DO_Run         := FALSE;
+	    "DB_Mechs".Feeder[#i].StartMs        := 0;
+	    "DB_Mechs".Feeder[#i].FeedbackLostMs := 0;
+	    "DB_Mechs".Feeder[#i].StopMs         := 0;
+	END_FOR;
+	
+	// === Silos ===
+	FOR #i := 0 TO "SILOS_COUNT" DO
+	    "DB_Mechs".Silos[#i].DI_LevelLow  := FALSE;
+	    "DB_Mechs".Silos[#i].DI_LevelHigh := FALSE;
+	    "DB_Mechs".Silos[#i].AI_Level     := 0;
+	END_FOR;
+	
+END_ORGANIZATION_BLOCK

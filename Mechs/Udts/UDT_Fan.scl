@@ -1,11 +1,17 @@
 ﻿TYPE "UDT_Fan" :
 STRUCT
     // ===== Дискретні входи/виходи (HAL / залізо) =====
-    DI_Breaker_OK   : BOOL;    // автомат захисту [cite: 79, 80]
-    DI_Feedback_OK  : BOOL;    // зворотний зв'язок контактора [cite: 80]
-    DO_Run          : BOOL;    // вихід на контактор [cite: 81]
+    DI_Breaker_OK   : BOOL;    // автомат захисту
+    DI_Feedback_OK  : BOOL;    // зворотний зв'язок контактора
+    DO_Run          : BOOL;    // вихід на контактор
 
     // ===== Стан/таймінги вентилятора =====
-    StartMs         : DINT;    // час старту (мітка) [cite: 82]
+    StartMs         : DINT;    // час старту (мітка)
+    FeedbackLostMs  : DINT;    // мітка втрати Feedback_OK
+    StopMs          : DINT;    // мітка початку зупинки (для таймауту вибігу)
+
+    // ===== Індивідуальні задержки (мс) =====
+    StartDelayMs    : DINT;
+    StopDelayMs     : DINT;
 END_STRUCT;
 END_TYPE

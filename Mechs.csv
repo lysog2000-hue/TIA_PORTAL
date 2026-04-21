@@ -1,6 +1,12 @@
-Name;Path;Data Type;Value;Comment
-GATES2P_COUNT;Mechs_;UInt;0;������� �������� �������� 
-REDLERS_COUNT;Mechs_;UInt;0;������� �������� �������� 
-NORIAS_COUNT;Mechs_;UInt;2;������� �������� �������� 
-FANS_COUNT;Mechs_;UInt;0;������� �������� �������� 
-MECHS_COUNT;Mechs_;UInt;2;���� ������� ���� ��������� 
+﻿Name;Path;Data Type;Value;Comment
+GATES2P_COUNT;Mechs_;UInt;80;Верхня межа масиву Gate2P[] (кількість засувок - 1)
+REDLERS_COUNT;Mechs_;UInt;38;Верхня межа масиву Redler[] (кількість редлерів - 1)
+NORIAS_COUNT;Mechs_;UInt;11;Верхня межа масиву Noria[] (кількість норій - 1)
+FANS_COUNT;Mechs_;UInt;2;Верхня межа масиву Fan[] (кількість вентиляторів - 1)
+RECEIVING_PITS_COUNT;Mechs_;UInt;1;Верхня межа масиву ReceivingPit[] (кількість приймальних ям - 1)
+SEPARATORS_COUNT;Mechs_;UInt;2;Верхня межа масиву Separator[] (кількість сепараторів - 1)
+VALVES3P_COUNT;Mechs_;UInt;29;Верхня межа масиву Valve3P[] (кількість клапанів 3П - 1)
+SILOS_COUNT;Mechs_;UInt;27;Верхня межа масиву Silos[] (кількість силосів - 1)
+SUSHKAS_COUNT;Mechs_;UInt;3;Верхня межа масиву Sushka[] (кількість сушарок - 1)
+FEEDERS_COUNT;Mechs_;UInt;2;Верхня межа масиву Feeder[] (кількість фідерів - 1)
+MECHS_COUNT;Mechs_;UInt;319;Верхня межа масиву Mechs[] (max SlotId серед усіх пристроїв)

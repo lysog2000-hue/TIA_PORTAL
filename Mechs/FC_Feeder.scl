@@ -1,0 +1,162 @@
+FUNCTION "FC_Feeder" : Void
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.2
+   VAR_IN_OUT 
+      F : "UDT_Feeder";
+      B : "UDT_BaseMechanism";
+   END_VAR
+
+   VAR_TEMP 
+      elapsedMs : DInt;
+      nowTck : DInt;
+      forceBreaker : Bool;
+      forceFeedback : Bool;
+      forceStopTimeout : Bool;
+      isFault : Bool;
+      isBlocked : Bool;
+   END_VAR
+
+
+BEGIN
+	
+	REGION "0) Декодування форсування"
+	    // BIT0(1)=forceBreaker, BIT8(256)=forceFeedback, BIT6(64)=forceStopTimeout
+	    #forceBreaker := (#B.Force_Code AND 1) <> 0;
+	    #forceFeedback := (#B.Force_Code AND 256) <> 0;
+	    #forceStopTimeout := (#B.Force_Code AND 64) <> 0;
+	END_REGION
+	
+	REGION "1) RESET (Тільки за умови усунення причини)"
+	    IF #B.Cmd = "CMD_RESET" THEN
+	        CASE #B.FLTCode OF
+	            "FLT_BREAKER":
+	                IF #F.DI_Breaker_OK OR #forceBreaker THEN
+	                    #B.FLTCode := "FLT_NONE";
+	                END_IF;
+	            "FLT_NO_FEEDBACK":
+	                IF #F.DI_Feedback_OK OR #forceFeedback THEN
+	                    #B.FLTCode := "FLT_NONE";
+	                END_IF;
+	            "FLT_STOP_TIMEOUT":
+	                IF NOT #F.DI_Feedback_OK OR #forceStopTimeout THEN
+	                    #B.FLTCode := "FLT_NONE";
+	                END_IF;
+	        END_CASE;
+	        
+	        IF #B.FLTCode = "FLT_NONE" AND #B.Status = "STS_FAULT" THEN
+	            #B.Status := "STS_IDLE";
+	            #F.StartMs := 0;
+	            #F.FeedbackLostMs := 0;
+	            #F.StopMs := 0;
+	        END_IF;
+	    END_IF;
+	END_REGION
+	
+	REGION "2) Обробка блокувань"
+	    IF NOT #B.Enable_OK THEN
+	        #B.Status := "STS_DISABLED";
+	        #isBlocked := TRUE;
+	    ELSIF #B.LocalManual THEN
+	        #B.Status := "STS_LOCAL";
+	        #isBlocked := TRUE;
+	    ELSE
+	        #isBlocked := FALSE;
+	        IF (#B.Status = "STS_DISABLED") OR (#B.Status = "STS_LOCAL") THEN
+	            #B.Status := "STS_IDLE";
+	        END_IF;
+	    END_IF;
+	END_REGION
+	
+	REGION "3) Моніторинг аварій (Diagnostic Latch)"
+	    IF #B.FLTCode = "FLT_NONE" AND NOT #isBlocked THEN
+	        IF NOT #F.DI_Breaker_OK THEN
+	            #B.FLTCode := "FLT_BREAKER";
+	        END_IF;
+	    END_IF;
+	END_REGION
+	
+	REGION "4) Визначення виконавчої аварії"
+	    #isFault := FALSE;
+	    IF #B.FLTCode <> "FLT_NONE" THEN
+	        CASE #B.FLTCode OF
+	            "FLT_BREAKER":
+	                #isFault := NOT #forceBreaker;
+	            "FLT_NO_FEEDBACK":
+	                #isFault := NOT #forceFeedback;
+	            "FLT_STOP_TIMEOUT":
+	                #isFault := NOT #forceStopTimeout;
+	        END_CASE;
+	    END_IF;
+	    
+	    IF #isFault THEN
+	        #B.Status := "STS_FAULT";
+	    END_IF;
+	    #isFault := (#B.Status = "STS_FAULT");
+	END_REGION
+	
+	REGION "5 & 6) Машина станів та виконання команд"
+	    IF (NOT #isFault) AND (NOT #isBlocked) THEN
+	        IF #B.Cmd <> "CMD_NONE" THEN
+	            #B.LastCmd := #B.Cmd;
+	        END_IF;
+	        
+	        CASE #B.Status OF
+	            "STS_IDLE":
+	                IF #B.Cmd = "CMD_START" THEN
+	                    #B.Status := "STS_STARTING";
+	                    #F.StartMs := TIME_TCK();
+	                END_IF;
+	                
+	            "STS_STARTING":
+	                IF #F.DI_Feedback_OK OR #forceFeedback THEN
+	                    #B.Status := "STS_RUNNING";
+	                ELSE
+	                    IF "FC_TimeElapsedMs"(StartTck := #F.StartMs, TimeoutMs := "TimeoutMs_Feeder_Feedback",
+	                                              ElapsedMs => #elapsedMs, NowTck => #nowTck) THEN
+	                        #B.FLTCode := "FLT_NO_FEEDBACK";
+	                        #B.Status := "STS_FAULT";
+	                    END_IF;
+	                END_IF;
+	                
+	            "STS_RUNNING":
+	                IF NOT (#F.DI_Feedback_OK OR #forceFeedback) THEN
+	                    IF #F.FeedbackLostMs = 0 THEN
+	                        #F.FeedbackLostMs := TIME_TCK();
+	                    END_IF;
+	                    IF "FC_TimeElapsedMs"(StartTck := #F.FeedbackLostMs, TimeoutMs := "TimeoutMs_Feeder_FeedbackPause",
+	                                              ElapsedMs => #elapsedMs, NowTck => #nowTck) THEN
+	                        #B.FLTCode := "FLT_NO_FEEDBACK";
+	                        #B.Status := "STS_FAULT";
+	                    END_IF;
+	                ELSE
+	                    #F.FeedbackLostMs := 0;
+	                END_IF;
+	                
+	            "STS_STOPPING":
+	                IF (NOT #F.DI_Feedback_OK) OR #forceFeedback THEN
+	                    #B.Status := "STS_IDLE";
+	                    #F.StopMs := 0;
+	                ELSE
+	                    IF #F.StopMs = 0 THEN
+	                        #F.StopMs := TIME_TCK();
+	                    END_IF;
+	                    IF "FC_TimeElapsedMs"(StartTck := #F.StopMs, TimeoutMs := "TimeoutMs_Feeder_Stop",
+	                                              ElapsedMs => #elapsedMs, NowTck => #nowTck) THEN
+	                        #B.FLTCode := "FLT_STOP_TIMEOUT";
+	                        #B.Status := "STS_FAULT";
+	                    END_IF;
+	                END_IF;
+	        END_CASE;
+	        
+	        IF #B.Cmd = "CMD_STOP" AND #B.Status <> "STS_IDLE" THEN
+	            #B.Status := "STS_STOPPING";
+	        END_IF;
+	    END_IF;
+	END_REGION
+	
+	REGION "7) Фіналізація"
+	    #F.DO_Run := (#B.Status = "STS_STARTING") OR (#B.Status = "STS_RUNNING");
+	    #B.Cmd := "CMD_NONE";
+	END_REGION
+	
+END_FUNCTION

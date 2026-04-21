@@ -1,7 +1,7 @@
 ﻿TYPE "UDT_BaseMechanism" :
 STRUCT
 
-    SlotId : USINT;  //
+    SlotId : INT;  //
     // ===== 0) Мапінг слоту (slot -> typed array) =====
     DeviceType : USINT;  // TYPE_REDLER / TYPE_...
     TypedIndex : UINT;   // індекс у DB_Mechs.<Type>[TypedIndex]
@@ -26,7 +26,7 @@ STRUCT
     LastCmd      : USINT;   // остання команда (заповнює МЕХАНІЗМ)
 
     // ===== Стан та аварії (заповнює МЕХАНІЗМ) =====
-    FLTCode      : UINT;    // код помилки (0 — відсутня)
+    FLTCode      : WORD;    // код помилки (0 — відсутня)
     Status       : UINT;    // поточний стан
     Status_Param : INT;     // додатковий параметр стану (залежить від типу: Gate2P=поточна позиція CMD_GATE_POS0/POS1, 0=невідома; інші=0)
 END_STRUCT;

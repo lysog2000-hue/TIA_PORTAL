@@ -1,0 +1,7497 @@
+{
+  "deviceTypes": [
+    {
+      "name": "Redler",
+      "label": "Redler",
+      "color": "#4A90D9",
+      "icon": "⚙️"
+    },
+    {
+      "name": "Silos",
+      "label": "Silos",
+      "color": "#D35400",
+      "icon": "🏛️"
+    },
+    {
+      "name": "Noria",
+      "label": "Noria",
+      "color": "#F39C12",
+      "icon": "⬆️"
+    },
+    {
+      "name": "Gate2P",
+      "label": "Gate2P",
+      "color": "#8E44AD",
+      "icon": "↔️"
+    },
+    {
+      "name": "Valve3P",
+      "label": "Valve3P",
+      "color": "#7F8C8D",
+      "icon": "🔀"
+    },
+    {
+      "name": "Separator",
+      "label": "Separator",
+      "color": "#C0392B",
+      "icon": "⚡"
+    },
+    {
+      "name": "ReceivingPit",
+      "label": "ReceivingPit",
+      "color": "#7F8C8D",
+      "icon": "🌀"
+    },
+    {
+      "name": "Sushka",
+      "label": "Dryer",
+      "color": "#27AE60",
+      "icon": "🎛️"
+    },
+    {
+      "name": "Feeder",
+      "label": "Feeder",
+      "color": "#4A90D9",
+      "icon": "🔧"
+    },
+    {
+      "name": "Fan",
+      "label": "Fan",
+      "color": "#8E44AD",
+      "icon": "🎛️"
+    }
+  ],
+  "devices": [
+    {
+      "name": "RP1",
+      "id": "305",
+      "type": "ReceivingPit",
+      "description": null,
+      "pos_x": 112,
+      "pos_y": -512,
+      "ports": [
+        {
+          "direction": "out",
+          "name": "RP1_OUT",
+          "port_order": 0
+        }
+      ],
+      "internal_connections": []
+    },
+    {
+      "name": "RD1",
+      "id": "1",
+      "type": "Redler",
+      "description": null,
+      "pos_x": 352,
+      "pos_y": -512,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "RD1_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "RD1_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "RD1_IN",
+          "out_port": "RD1_OUT"
+        }
+      ]
+    },
+    {
+      "name": "RD5",
+      "id": "5",
+      "type": "Redler",
+      "description": null,
+      "pos_x": 352,
+      "pos_y": -416,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "RD5_IN1",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "RD5_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "RD5_OUT2",
+          "port_order": 2
+        },
+        {
+          "direction": "out",
+          "name": "RD5_OUT3",
+          "port_order": 3
+        },
+        {
+          "direction": "in",
+          "name": "RD5_IN2",
+          "port_order": 5
+        },
+        {
+          "direction": "in",
+          "name": "RD5_IN3",
+          "port_order": 6
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "RD5_IN1",
+          "out_port": "RD5_OUT1"
+        },
+        {
+          "in_port": "RD5_IN1",
+          "out_port": "RD5_OUT2"
+        },
+        {
+          "in_port": "RD5_IN1",
+          "out_port": "RD5_OUT3"
+        },
+        {
+          "in_port": "RD5_IN2",
+          "out_port": "RD5_OUT2"
+        },
+        {
+          "in_port": "RD5_IN2",
+          "out_port": "RD5_OUT3"
+        },
+        {
+          "in_port": "RD5_IN3",
+          "out_port": "RD5_OUT2"
+        },
+        {
+          "in_port": "RD5_IN3",
+          "out_port": "RD5_OUT3"
+        }
+      ]
+    },
+    {
+      "name": "GT5.1",
+      "id": "116",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 352,
+      "pos_y": -272,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT5.1_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT5.1_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT5.1_IN",
+          "out_port": "GT5.1_OUT"
+        }
+      ]
+    },
+    {
+      "name": "SEP1",
+      "id": "311",
+      "type": "Separator",
+      "description": null,
+      "pos_x": 336,
+      "pos_y": -960,
+      "ports": [
+        {
+          "direction": "out",
+          "name": "SP1_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "in",
+          "name": "SP1_IN",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "SP1_OUT2",
+          "port_order": 2
+        },
+        {
+          "direction": "out",
+          "name": "SP1_OUT3",
+          "port_order": 3
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "SP1_IN",
+          "out_port": "SP1_OUT1"
+        },
+        {
+          "in_port": "SP1_IN",
+          "out_port": "SP1_OUT2"
+        },
+        {
+          "in_port": "SP1_IN",
+          "out_port": "SP1_OUT3"
+        }
+      ]
+    },
+    {
+      "name": "Auto1.1",
+      "id": "251",
+      "type": "Silos",
+      "description": null,
+      "pos_x": 112,
+      "pos_y": -768,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "Auto1.1_IN",
+          "port_order": 0
+        }
+      ],
+      "internal_connections": []
+    },
+    {
+      "name": "NR1",
+      "id": "51",
+      "type": "Noria",
+      "description": null,
+      "pos_x": 16,
+      "pos_y": -1024,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "NR1_IN1",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "NR1_OUT",
+          "port_order": 1
+        },
+        {
+          "direction": "in",
+          "name": "NR1_IN2",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "NR1_IN1",
+          "out_port": "NR1_OUT"
+        },
+        {
+          "in_port": "NR1_IN2",
+          "out_port": "NR1_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT36.3",
+      "id": "119",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 672,
+      "pos_y": -496,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT36.3_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT36.3_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT36.3_IN",
+          "out_port": "GT36.3_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT5.3",
+      "id": "118",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 656,
+      "pos_y": -272,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT5.3_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT5.3_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT5.3_IN",
+          "out_port": "GT5.3_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT5.2",
+      "id": "117",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 656,
+      "pos_y": -384,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT5.2_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT5.2_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT5.2_IN",
+          "out_port": "GT5.2_OUT"
+        }
+      ]
+    },
+    {
+      "name": "RP2",
+      "id": "306",
+      "type": "ReceivingPit",
+      "description": null,
+      "pos_x": 32,
+      "pos_y": 464,
+      "ports": [
+        {
+          "direction": "out",
+          "name": "RP2_OUT",
+          "port_order": 0
+        }
+      ],
+      "internal_connections": []
+    },
+    {
+      "name": "RD2",
+      "id": "2",
+      "type": "Redler",
+      "description": null,
+      "pos_x": 320,
+      "pos_y": 480,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "RD2_IN1",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "RD2_OUT1",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "RD2_IN1",
+          "out_port": "RD2_OUT1"
+        }
+      ]
+    },
+    {
+      "name": "RD6",
+      "id": "6",
+      "type": "Redler",
+      "description": null,
+      "pos_x": 320,
+      "pos_y": 576,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "RD6_IN1",
+          "port_order": 0
+        },
+        {
+          "direction": "in",
+          "name": "RD6_IN2",
+          "port_order": 1
+        },
+        {
+          "direction": "in",
+          "name": "RD6_IN3",
+          "port_order": 2
+        },
+        {
+          "direction": "out",
+          "name": "RD6_OUT1",
+          "port_order": 3
+        },
+        {
+          "direction": "out",
+          "name": "RD6_OUT2",
+          "port_order": 4
+        },
+        {
+          "direction": "out",
+          "name": "RD6_OUT3",
+          "port_order": 5
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "RD6_IN1",
+          "out_port": "RD6_OUT1"
+        },
+        {
+          "in_port": "RD6_IN1",
+          "out_port": "RD6_OUT2"
+        },
+        {
+          "in_port": "RD6_IN1",
+          "out_port": "RD6_OUT3"
+        },
+        {
+          "in_port": "RD6_IN2",
+          "out_port": "RD6_OUT2"
+        },
+        {
+          "in_port": "RD6_IN2",
+          "out_port": "RD6_OUT3"
+        },
+        {
+          "in_port": "RD6_IN3",
+          "out_port": "RD6_OUT2"
+        },
+        {
+          "in_port": "RD6_IN3",
+          "out_port": "RD6_OUT3"
+        }
+      ]
+    },
+    {
+      "name": "RD4",
+      "id": "4",
+      "type": "Redler",
+      "description": null,
+      "pos_x": 624,
+      "pos_y": 240,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "RD4_IN1",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "RD4_OUT",
+          "port_order": 1
+        },
+        {
+          "direction": "in",
+          "name": "RD4_IN2",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "RD4_IN1",
+          "out_port": "RD4_OUT"
+        },
+        {
+          "in_port": "RD4_IN2",
+          "out_port": "RD4_OUT"
+        }
+      ]
+    },
+    {
+      "name": "VL9",
+      "id": "209",
+      "type": "Valve3P",
+      "description": null,
+      "pos_x": 800,
+      "pos_y": 96,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "VL9_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "VL9_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "VL9_OUT2",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "VL9_IN",
+          "out_port": "VL9_OUT1"
+        },
+        {
+          "in_port": "VL9_IN",
+          "out_port": "VL9_OUT2"
+        }
+      ]
+    },
+    {
+      "name": "GT6.1",
+      "id": "127",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 624,
+      "pos_y": 352,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT6.1_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT6.1_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT6.1_IN",
+          "out_port": "GT6.1_OUT"
+        }
+      ]
+    },
+    {
+      "name": "NR2",
+      "id": "52",
+      "type": "Noria",
+      "description": null,
+      "pos_x": 96,
+      "pos_y": -96,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "NR2_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "NR2_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "NR2_IN",
+          "out_port": "NR2_OUT"
+        }
+      ]
+    },
+    {
+      "name": "SEP2",
+      "id": "312",
+      "type": "Separator",
+      "description": null,
+      "pos_x": 320,
+      "pos_y": 240,
+      "ports": [
+        {
+          "direction": "out",
+          "name": "SP2_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "SP2_OUT2",
+          "port_order": 2
+        },
+        {
+          "direction": "out",
+          "name": "SP2_OUT3",
+          "port_order": 3
+        },
+        {
+          "direction": "in",
+          "name": "SP2_IN",
+          "port_order": 3
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "SP2_IN",
+          "out_port": "SP2_OUT1"
+        },
+        {
+          "in_port": "SP2_IN",
+          "out_port": "SP2_OUT2"
+        },
+        {
+          "in_port": "SP2_IN",
+          "out_port": "SP2_OUT3"
+        }
+      ]
+    },
+    {
+      "name": "VL2",
+      "id": "202",
+      "type": "Valve3P",
+      "description": null,
+      "pos_x": 624,
+      "pos_y": -752,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "VL2_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "VL2_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "VL2_OUT2",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "VL2_IN",
+          "out_port": "VL2_OUT1"
+        },
+        {
+          "in_port": "VL2_IN",
+          "out_port": "VL2_OUT2"
+        }
+      ]
+    },
+    {
+      "name": "VL1",
+      "id": "201",
+      "type": "Valve3P",
+      "description": null,
+      "pos_x": 608,
+      "pos_y": -896,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "VL1_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "VL1_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "VL1_OUT2",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "VL1_IN",
+          "out_port": "VL1_OUT1"
+        },
+        {
+          "in_port": "VL1_IN",
+          "out_port": "VL1_OUT2"
+        }
+      ]
+    },
+    {
+      "name": "RD3",
+      "id": "3",
+      "type": "Redler",
+      "description": null,
+      "pos_x": 352,
+      "pos_y": -624,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "RD3_IN1",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "RD3_OUT",
+          "port_order": 1
+        },
+        {
+          "direction": "in",
+          "name": "RD3_IN2",
+          "port_order": 3
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "RD3_IN1",
+          "out_port": "RD3_OUT"
+        },
+        {
+          "in_port": "RD3_IN2",
+          "out_port": "RD3_OUT"
+        }
+      ]
+    },
+    {
+      "name": "Auto1.2",
+      "id": "252",
+      "type": "Silos",
+      "description": null,
+      "pos_x": 112,
+      "pos_y": -672,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "Auto1.2_IN1",
+          "port_order": 0
+        },
+        {
+          "direction": "in",
+          "name": "Auto1.2_IN2",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": []
+    },
+    {
+      "name": "VL4",
+      "id": "204",
+      "type": "Valve3P",
+      "description": null,
+      "pos_x": 320,
+      "pos_y": 368,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "VL4_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "VL4_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "VL4_OUT2",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "VL4_IN",
+          "out_port": "VL4_OUT1"
+        },
+        {
+          "in_port": "VL4_IN",
+          "out_port": "VL4_OUT2"
+        }
+      ]
+    },
+    {
+      "name": "VL3",
+      "id": "203",
+      "type": "Valve3P",
+      "description": null,
+      "pos_x": 560,
+      "pos_y": 32,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "VL3_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "VL3_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "VL3_OUT2",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "VL3_IN",
+          "out_port": "VL3_OUT1"
+        },
+        {
+          "in_port": "VL3_IN",
+          "out_port": "VL3_OUT2"
+        }
+      ]
+    },
+    {
+      "name": "Auto2.2",
+      "id": "253",
+      "type": "Silos",
+      "description": null,
+      "pos_x": 0,
+      "pos_y": 176,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "Auto2.2_IN1",
+          "port_order": 0
+        },
+        {
+          "direction": "in",
+          "name": "Auto2.2_IN2",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": []
+    },
+    {
+      "name": "Auto2.1",
+      "id": "254",
+      "type": "Silos",
+      "description": null,
+      "pos_x": 64,
+      "pos_y": 320,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "Auto2.1_IN",
+          "port_order": 0
+        }
+      ],
+      "internal_connections": []
+    },
+    {
+      "name": "GT6.2",
+      "id": "128",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 624,
+      "pos_y": 448,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT6.2_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT6.2_OUT",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT6.2_IN",
+          "out_port": "GT6.2_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT6.3",
+      "id": "129",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 624,
+      "pos_y": 544,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT6.3_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT6.3_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT6.3_IN",
+          "out_port": "GT6.3_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT15.1",
+      "id": "125",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 816,
+      "pos_y": -128,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT15.1_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT15.1_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT15.1_IN",
+          "out_port": "GT15.1_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT15.2",
+      "id": "126",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 800,
+      "pos_y": 0,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT15.2_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT15.2_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT15.2_IN",
+          "out_port": "GT15.2_OUT"
+        }
+      ]
+    },
+    {
+      "name": "RD15",
+      "id": "15",
+      "type": "Redler",
+      "description": null,
+      "pos_x": 1312,
+      "pos_y": -352,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "RD15_IN1",
+          "port_order": 0
+        },
+        {
+          "direction": "in",
+          "name": "RD15_IN2",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "RD15_OUT1",
+          "port_order": 2
+        },
+        {
+          "direction": "out",
+          "name": "RD15_OUT2",
+          "port_order": 3
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "RD15_IN1",
+          "out_port": "RD15_OUT1"
+        },
+        {
+          "in_port": "RD15_IN1",
+          "out_port": "RD15_OUT2"
+        },
+        {
+          "in_port": "RD15_IN2",
+          "out_port": "RD15_OUT2"
+        },
+        {
+          "in_port": "RD15_IN2",
+          "out_port": "RD15_OUT1"
+        }
+      ]
+    },
+    {
+      "name": "RD39",
+      "id": "39",
+      "type": "Redler",
+      "description": null,
+      "pos_x": 1040,
+      "pos_y": -352,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "RD39_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "RD39_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "RD39_IN",
+          "out_port": "RD39_OUT"
+        }
+      ]
+    },
+    {
+      "name": "SLA2",
+      "id": "256",
+      "type": "Silos",
+      "description": null,
+      "pos_x": 1040,
+      "pos_y": -544,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "SLA2_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "SLA2_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": []
+    },
+    {
+      "name": "SLA1",
+      "id": "255",
+      "type": "Silos",
+      "description": null,
+      "pos_x": 1312,
+      "pos_y": -544,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "SLA1_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "SLA1_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": []
+    },
+    {
+      "name": "GT7.2",
+      "id": "132",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 1312,
+      "pos_y": -848,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT7.2_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT7.2_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT7.2_IN",
+          "out_port": "GT7.2_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT9.1",
+      "id": "133",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 1312,
+      "pos_y": -640,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT9.1_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT9.1_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT9.1_IN",
+          "out_port": "GT9.1_OUT"
+        }
+      ]
+    },
+    {
+      "name": "RD9",
+      "id": "9",
+      "type": "Redler",
+      "description": null,
+      "pos_x": 1312,
+      "pos_y": -752,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "RD9_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "RD9_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "RD9_OUT2",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "RD9_IN",
+          "out_port": "RD9_OUT1"
+        },
+        {
+          "in_port": "RD9_IN",
+          "out_port": "RD9_OUT2"
+        }
+      ]
+    },
+    {
+      "name": "GT9.2",
+      "id": "131",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 1040,
+      "pos_y": -640,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT9.2_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT9.2_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT9.2_IN",
+          "out_port": "GT9.2_OUT"
+        }
+      ]
+    },
+    {
+      "name": "RD7",
+      "id": "7",
+      "type": "Redler",
+      "description": null,
+      "pos_x": 1520,
+      "pos_y": -1024,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "RD7_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "RD7_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "RD7_OUT2",
+          "port_order": 2
+        },
+        {
+          "direction": "out",
+          "name": "RD7_OUT3",
+          "port_order": 3
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "RD7_IN",
+          "out_port": "RD7_OUT1"
+        },
+        {
+          "in_port": "RD7_IN",
+          "out_port": "RD7_OUT2"
+        },
+        {
+          "in_port": "RD7_IN",
+          "out_port": "RD7_OUT3"
+        }
+      ]
+    },
+    {
+      "name": "GT7.3",
+      "id": "135",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 1584,
+      "pos_y": -800,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT7.3_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT7.3_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT7.3_IN",
+          "out_port": "GT7.3_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT7.1",
+      "id": "137",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 2032,
+      "pos_y": -816,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT7.1_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT7.1_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT7.1_IN",
+          "out_port": "GT7.1_OUT"
+        }
+      ]
+    },
+    {
+      "name": "DR4",
+      "id": "304",
+      "type": "Sushka",
+      "description": null,
+      "pos_x": 1584,
+      "pos_y": -704,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "DR4_IN1",
+          "port_order": 0
+        },
+        {
+          "direction": "in",
+          "name": "DR4_IN2",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "DR4_OUT",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "DR4_IN1",
+          "out_port": "DR4_OUT"
+        },
+        {
+          "in_port": "DR4_IN2",
+          "out_port": "DR4_OUT"
+        }
+      ]
+    },
+    {
+      "name": "DR1",
+      "id": "301",
+      "type": "Sushka",
+      "description": null,
+      "pos_x": 2032,
+      "pos_y": -720,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "DR1_IN1",
+          "port_order": 0
+        },
+        {
+          "direction": "in",
+          "name": "DR1_IN2",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "DR1_OUT",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "DR1_IN1",
+          "out_port": "DR1_OUT"
+        },
+        {
+          "in_port": "DR1_IN2",
+          "out_port": "DR1_OUT"
+        }
+      ]
+    },
+    {
+      "name": "VL30",
+      "id": "230",
+      "type": "Valve3P",
+      "description": null,
+      "pos_x": 1872,
+      "pos_y": -992,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "VL30_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "VL30_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "VL30_OUT2",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "VL30_IN",
+          "out_port": "VL30_OUT1"
+        },
+        {
+          "in_port": "VL30_IN",
+          "out_port": "VL30_OUT2"
+        }
+      ]
+    },
+    {
+      "name": "NR12",
+      "id": "62",
+      "type": "Noria",
+      "description": null,
+      "pos_x": 1840,
+      "pos_y": -1168,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "NR12_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "NR12_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "NR12_IN",
+          "out_port": "NR12_OUT"
+        }
+      ]
+    },
+    {
+      "name": "RD11",
+      "id": "11",
+      "type": "Redler",
+      "description": null,
+      "pos_x": 1840,
+      "pos_y": -560,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "RD11_IN1",
+          "port_order": 0
+        },
+        {
+          "direction": "in",
+          "name": "RD11_IN2",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "RD11_OUT1",
+          "port_order": 2
+        },
+        {
+          "direction": "out",
+          "name": "RD11_OUT2",
+          "port_order": 3
+        },
+        {
+          "direction": "out",
+          "name": "RD11_OUT3",
+          "port_order": 4
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "RD11_IN1",
+          "out_port": "RD11_OUT1"
+        },
+        {
+          "in_port": "RD11_IN2",
+          "out_port": "RD11_OUT1"
+        },
+        {
+          "in_port": "RD11_IN1",
+          "out_port": "RD11_OUT2"
+        },
+        {
+          "in_port": "RD11_IN1",
+          "out_port": "RD11_OUT3"
+        },
+        {
+          "in_port": "RD11_IN2",
+          "out_port": "RD11_OUT2"
+        },
+        {
+          "in_port": "RD11_IN2",
+          "out_port": "RD11_OUT3"
+        }
+      ]
+    },
+    {
+      "name": "GT11.3",
+      "id": "134",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 1680,
+      "pos_y": -352,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT11.3_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT11.3_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT11.3_IN",
+          "out_port": "GT11.3_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT11.2",
+      "id": "138",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 2096,
+      "pos_y": -480,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT11.2_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT11.2_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT11.2_IN",
+          "out_port": "GT11.2_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT11.1",
+      "id": "136",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 1952,
+      "pos_y": -368,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT11.1_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT11.1_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT11.1_IN",
+          "out_port": "GT11.1_OUT"
+        }
+      ]
+    },
+    {
+      "name": "VL8",
+      "id": "208",
+      "type": "Valve3P",
+      "description": null,
+      "pos_x": 1760,
+      "pos_y": -64,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "VL8_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "VL8_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "VL8_OUT2",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "VL8_IN",
+          "out_port": "VL8_OUT1"
+        },
+        {
+          "in_port": "VL8_IN",
+          "out_port": "VL8_OUT2"
+        }
+      ]
+    },
+    {
+      "name": "VL7",
+      "id": "207",
+      "type": "Valve3P",
+      "description": null,
+      "pos_x": 2000,
+      "pos_y": -224,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "VL7_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "VL7_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "VL7_OUT2",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "VL7_IN",
+          "out_port": "VL7_OUT1"
+        },
+        {
+          "in_port": "VL7_IN",
+          "out_port": "VL7_OUT2"
+        }
+      ]
+    },
+    {
+      "name": "NR3",
+      "id": "53",
+      "type": "Noria",
+      "description": null,
+      "pos_x": 1392,
+      "pos_y": 0,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "NR3_IN1",
+          "port_order": 0
+        },
+        {
+          "direction": "in",
+          "name": "NR3_IN2",
+          "port_order": 1
+        },
+        {
+          "direction": "in",
+          "name": "NR3_IN3",
+          "port_order": 2
+        },
+        {
+          "direction": "out",
+          "name": "NR3_OUT",
+          "port_order": 3
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "NR3_IN1",
+          "out_port": "NR3_OUT"
+        },
+        {
+          "in_port": "NR3_IN2",
+          "out_port": "NR3_OUT"
+        },
+        {
+          "in_port": "NR3_IN3",
+          "out_port": "NR3_OUT"
+        }
+      ]
+    },
+    {
+      "name": "VL6",
+      "id": "206",
+      "type": "Valve3P",
+      "description": null,
+      "pos_x": 880,
+      "pos_y": 448,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "VL6_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "VL6_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "VL6_OUT2",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "VL6_IN",
+          "out_port": "VL6_OUT1"
+        },
+        {
+          "in_port": "VL6_IN",
+          "out_port": "VL6_OUT2"
+        }
+      ]
+    },
+    {
+      "name": "VL5",
+      "id": "205",
+      "type": "Valve3P",
+      "description": null,
+      "pos_x": 880,
+      "pos_y": 320,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "VL5_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "VL5_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "VL5_OUT2",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "VL5_IN",
+          "out_port": "VL5_OUT2"
+        },
+        {
+          "in_port": "VL5_IN",
+          "out_port": "VL5_OUT1"
+        }
+      ]
+    },
+    {
+      "name": "GT36.2",
+      "id": "130",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 1344,
+      "pos_y": 256,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT36.2_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT36.2_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT36.2_IN",
+          "out_port": "GT36.2_OUT"
+        }
+      ]
+    },
+    {
+      "name": "RD36",
+      "id": "36",
+      "type": "Redler",
+      "description": null,
+      "pos_x": 2816,
+      "pos_y": 208,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "RD36_IN1",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "RD36_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "RD36_OUT2",
+          "port_order": 2
+        },
+        {
+          "direction": "out",
+          "name": "RD36_OUT3",
+          "port_order": 3
+        },
+        {
+          "direction": "in",
+          "name": "RD36_IN2",
+          "port_order": 4
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "RD36_IN1",
+          "out_port": "RD36_OUT1"
+        },
+        {
+          "in_port": "RD36_IN1",
+          "out_port": "RD36_OUT2"
+        },
+        {
+          "in_port": "RD36_IN1",
+          "out_port": "RD36_OUT3"
+        },
+        {
+          "in_port": "RD36_IN2",
+          "out_port": "RD36_OUT1"
+        },
+        {
+          "in_port": "RD36_IN2",
+          "out_port": "RD36_OUT2"
+        },
+        {
+          "in_port": "RD36_IN2",
+          "out_port": "RD36_OUT3"
+        }
+      ]
+    },
+    {
+      "name": "GT36.1",
+      "id": "140",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 1904,
+      "pos_y": 336,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT36.1_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT36.1_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT36.1_IN",
+          "out_port": "GT36.1_OUT"
+        }
+      ]
+    },
+    {
+      "name": "RD19",
+      "id": "19",
+      "type": "Redler",
+      "description": null,
+      "pos_x": 2816,
+      "pos_y": 48,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "RD19_IN1",
+          "port_order": 0
+        },
+        {
+          "direction": "in",
+          "name": "RD19_IN2",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "RD19_OUT1",
+          "port_order": 2
+        },
+        {
+          "direction": "out",
+          "name": "RD19_OUT2",
+          "port_order": 3
+        },
+        {
+          "direction": "in",
+          "name": "RD19_IN3",
+          "port_order": 4
+        },
+        {
+          "direction": "in",
+          "name": "RD19_IN4",
+          "port_order": 5
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "RD19_IN1",
+          "out_port": "RD19_OUT1"
+        },
+        {
+          "in_port": "RD19_IN1",
+          "out_port": "RD19_OUT2"
+        },
+        {
+          "in_port": "RD19_IN2",
+          "out_port": "RD19_OUT2"
+        },
+        {
+          "in_port": "RD19_IN2",
+          "out_port": "RD19_OUT1"
+        },
+        {
+          "in_port": "RD19_IN3",
+          "out_port": "RD19_OUT1"
+        },
+        {
+          "in_port": "RD19_IN3",
+          "out_port": "RD19_OUT2"
+        },
+        {
+          "in_port": "RD19_IN4",
+          "out_port": "RD19_OUT1"
+        },
+        {
+          "in_port": "RD19_IN4",
+          "out_port": "RD19_OUT2"
+        }
+      ]
+    },
+    {
+      "name": "RD18",
+      "id": "18",
+      "type": "Redler",
+      "description": null,
+      "pos_x": 2816,
+      "pos_y": -64,
+      "ports": [
+        {
+          "direction": "out",
+          "name": "RD18_OUT1",
+          "port_order": 2
+        },
+        {
+          "direction": "out",
+          "name": "RD18_OUT2",
+          "port_order": 3
+        },
+        {
+          "direction": "in",
+          "name": "RD18_IN1",
+          "port_order": 3
+        },
+        {
+          "direction": "in",
+          "name": "RD18_IN2",
+          "port_order": 3
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "RD18_IN1",
+          "out_port": "RD18_OUT1"
+        },
+        {
+          "in_port": "RD18_IN1",
+          "out_port": "RD18_OUT2"
+        },
+        {
+          "in_port": "RD18_IN2",
+          "out_port": "RD18_OUT2"
+        },
+        {
+          "in_port": "RD18_IN2",
+          "out_port": "RD18_OUT1"
+        }
+      ]
+    },
+    {
+      "name": "NR6",
+      "id": "56",
+      "type": "Noria",
+      "description": null,
+      "pos_x": 2736,
+      "pos_y": 400,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "NR6_IN1",
+          "port_order": 0
+        },
+        {
+          "direction": "in",
+          "name": "NR6_IN2",
+          "port_order": 1
+        },
+        {
+          "direction": "in",
+          "name": "NR6_IN3",
+          "port_order": 2
+        },
+        {
+          "direction": "out",
+          "name": "NR6_OUT",
+          "port_order": 3
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "NR6_IN1",
+          "out_port": "NR6_OUT"
+        },
+        {
+          "in_port": "NR6_IN2",
+          "out_port": "NR6_OUT"
+        },
+        {
+          "in_port": "NR6_IN3",
+          "out_port": "NR6_OUT"
+        }
+      ]
+    },
+    {
+      "name": "Vl11",
+      "id": "211",
+      "type": "Valve3P",
+      "description": null,
+      "pos_x": 2272,
+      "pos_y": 160,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "VL11_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "VL11_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "VL11_OUT2",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "VL11_IN",
+          "out_port": "VL11_OUT1"
+        },
+        {
+          "in_port": "VL11_IN",
+          "out_port": "VL11_OUT2"
+        }
+      ]
+    },
+    {
+      "name": "VL10",
+      "id": "210",
+      "type": "Valve3P",
+      "description": null,
+      "pos_x": 2816,
+      "pos_y": -192,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "VL10_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "VL10_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "VL10_OUT2",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "VL10_IN",
+          "out_port": "VL10_OUT1"
+        },
+        {
+          "in_port": "VL10_IN",
+          "out_port": "VL10_OUT2"
+        }
+      ]
+    },
+    {
+      "name": "VL12",
+      "id": "212",
+      "type": "Valve3P",
+      "description": null,
+      "pos_x": 2496,
+      "pos_y": -208,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "VL12_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "VL12_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "VL12_OUT2",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "VL12_IN",
+          "out_port": "VL12_OUT1"
+        },
+        {
+          "in_port": "VL12_IN",
+          "out_port": "VL12_OUT2"
+        }
+      ]
+    },
+    {
+      "name": "GT30.1",
+      "id": "142",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 2816,
+      "pos_y": -320,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT30.1_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT30.1_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT30.1_IN",
+          "out_port": "GT30.1_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT30.2",
+      "id": "141",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 2496,
+      "pos_y": -304,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT30.2_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT30.2_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT30.2_IN",
+          "out_port": "GT30.2_OUT"
+        }
+      ]
+    },
+    {
+      "name": "RD30",
+      "id": "30",
+      "type": "Redler",
+      "description": null,
+      "pos_x": 2528,
+      "pos_y": -480,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "RD30_IN1",
+          "port_order": 0
+        },
+        {
+          "direction": "in",
+          "name": "RD30_IN2",
+          "port_order": 1
+        },
+        {
+          "direction": "in",
+          "name": "RD30_IN3",
+          "port_order": 2
+        },
+        {
+          "direction": "in",
+          "name": "RD30_IN4",
+          "port_order": 3
+        },
+        {
+          "direction": "out",
+          "name": "RD30_OUT1",
+          "port_order": 4
+        },
+        {
+          "direction": "out",
+          "name": "RD30_OUT2",
+          "port_order": 5
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "RD30_IN1",
+          "out_port": "RD30_OUT1"
+        },
+        {
+          "in_port": "RD30_IN1",
+          "out_port": "RD30_OUT2"
+        },
+        {
+          "in_port": "RD30_IN2",
+          "out_port": "RD30_OUT1"
+        },
+        {
+          "in_port": "RD30_IN2",
+          "out_port": "RD30_OUT2"
+        },
+        {
+          "in_port": "RD30_IN3",
+          "out_port": "RD30_OUT1"
+        },
+        {
+          "in_port": "RD30_IN3",
+          "out_port": "RD30_OUT2"
+        },
+        {
+          "in_port": "RD30_IN4",
+          "out_port": "RD30_OUT2"
+        },
+        {
+          "in_port": "RD30_IN4",
+          "out_port": "RD30_OUT1"
+        }
+      ]
+    },
+    {
+      "name": "SPA5",
+      "id": "261",
+      "type": "Silos",
+      "description": null,
+      "pos_x": 3440,
+      "pos_y": -720,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "SPA5_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "SPA5_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": []
+    },
+    {
+      "name": "SPA4",
+      "id": "260",
+      "type": "Silos",
+      "description": null,
+      "pos_x": 3184,
+      "pos_y": -720,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "SPA4_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "SPA4_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": []
+    },
+    {
+      "name": "SPA3",
+      "id": "259",
+      "type": "Silos",
+      "description": null,
+      "pos_x": 2928,
+      "pos_y": -720,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "SPA3_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "SPA3_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": []
+    },
+    {
+      "name": "SPA2",
+      "id": "258",
+      "type": "Silos",
+      "description": null,
+      "pos_x": 2672,
+      "pos_y": -720,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "SPA2_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "SPA2_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": []
+    },
+    {
+      "name": "SPA1",
+      "id": "257",
+      "type": "Silos",
+      "description": null,
+      "pos_x": 2400,
+      "pos_y": -720,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "SPA1_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "SPA1_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": []
+    },
+    {
+      "name": "GT21.4",
+      "id": "146",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 3072,
+      "pos_y": -1072,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT21.4_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT24.1_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT21.4_IN",
+          "out_port": "GT24.1_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT24.2",
+      "id": "147",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 3440,
+      "pos_y": -832,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT24.2_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT24.2_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT24.2_IN",
+          "out_port": "GT24.2_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT24.1",
+      "id": "145",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 3184,
+      "pos_y": -832,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT24.1_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT24.1_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT24.1_IN",
+          "out_port": "GT24.1_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT21.3",
+      "id": "144",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 2928,
+      "pos_y": -832,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT21.3_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT21.3_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": []
+    },
+    {
+      "name": "GT21.2",
+      "id": "143",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 2672,
+      "pos_y": -832,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT21.2_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT21.2_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT21.2_IN",
+          "out_port": "GT21.2_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT21.1",
+      "id": "139",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 2400,
+      "pos_y": -832,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT21.1_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT21.1_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT21.1_IN",
+          "out_port": "GT21.1_OUT"
+        }
+      ]
+    },
+    {
+      "name": "RD27",
+      "id": "27",
+      "type": "Redler",
+      "description": null,
+      "pos_x": 3264,
+      "pos_y": -480,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "RD27_IN1",
+          "port_order": 0
+        },
+        {
+          "direction": "in",
+          "name": "RD27_IN2",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "RD27_OUT",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "RD27_IN1",
+          "out_port": "RD27_OUT"
+        },
+        {
+          "in_port": "RD27_IN2",
+          "out_port": "RD27_OUT"
+        }
+      ]
+    },
+    {
+      "name": "RD21",
+      "id": "21",
+      "type": "Redler",
+      "description": null,
+      "pos_x": 2704,
+      "pos_y": -1040,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "RD21_IN1",
+          "port_order": 0
+        },
+        {
+          "direction": "in",
+          "name": "RD21_IN2",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "RD21_OUT1",
+          "port_order": 2
+        },
+        {
+          "direction": "out",
+          "name": "RD21_OUT2",
+          "port_order": 3
+        },
+        {
+          "direction": "out",
+          "name": "RD21_OUT3",
+          "port_order": 4
+        },
+        {
+          "direction": "out",
+          "name": "RD21_OUT4",
+          "port_order": 5
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "RD21_IN1",
+          "out_port": "RD21_OUT1"
+        },
+        {
+          "in_port": "RD21_IN1",
+          "out_port": "RD21_OUT2"
+        },
+        {
+          "in_port": "RD21_IN1",
+          "out_port": "RD21_OUT3"
+        },
+        {
+          "in_port": "RD21_IN1",
+          "out_port": "RD21_OUT4"
+        },
+        {
+          "in_port": "RD21_IN2",
+          "out_port": "RD21_OUT1"
+        },
+        {
+          "in_port": "RD21_IN2",
+          "out_port": "RD21_OUT2"
+        },
+        {
+          "in_port": "RD21_IN2",
+          "out_port": "RD21_OUT3"
+        },
+        {
+          "in_port": "RD21_IN2",
+          "out_port": "RD21_OUT4"
+        }
+      ]
+    },
+    {
+      "name": "RD24",
+      "id": "24",
+      "type": "Redler",
+      "description": null,
+      "pos_x": 3088,
+      "pos_y": -944,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "RD24_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "RD24_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "RD24_OUT2",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "RD24_IN",
+          "out_port": "RD24_OUT1"
+        },
+        {
+          "in_port": "RD24_IN",
+          "out_port": "RD24_OUT2"
+        }
+      ]
+    },
+    {
+      "name": "RD33",
+      "id": "33",
+      "type": "Redler",
+      "description": null,
+      "pos_x": 3904,
+      "pos_y": -1056,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "RD33_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "RD33_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "RD33_IN",
+          "out_port": "RD33_OUT"
+        }
+      ]
+    },
+    {
+      "name": "SLA4",
+      "id": "262",
+      "type": "Silos",
+      "description": null,
+      "pos_x": 3808,
+      "pos_y": -720,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "SLA4_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "SLA4_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": []
+    },
+    {
+      "name": "SLA3",
+      "id": "263",
+      "type": "Silos",
+      "description": null,
+      "pos_x": 4080,
+      "pos_y": -720,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "SLA3_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "SLA3_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": []
+    },
+    {
+      "name": "GT10.1",
+      "id": "154",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 4080,
+      "pos_y": -816,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT10.1_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT10.1_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT10.1_IN",
+          "out_port": "GT10.1_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT8.3",
+      "id": "155",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 4128,
+      "pos_y": -992,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT8.3_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT8.3_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT8.3_IN",
+          "out_port": "GT8.3_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT10.2",
+      "id": "153",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 3808,
+      "pos_y": -816,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT10.2_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT10.2_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT10.2_IN",
+          "out_port": "GT10.2_OUT"
+        }
+      ]
+    },
+    {
+      "name": "RD16",
+      "id": "16",
+      "type": "Redler",
+      "description": null,
+      "pos_x": 4032,
+      "pos_y": -432,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "RD16_IN1",
+          "port_order": 0
+        },
+        {
+          "direction": "in",
+          "name": "RD16_IN2",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "RD16_OUT",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "RD16_IN1",
+          "out_port": "RD16_OUT"
+        },
+        {
+          "in_port": "RD16_IN2",
+          "out_port": "RD16_OUT"
+        }
+      ]
+    },
+    {
+      "name": "RD10",
+      "id": "10",
+      "type": "Redler",
+      "description": null,
+      "pos_x": 3680,
+      "pos_y": -944,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "RD10_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "RD10_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "RD10_OUT2",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "RD10_IN",
+          "out_port": "RD10_OUT1"
+        },
+        {
+          "in_port": "RD10_IN",
+          "out_port": "RD10_OUT2"
+        }
+      ]
+    },
+    {
+      "name": "RD8",
+      "id": "8",
+      "type": "Redler",
+      "description": null,
+      "pos_x": 4608,
+      "pos_y": -1008,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "RD8_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "RD8_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "RD8_OUT2",
+          "port_order": 2
+        },
+        {
+          "direction": "out",
+          "name": "RD8_OUT3",
+          "port_order": 3
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "RD8_IN",
+          "out_port": "RD8_OUT1"
+        },
+        {
+          "in_port": "RD8_IN",
+          "out_port": "RD8_OUT2"
+        },
+        {
+          "in_port": "RD8_IN",
+          "out_port": "RD8_OUT3"
+        }
+      ]
+    },
+    {
+      "name": "VL15",
+      "id": "215",
+      "type": "Valve3P",
+      "description": null,
+      "pos_x": 4608,
+      "pos_y": -1136,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "VL15_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "VL15_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "VL15_OUT2",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "VL15_IN",
+          "out_port": "VL15_OUT1"
+        },
+        {
+          "in_port": "VL15_IN",
+          "out_port": "VL15_OUT2"
+        }
+      ]
+    },
+    {
+      "name": "DR2",
+      "id": "302",
+      "type": "Sushka",
+      "description": null,
+      "pos_x": 4800,
+      "pos_y": -784,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "DR2_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "DR2_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "DR2_IN",
+          "out_port": "DR2_OUT"
+        }
+      ]
+    },
+    {
+      "name": "DR3",
+      "id": "303",
+      "type": "Sushka",
+      "description": null,
+      "pos_x": 4480,
+      "pos_y": -784,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "DR3_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "DR3_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "DR3_IN",
+          "out_port": "DR3_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT8.1",
+      "id": "158",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 4800,
+      "pos_y": -880,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT8.1_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT8.1_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT8.1_IN",
+          "out_port": "GT8.1_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT8.2",
+      "id": "156",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 4480,
+      "pos_y": -880,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT8.2_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT8.2_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT8.2_IN",
+          "out_port": "GT8.2_OUT"
+        }
+      ]
+    },
+    {
+      "name": "NR5",
+      "id": "55",
+      "type": "Noria",
+      "description": null,
+      "pos_x": 4512,
+      "pos_y": -416,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "NR5_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "NR5_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "NR5_IN",
+          "out_port": "NR5_OUT"
+        }
+      ]
+    },
+    {
+      "name": "RD14",
+      "id": "14",
+      "type": "Redler",
+      "description": null,
+      "pos_x": 5216,
+      "pos_y": -736,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "RD14_IN1",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "RD14_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "in",
+          "name": "RD14_IN2",
+          "port_order": 2
+        },
+        {
+          "direction": "out",
+          "name": "RD14_OUT2",
+          "port_order": 3
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "RD14_IN1",
+          "out_port": "RD14_OUT1"
+        },
+        {
+          "in_port": "RD14_IN2",
+          "out_port": "RD14_OUT1"
+        },
+        {
+          "in_port": "RD14_IN2",
+          "out_port": "RD14_OUT2"
+        },
+        {
+          "in_port": "RD14_IN1",
+          "out_port": "RD14_OUT2"
+        }
+      ]
+    },
+    {
+      "name": "RD13",
+      "id": "13",
+      "type": "Redler",
+      "description": null,
+      "pos_x": 4800,
+      "pos_y": -672,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "RD13_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "RD13_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "RD13_IN",
+          "out_port": "RD13_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT12.2",
+      "id": "159",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 4800,
+      "pos_y": -560,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT12.2_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT12.2_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT12.2_IN",
+          "out_port": "GT12.2_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT12.1",
+      "id": "157",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 4480,
+      "pos_y": -560,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT12.1_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT12.1_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT12.1_IN",
+          "out_port": "GT12.1_OUT"
+        }
+      ]
+    },
+    {
+      "name": "RD12",
+      "id": "12",
+      "type": "Redler",
+      "description": null,
+      "pos_x": 4480,
+      "pos_y": -688,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "RD12_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "RD12_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "RD12_OUT2",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "RD12_IN",
+          "out_port": "RD12_OUT1"
+        },
+        {
+          "in_port": "RD12_IN",
+          "out_port": "RD12_OUT2"
+        }
+      ]
+    },
+    {
+      "name": "RD17",
+      "id": "17",
+      "type": "Redler",
+      "description": null,
+      "pos_x": 4384,
+      "pos_y": -272,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "RD17_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "RD17_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "RD17_IN",
+          "out_port": "RD17_OUT"
+        }
+      ]
+    },
+    {
+      "name": "VL16",
+      "id": "216",
+      "type": "Valve3P",
+      "description": null,
+      "pos_x": 4368,
+      "pos_y": -176,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "VL16_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "VL16_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "VL16_OUT2",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "VL16_IN",
+          "out_port": "VL16_OUT1"
+        },
+        {
+          "in_port": "VL16_IN",
+          "out_port": "VL16_OUT2"
+        }
+      ]
+    },
+    {
+      "name": "NR4",
+      "id": "54",
+      "type": "Noria",
+      "description": null,
+      "pos_x": 4480,
+      "pos_y": 224,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "NR4_IN1",
+          "port_order": 0
+        },
+        {
+          "direction": "in",
+          "name": "NR4_IN2",
+          "port_order": 1
+        },
+        {
+          "direction": "in",
+          "name": "NR4_IN3",
+          "port_order": 2
+        },
+        {
+          "direction": "in",
+          "name": "NR4_IN4",
+          "port_order": 3
+        },
+        {
+          "direction": "out",
+          "name": "NR4_OUT",
+          "port_order": 4
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "NR4_IN1",
+          "out_port": "NR4_OUT"
+        },
+        {
+          "in_port": "NR4_IN2",
+          "out_port": "NR4_OUT"
+        },
+        {
+          "in_port": "NR4_IN3",
+          "out_port": "NR4_OUT"
+        },
+        {
+          "in_port": "NR4_IN4",
+          "out_port": "NR4_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT14.2",
+      "id": "161",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 5472,
+      "pos_y": -608,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT14.2_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT14.2_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT14.2_IN",
+          "out_port": "GT14.2_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT14.1",
+      "id": "162",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 5216,
+      "pos_y": -608,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT14.1_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT14.1_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT14.1_IN",
+          "out_port": "GT14.1_OUT"
+        }
+      ]
+    },
+    {
+      "name": "VL18",
+      "id": "218",
+      "type": "Valve3P",
+      "description": null,
+      "pos_x": 5472,
+      "pos_y": -496,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "VL18_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "VL18_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "VL18_OUT2",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "VL18_IN",
+          "out_port": "VL18_OUT1"
+        },
+        {
+          "in_port": "VL18_IN",
+          "out_port": "VL18_OUT2"
+        }
+      ]
+    },
+    {
+      "name": "VL17",
+      "id": "217",
+      "type": "Valve3P",
+      "description": null,
+      "pos_x": 5216,
+      "pos_y": -496,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "VL17_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "VL17_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "VL17_OUT2",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "VL17_IN",
+          "out_port": "VL17_OUT1"
+        },
+        {
+          "in_port": "VL17_IN",
+          "out_port": "VL17_OUT2"
+        }
+      ]
+    },
+    {
+      "name": "GT18.2",
+      "id": "149",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 3248,
+      "pos_y": -96,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT18.2_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT18.2_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT18.2_IN",
+          "out_port": "GT18.2_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT18.1",
+      "id": "148",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 3248,
+      "pos_y": -208,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT18.1_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT18.1_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT18.1_IN",
+          "out_port": "GT18.1_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT19.1",
+      "id": "150",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 3248,
+      "pos_y": 16,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT19.1_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT19.1_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT19.1_IN",
+          "out_port": "GT19.1_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT35.2",
+      "id": "152",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 3248,
+      "pos_y": 240,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT35.2_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT35.2_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT35.2_IN",
+          "out_port": "GT35.2_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT35.1",
+      "id": "160",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 5056,
+      "pos_y": -288,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT35.1_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT35.1_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT35.1_IN",
+          "out_port": "GT35.1_OUT"
+        }
+      ]
+    },
+    {
+      "name": "VL29",
+      "id": "229",
+      "type": "Valve3P",
+      "description": null,
+      "pos_x": 5056,
+      "pos_y": -192,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "VL29_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "VL29_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "VL29_OUT2",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "VL29_IN",
+          "out_port": "VL29_OUT1"
+        },
+        {
+          "in_port": "VL29_IN",
+          "out_port": "VL29_OUT2"
+        }
+      ]
+    },
+    {
+      "name": "VL14",
+      "id": "214",
+      "type": "Valve3P",
+      "description": null,
+      "pos_x": 3744,
+      "pos_y": 0,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "VL14_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "VL14_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "VL14_OUT2",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "VL14_IN",
+          "out_port": "VL14_OUT1"
+        },
+        {
+          "in_port": "VL14_IN",
+          "out_port": "VL14_OUT2"
+        }
+      ]
+    },
+    {
+      "name": "VL13",
+      "id": "213",
+      "type": "Valve3P",
+      "description": null,
+      "pos_x": 3680,
+      "pos_y": -208,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "VL13_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "VL13_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "VL13_OUT2",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "VL13_IN",
+          "out_port": "VL13_OUT1"
+        },
+        {
+          "in_port": "VL13_IN",
+          "out_port": "VL13_OUT2"
+        }
+      ]
+    },
+    {
+      "name": "GT19.2",
+      "id": "151",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 3248,
+      "pos_y": 112,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT19.2_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT19.2_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT19.2_IN",
+          "out_port": "GT19.2_OUT"
+        }
+      ]
+    },
+    {
+      "name": "RD20",
+      "id": "20",
+      "type": "Redler",
+      "description": null,
+      "pos_x": 6592,
+      "pos_y": 160,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "RD20_IN1",
+          "port_order": 0
+        },
+        {
+          "direction": "in",
+          "name": "RD20_IN2",
+          "port_order": 1
+        },
+        {
+          "direction": "in",
+          "name": "RD20_IN3",
+          "port_order": 2
+        },
+        {
+          "direction": "out",
+          "name": "RD20_OUT1",
+          "port_order": 3
+        },
+        {
+          "direction": "out",
+          "name": "RD20_OUT2",
+          "port_order": 4
+        },
+        {
+          "direction": "in",
+          "name": "RD20_IN4",
+          "port_order": 5
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "RD20_IN1",
+          "out_port": "RD20_OUT1"
+        },
+        {
+          "in_port": "RD20_IN1",
+          "out_port": "RD20_OUT2"
+        },
+        {
+          "in_port": "RD20_IN2",
+          "out_port": "RD20_OUT1"
+        },
+        {
+          "in_port": "RD20_IN2",
+          "out_port": "RD20_OUT2"
+        },
+        {
+          "in_port": "RD20_IN3",
+          "out_port": "RD20_OUT1"
+        },
+        {
+          "in_port": "RD20_IN3",
+          "out_port": "RD20_OUT2"
+        },
+        {
+          "in_port": "RD20_IN4",
+          "out_port": "RD20_OUT1"
+        },
+        {
+          "in_port": "RD20_IN4",
+          "out_port": "RD20_OUT2"
+        }
+      ]
+    },
+    {
+      "name": "NR7",
+      "id": "57",
+      "type": "Noria",
+      "description": null,
+      "pos_x": 5040,
+      "pos_y": 208,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "NR7_IN1",
+          "port_order": 0
+        },
+        {
+          "direction": "in",
+          "name": "NR7_IN2",
+          "port_order": 1
+        },
+        {
+          "direction": "in",
+          "name": "NR7_IN3",
+          "port_order": 2
+        },
+        {
+          "direction": "in",
+          "name": "NR7_IN4",
+          "port_order": 3
+        },
+        {
+          "direction": "in",
+          "name": "NR7_IN5",
+          "port_order": 4
+        },
+        {
+          "direction": "out",
+          "name": "NR7_OUT",
+          "port_order": 5
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "NR7_IN1",
+          "out_port": "NR7_OUT"
+        },
+        {
+          "in_port": "NR7_IN2",
+          "out_port": "NR7_OUT"
+        },
+        {
+          "in_port": "NR7_IN3",
+          "out_port": "NR7_OUT"
+        },
+        {
+          "in_port": "NR7_IN4",
+          "out_port": "NR7_OUT"
+        },
+        {
+          "in_port": "NR7_IN5",
+          "out_port": "NR7_OUT"
+        }
+      ]
+    },
+    {
+      "name": "RD35",
+      "id": "35",
+      "type": "Redler",
+      "description": null,
+      "pos_x": 5408,
+      "pos_y": 0,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "RD35_IN1",
+          "port_order": 0
+        },
+        {
+          "direction": "in",
+          "name": "RD35_IN2",
+          "port_order": 1
+        },
+        {
+          "direction": "in",
+          "name": "RD35_IN3",
+          "port_order": 2
+        },
+        {
+          "direction": "out",
+          "name": "RD35_OUT2",
+          "port_order": 3
+        },
+        {
+          "direction": "out",
+          "name": "RD35_OUT1",
+          "port_order": 4
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "RD35_IN1",
+          "out_port": "RD35_OUT2"
+        },
+        {
+          "in_port": "RD35_IN2",
+          "out_port": "RD35_OUT2"
+        },
+        {
+          "in_port": "RD35_IN3",
+          "out_port": "RD35_OUT2"
+        },
+        {
+          "in_port": "RD35_IN1",
+          "out_port": "RD35_OUT1"
+        },
+        {
+          "in_port": "RD35_IN2",
+          "out_port": "RD35_OUT1"
+        },
+        {
+          "in_port": "RD35_IN3",
+          "out_port": "RD35_OUT1"
+        }
+      ]
+    },
+    {
+      "name": "VL19",
+      "id": "219",
+      "type": "Valve3P",
+      "description": null,
+      "pos_x": 5216,
+      "pos_y": -1120,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "VL19_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "VL19_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "VL19_OUT2",
+          "port_order": 2
+        },
+        {
+          "direction": "out",
+          "name": "VL19_OUT3",
+          "port_order": 3
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "VL19_IN",
+          "out_port": "VL19_OUT1"
+        },
+        {
+          "in_port": "VL19_IN",
+          "out_port": "VL19_OUT2"
+        },
+        {
+          "in_port": "VL19_IN",
+          "out_port": "VL19_OUT3"
+        }
+      ]
+    },
+    {
+      "name": "RD22",
+      "id": "22",
+      "type": "Redler",
+      "description": null,
+      "pos_x": 5968,
+      "pos_y": -1072,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "RD22_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "RD22_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "RD22_OUT2",
+          "port_order": 2
+        },
+        {
+          "direction": "out",
+          "name": "RD22_OUT3",
+          "port_order": 3
+        },
+        {
+          "direction": "out",
+          "name": "RD22_OUT4",
+          "port_order": 4
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "RD22_IN",
+          "out_port": "RD22_OUT1"
+        },
+        {
+          "in_port": "RD22_IN",
+          "out_port": "RD22_OUT2"
+        },
+        {
+          "in_port": "RD22_IN",
+          "out_port": "RD22_OUT3"
+        },
+        {
+          "in_port": "RD22_IN",
+          "out_port": "RD22_OUT4"
+        }
+      ]
+    },
+    {
+      "name": "RD34",
+      "id": "34",
+      "type": "Redler",
+      "description": null,
+      "pos_x": 5984,
+      "pos_y": -1184,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "RD34_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "RD34_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "RD34_IN",
+          "out_port": "RD34_OUT"
+        }
+      ]
+    },
+    {
+      "name": "RD25",
+      "id": "25",
+      "type": "Redler",
+      "description": null,
+      "pos_x": 6576,
+      "pos_y": -896,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "RD25_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "RD25_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "RD25_OUT2",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "RD25_IN",
+          "out_port": "RD25_OUT1"
+        },
+        {
+          "in_port": "RD25_IN",
+          "out_port": "RD25_OUT2"
+        }
+      ]
+    },
+    {
+      "name": "GT22.1",
+      "id": "165",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 5760,
+      "pos_y": -816,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT22.1_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT22.1_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT22.1_IN",
+          "out_port": "GT22.1_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT22.2",
+      "id": "166",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 6032,
+      "pos_y": -816,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT22.2_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT22.2_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT22.2_IN",
+          "out_port": "GT22.2_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT22.3",
+      "id": "167",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 6288,
+      "pos_y": -816,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT22.3_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT22.3_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT22.3_IN",
+          "out_port": "GT22.3_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT22.4",
+      "id": "168",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 6368,
+      "pos_y": -1008,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT22.4_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT22.4_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT22.4_IN",
+          "out_port": "GT22.4_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT25.1",
+      "id": "169",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 6576,
+      "pos_y": -784,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT25.1_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT25.1_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT25.1_IN",
+          "out_port": "GT25.1_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT25.2",
+      "id": "170",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 6832,
+      "pos_y": -784,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT25.2_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT25.2_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT25.2_IN",
+          "out_port": "GT25.2_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT31.2",
+      "id": "163",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 5616,
+      "pos_y": -224,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT31.2_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT31.2_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT31.2_IN",
+          "out_port": "GT31.2_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT31.1",
+      "id": "164",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 5872,
+      "pos_y": -224,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT31.1_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT31.1_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT31.1_IN",
+          "out_port": "GT31.1_OUT"
+        }
+      ]
+    },
+    {
+      "name": "RD28",
+      "id": "28",
+      "type": "Redler",
+      "description": null,
+      "pos_x": 6624,
+      "pos_y": -480,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "RD28_IN1",
+          "port_order": 0
+        },
+        {
+          "direction": "in",
+          "name": "RD28_IN2",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "RD28_OUT",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "RD28_IN1",
+          "out_port": "RD28_OUT"
+        },
+        {
+          "in_port": "RD28_IN2",
+          "out_port": "RD28_OUT"
+        }
+      ]
+    },
+    {
+      "name": "RD31",
+      "id": "31",
+      "type": "Redler",
+      "description": null,
+      "pos_x": 5856,
+      "pos_y": -432,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "RD31_IN1",
+          "port_order": 0
+        },
+        {
+          "direction": "in",
+          "name": "RD31_IN2",
+          "port_order": 1
+        },
+        {
+          "direction": "in",
+          "name": "RD31_IN3",
+          "port_order": 2
+        },
+        {
+          "direction": "in",
+          "name": "RD31_IN4",
+          "port_order": 3
+        },
+        {
+          "direction": "out",
+          "name": "RD31_OUT1",
+          "port_order": 4
+        },
+        {
+          "direction": "out",
+          "name": "RD31_OUT2",
+          "port_order": 5
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "RD31_IN1",
+          "out_port": "RD31_OUT1"
+        },
+        {
+          "in_port": "RD31_IN1",
+          "out_port": "RD31_OUT2"
+        },
+        {
+          "in_port": "RD31_IN2",
+          "out_port": "RD31_OUT1"
+        },
+        {
+          "in_port": "RD31_IN2",
+          "out_port": "RD31_OUT2"
+        },
+        {
+          "in_port": "RD31_IN3",
+          "out_port": "RD31_OUT1"
+        },
+        {
+          "in_port": "RD31_IN3",
+          "out_port": "RD31_OUT2"
+        },
+        {
+          "in_port": "RD31_IN4",
+          "out_port": "RD31_OUT1"
+        },
+        {
+          "in_port": "RD31_IN4",
+          "out_port": "RD31_OUT2"
+        }
+      ]
+    },
+    {
+      "name": "SPA8",
+      "id": "266",
+      "type": "Silos",
+      "description": null,
+      "pos_x": 6288,
+      "pos_y": -704,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "SPA8_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "SPA8_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": []
+    },
+    {
+      "name": "SPA7",
+      "id": "265",
+      "type": "Silos",
+      "description": null,
+      "pos_x": 6032,
+      "pos_y": -704,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "SPA7_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "SPA7_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": []
+    },
+    {
+      "name": "SPA6",
+      "id": "264",
+      "type": "Silos",
+      "description": null,
+      "pos_x": 5760,
+      "pos_y": -704,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "SPA6_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "SPA6_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": []
+    },
+    {
+      "name": "SPA10",
+      "id": "268",
+      "type": "Silos",
+      "description": null,
+      "pos_x": 6832,
+      "pos_y": -688,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "SPA10_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "SPA10_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": []
+    },
+    {
+      "name": "SPA9",
+      "id": "267",
+      "type": "Silos",
+      "description": null,
+      "pos_x": 6576,
+      "pos_y": -688,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "SPA9_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "SPA9_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": []
+    },
+    {
+      "name": "VL20",
+      "id": "220",
+      "type": "Valve3P",
+      "description": null,
+      "pos_x": 5824,
+      "pos_y": -80,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "VL20_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "VL20_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "VL20_OUT2",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "VL20_IN",
+          "out_port": "VL20_OUT1"
+        },
+        {
+          "in_port": "VL20_IN",
+          "out_port": "VL20_OUT2"
+        }
+      ]
+    },
+    {
+      "name": "RD23",
+      "id": "23",
+      "type": "Redler",
+      "description": null,
+      "pos_x": 7424,
+      "pos_y": -1328,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "RD23_IN1",
+          "port_order": 0
+        },
+        {
+          "direction": "in",
+          "name": "RD23_IN2",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "RD23_OUT1",
+          "port_order": 2
+        },
+        {
+          "direction": "out",
+          "name": "RD23_OUT2",
+          "port_order": 3
+        },
+        {
+          "direction": "out",
+          "name": "RD23_OUT3",
+          "port_order": 4
+        },
+        {
+          "direction": "out",
+          "name": "RD23_OUT4",
+          "port_order": 5
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "RD23_IN1",
+          "out_port": "RD23_OUT1"
+        },
+        {
+          "in_port": "RD23_IN1",
+          "out_port": "RD23_OUT2"
+        },
+        {
+          "in_port": "RD23_IN1",
+          "out_port": "RD23_OUT3"
+        },
+        {
+          "in_port": "RD23_IN1",
+          "out_port": "RD23_OUT4"
+        },
+        {
+          "in_port": "RD23_IN2",
+          "out_port": "RD23_OUT1"
+        },
+        {
+          "in_port": "RD23_IN2",
+          "out_port": "RD23_OUT2"
+        },
+        {
+          "in_port": "RD23_IN2",
+          "out_port": "RD23_OUT3"
+        },
+        {
+          "in_port": "RD23_IN2",
+          "out_port": "RD23_OUT4"
+        }
+      ]
+    },
+    {
+      "name": "RD26",
+      "id": "26",
+      "type": "Redler",
+      "description": null,
+      "pos_x": 8128,
+      "pos_y": -976,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "RD26_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "RD26_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "RD26_OUT2",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "RD26_IN",
+          "out_port": "RD26_OUT1"
+        },
+        {
+          "in_port": "RD26_IN",
+          "out_port": "RD26_OUT2"
+        }
+      ]
+    },
+    {
+      "name": "RD32",
+      "id": "32",
+      "type": "Redler",
+      "description": null,
+      "pos_x": 7424,
+      "pos_y": -448,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "RD32_IN1",
+          "port_order": 0
+        },
+        {
+          "direction": "in",
+          "name": "RD32_IN2",
+          "port_order": 1
+        },
+        {
+          "direction": "in",
+          "name": "RD32_IN3",
+          "port_order": 2
+        },
+        {
+          "direction": "in",
+          "name": "RD32_IN4",
+          "port_order": 3
+        },
+        {
+          "direction": "out",
+          "name": "RD32_OUT1",
+          "port_order": 4
+        },
+        {
+          "direction": "out",
+          "name": "RD32_OUT2",
+          "port_order": 5
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "RD32_IN1",
+          "out_port": "RD32_OUT1"
+        },
+        {
+          "in_port": "RD32_IN1",
+          "out_port": "RD32_OUT2"
+        },
+        {
+          "in_port": "RD32_IN2",
+          "out_port": "RD32_OUT2"
+        },
+        {
+          "in_port": "RD32_IN2",
+          "out_port": "RD32_OUT1"
+        },
+        {
+          "in_port": "RD32_IN3",
+          "out_port": "RD32_OUT1"
+        },
+        {
+          "in_port": "RD32_IN3",
+          "out_port": "RD32_OUT2"
+        },
+        {
+          "in_port": "RD32_IN4",
+          "out_port": "RD32_OUT2"
+        },
+        {
+          "in_port": "RD32_IN4",
+          "out_port": "RD32_OUT1"
+        }
+      ]
+    },
+    {
+      "name": "RD29",
+      "id": "29",
+      "type": "Redler",
+      "description": null,
+      "pos_x": 8224,
+      "pos_y": -528,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "RD29_N1",
+          "port_order": 0
+        },
+        {
+          "direction": "in",
+          "name": "RD29_N2",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "RD29_OUT",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "RD29_N1",
+          "out_port": "RD29_OUT"
+        },
+        {
+          "in_port": "RD29_N2",
+          "out_port": "RD29_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT32.1",
+      "id": "174",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 7776,
+      "pos_y": -384,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT32.1_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT32.1_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT32.1_IN",
+          "out_port": "GT32.1_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT32.2",
+      "id": "171",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 7232,
+      "pos_y": -288,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT32.2_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT32.2_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT32.2_IN",
+          "out_port": "GT32.2_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT23.4",
+      "id": "178",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 8128,
+      "pos_y": -1072,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT23.4_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT23.4_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT23.4_IN",
+          "out_port": "GT23.4_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT23.3",
+      "id": "177",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 7888,
+      "pos_y": -1072,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT23.3_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT23.3_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT23.3_IN",
+          "out_port": "GT23.3_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT23.2",
+      "id": "176",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 7632,
+      "pos_y": -1072,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT23.2_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT23.2_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT23.2_IN",
+          "out_port": "GT23.2_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT23.1",
+      "id": "175",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 7376,
+      "pos_y": -1072,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT23.1_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT23.1_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT23.1_IN",
+          "out_port": "GT23.1_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT26.2",
+      "id": "180",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 8384,
+      "pos_y": -864,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT26.2_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT26.2_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT26.2_IN",
+          "out_port": "GT26.2_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT26.1",
+      "id": "179",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 8128,
+      "pos_y": -864,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT26.1_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT26.1_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT26.1_IN",
+          "out_port": "GT26.1_OUT"
+        }
+      ]
+    },
+    {
+      "name": "SPA15",
+      "id": "275",
+      "type": "Silos",
+      "description": null,
+      "pos_x": 8384,
+      "pos_y": -768,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "SPA15_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "SPA15_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": []
+    },
+    {
+      "name": "SPA14",
+      "id": "274",
+      "type": "Silos",
+      "description": null,
+      "pos_x": 8128,
+      "pos_y": -768,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "SPA14_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "SPA14_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": []
+    },
+    {
+      "name": "SPA13",
+      "id": "273",
+      "type": "Silos",
+      "description": null,
+      "pos_x": 7888,
+      "pos_y": -768,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "SPA13_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "SPA13_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": []
+    },
+    {
+      "name": "SPA12",
+      "id": "272",
+      "type": "Silos",
+      "description": null,
+      "pos_x": 7632,
+      "pos_y": -768,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "SPA12_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "SPA12_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": []
+    },
+    {
+      "name": "SPA11",
+      "id": "271",
+      "type": "Silos",
+      "description": null,
+      "pos_x": 7376,
+      "pos_y": -768,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "SPA11_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "SPA11_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": []
+    },
+    {
+      "name": "VL24",
+      "id": "224",
+      "type": "Valve3P",
+      "description": null,
+      "pos_x": 7232,
+      "pos_y": -192,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "VL24_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "VL24_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "VL24_OUT2",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "VL24_IN",
+          "out_port": "VL24_OUT1"
+        },
+        {
+          "in_port": "VL24_IN",
+          "out_port": "VL24_OUT2"
+        }
+      ]
+    },
+    {
+      "name": "VL25",
+      "id": "225",
+      "type": "Valve3P",
+      "description": null,
+      "pos_x": 7232,
+      "pos_y": -80,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "VL25_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "VL25_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "VL25_OUt2",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "VL25_IN",
+          "out_port": "VL25_OUT1"
+        },
+        {
+          "in_port": "VL25_IN",
+          "out_port": "VL25_OUt2"
+        }
+      ]
+    },
+    {
+      "name": "VL22",
+      "id": "222",
+      "type": "Valve3P",
+      "description": null,
+      "pos_x": 7536,
+      "pos_y": -144,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "VL22_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "VL22_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "VL22_OUT2",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "VL22_IN",
+          "out_port": "VL22_OUT1"
+        },
+        {
+          "in_port": "VL22_IN",
+          "out_port": "VL22_OUT2"
+        }
+      ]
+    },
+    {
+      "name": "NR8",
+      "id": "58",
+      "type": "Noria",
+      "description": null,
+      "pos_x": 7568,
+      "pos_y": 128,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "NR8_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "NR8_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "NR8_IN",
+          "out_port": "NR8_OUT"
+        }
+      ]
+    },
+    {
+      "name": "NR9",
+      "id": "59",
+      "type": "Noria",
+      "description": null,
+      "pos_x": 7248,
+      "pos_y": 208,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "NR9_IN1",
+          "port_order": 0
+        },
+        {
+          "direction": "in",
+          "name": "NR9_IN2",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "NR9_OUT",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "NR9_IN1",
+          "out_port": "NR9_OUT"
+        },
+        {
+          "in_port": "NR9_IN2",
+          "out_port": "NR9_OUT"
+        }
+      ]
+    },
+    {
+      "name": "NR10",
+      "id": "60",
+      "type": "Noria",
+      "description": null,
+      "pos_x": 7920,
+      "pos_y": 224,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "NR10_IN1",
+          "port_order": 0
+        },
+        {
+          "direction": "in",
+          "name": "NR10_IN2",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "NR10_OUT",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "NR10_IN1",
+          "out_port": "NR10_OUT"
+        },
+        {
+          "in_port": "NR10_IN2",
+          "out_port": "NR10_OUT"
+        }
+      ]
+    },
+    {
+      "name": "NR11",
+      "id": "61",
+      "type": "Noria",
+      "description": null,
+      "pos_x": 8000,
+      "pos_y": 32,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "NR11_IN1",
+          "port_order": 0
+        },
+        {
+          "direction": "in",
+          "name": "NR11_IN2",
+          "port_order": 1
+        },
+        {
+          "direction": "in",
+          "name": "NR11_IN3",
+          "port_order": 2
+        },
+        {
+          "direction": "out",
+          "name": "NR11_OUT",
+          "port_order": 3
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "NR11_IN1",
+          "out_port": "NR11_OUT"
+        },
+        {
+          "in_port": "NR11_IN2",
+          "out_port": "NR11_OUT"
+        },
+        {
+          "in_port": "NR11_IN3",
+          "out_port": "NR11_OUT"
+        }
+      ]
+    },
+    {
+      "name": "RD37",
+      "id": "37",
+      "type": "Redler",
+      "description": null,
+      "pos_x": 8544,
+      "pos_y": -336,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "RD37_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "RD37_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "RD37_IN",
+          "out_port": "RD37_OUT"
+        }
+      ]
+    },
+    {
+      "name": "VL26",
+      "id": "226",
+      "type": "Valve3P",
+      "description": null,
+      "pos_x": 6608,
+      "pos_y": -144,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "VL26_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "VL26_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "VL26_OUT2",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "VL26_IN",
+          "out_port": "VL26_OUT1"
+        },
+        {
+          "in_port": "VL26_IN",
+          "out_port": "VL26_OUT2"
+        }
+      ]
+    },
+    {
+      "name": "VL27",
+      "id": "227",
+      "type": "Valve3P",
+      "description": null,
+      "pos_x": 6608,
+      "pos_y": -32,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "VL27_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "VL27_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "VL27_OUT2",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "VL27_IN",
+          "out_port": "VL27_OUT1"
+        },
+        {
+          "in_port": "VL27_IN",
+          "out_port": "VL27_OUT2"
+        }
+      ]
+    },
+    {
+      "name": "GT20.2",
+      "id": "173",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 6880,
+      "pos_y": 272,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT20.2_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT20.2_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT20.2_IN",
+          "out_port": "GT20.2_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT38.1",
+      "id": "181",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 8464,
+      "pos_y": -112,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT38.1_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT38.1_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT38.1_IN",
+          "out_port": "GT38.1_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT20.1",
+      "id": "172",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 6880,
+      "pos_y": 176,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT20.1_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT20.1_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT20.1_IN",
+          "out_port": "GT20.1_OUT"
+        }
+      ]
+    },
+    {
+      "name": "GT38.2",
+      "id": "182",
+      "type": "Gate2P",
+      "description": null,
+      "pos_x": 8736,
+      "pos_y": -112,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "GT38.2_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "GT38.2_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "GT38.2_IN",
+          "out_port": "GT38.2_OUT"
+        }
+      ]
+    },
+    {
+      "name": "SEP3",
+      "id": "313",
+      "type": "Separator",
+      "description": null,
+      "pos_x": 6880,
+      "pos_y": -240,
+      "ports": [
+        {
+          "direction": "out",
+          "name": "SP3_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "SP3_OUT2",
+          "port_order": 2
+        },
+        {
+          "direction": "out",
+          "name": "SP3_OUT3",
+          "port_order": 3
+        },
+        {
+          "direction": "in",
+          "name": "SP3_IN",
+          "port_order": 3
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "SP3_IN",
+          "out_port": "SP3_OUT1"
+        },
+        {
+          "in_port": "SP3_IN",
+          "out_port": "SP3_OUT2"
+        },
+        {
+          "in_port": "SP3_IN",
+          "out_port": "SP3_OUT3"
+        }
+      ]
+    },
+    {
+      "name": "ARB2",
+      "id": "278",
+      "type": "Silos",
+      "description": null,
+      "pos_x": 8768,
+      "pos_y": 32,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "ARB2_IN",
+          "port_order": 0
+        }
+      ],
+      "internal_connections": []
+    },
+    {
+      "name": "ARB1",
+      "id": "277",
+      "type": "Silos",
+      "description": null,
+      "pos_x": 8448,
+      "pos_y": 32,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "ARB1_IN",
+          "port_order": 0
+        }
+      ],
+      "internal_connections": []
+    },
+    {
+      "name": "Auto3.2",
+      "id": "270",
+      "type": "Silos",
+      "description": null,
+      "pos_x": 6240,
+      "pos_y": -64,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "Auto3.2_IN1",
+          "port_order": 0
+        },
+        {
+          "direction": "in",
+          "name": "Auto3.2_IN2",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": []
+    },
+    {
+      "name": "Auto3.1",
+      "id": "269",
+      "type": "Silos",
+      "description": null,
+      "pos_x": 6288,
+      "pos_y": -224,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "Auto3.1_IN",
+          "port_order": 0
+        }
+      ],
+      "internal_connections": []
+    },
+    {
+      "name": "VL21",
+      "id": "221",
+      "type": "Valve3P",
+      "description": null,
+      "pos_x": 7600,
+      "pos_y": -256,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "VL21_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "VL21_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "VL21_OUT2",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "VL21_IN",
+          "out_port": "VL21_OUT1"
+        },
+        {
+          "in_port": "VL21_IN",
+          "out_port": "VL21_OUT2"
+        }
+      ]
+    },
+    {
+      "name": "VL28",
+      "id": "228",
+      "type": "Valve3P",
+      "description": null,
+      "pos_x": 6992,
+      "pos_y": 16,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "VL28_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "VL28_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "VL28_OUT2",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "VL28_IN",
+          "out_port": "VL28_OUT1"
+        },
+        {
+          "in_port": "VL28_IN",
+          "out_port": "VL28_OUT2"
+        }
+      ]
+    },
+    {
+      "name": "VL23",
+      "id": "223",
+      "type": "Valve3P",
+      "description": null,
+      "pos_x": 7872,
+      "pos_y": -128,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "VL23_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "VL23_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "VL23_OUT2",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "VL23_IN",
+          "out_port": "VL23_OUT1"
+        },
+        {
+          "in_port": "VL23_IN",
+          "out_port": "VL23_OUT2"
+        }
+      ]
+    },
+    {
+      "name": "RD38",
+      "id": "38",
+      "type": "Redler",
+      "description": null,
+      "pos_x": 8560,
+      "pos_y": -224,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "RD38_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "RD38_OUT1",
+          "port_order": 1
+        },
+        {
+          "direction": "out",
+          "name": "RD38_OUT2",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "RD38_IN",
+          "out_port": "RD38_OUT1"
+        },
+        {
+          "in_port": "RD38_IN",
+          "out_port": "RD38_OUT2"
+        }
+      ]
+    },
+    {
+      "name": "ZHD",
+      "id": "276",
+      "type": "Silos",
+      "description": null,
+      "pos_x": 8816,
+      "pos_y": -320,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "ZHD_IN1",
+          "port_order": 0
+        }
+      ],
+      "internal_connections": []
+    },
+    {
+      "name": "FN3",
+      "id": "319",
+      "type": "Fan",
+      "description": null,
+      "pos_x": 6880,
+      "pos_y": -432,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "FN3_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "FN3_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "FN3_IN",
+          "out_port": "FN3_OUT"
+        }
+      ]
+    },
+    {
+      "name": "FN2",
+      "id": "318",
+      "type": "Fan",
+      "description": null,
+      "pos_x": 336,
+      "pos_y": -32,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "FN2_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "FN2_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "FN2_IN",
+          "out_port": "FN2_OUT"
+        }
+      ]
+    },
+    {
+      "name": "FN1",
+      "id": "317",
+      "type": "Fan",
+      "description": null,
+      "pos_x": 336,
+      "pos_y": -1152,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "FN1_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "FN1_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "FN1_IN",
+          "out_port": "FN1_OUT"
+        }
+      ]
+    },
+    {
+      "name": "FD3",
+      "id": "316",
+      "type": "Feeder",
+      "description": null,
+      "pos_x": 6880,
+      "pos_y": -336,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "FD3_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "FD3_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "FD3_IN",
+          "out_port": "FD3_OUT"
+        }
+      ]
+    },
+    {
+      "name": "FD2",
+      "id": "315",
+      "type": "Feeder",
+      "description": null,
+      "pos_x": 336,
+      "pos_y": 64,
+      "ports": [
+        {
+          "direction": "out",
+          "name": "FD2_OUT",
+          "port_order": 1
+        },
+        {
+          "direction": "in",
+          "name": "FD2_IN",
+          "port_order": 2
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "FD2_IN",
+          "out_port": "FD2_OUT"
+        }
+      ]
+    },
+    {
+      "name": "FD1",
+      "id": "314",
+      "type": "Feeder",
+      "description": null,
+      "pos_x": 336,
+      "pos_y": -1056,
+      "ports": [
+        {
+          "direction": "in",
+          "name": "FD1_IN",
+          "port_order": 0
+        },
+        {
+          "direction": "out",
+          "name": "FD1_OUT",
+          "port_order": 1
+        }
+      ],
+      "internal_connections": [
+        {
+          "in_port": "FD1_IN",
+          "out_port": "FD1_OUT"
+        }
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "source_device": "RP1",
+      "source_port": "RP1_OUT",
+      "target_device": "RD1",
+      "target_port": "RD1_IN"
+    },
+    {
+      "source_device": "RD1",
+      "source_port": "RD1_OUT",
+      "target_device": "RD5",
+      "target_port": "RD5_IN1"
+    },
+    {
+      "source_device": "RD5",
+      "source_port": "RD5_OUT1",
+      "target_device": "GT5.1",
+      "target_port": "GT5.1_IN"
+    },
+    {
+      "source_device": "GT5.1",
+      "source_port": "GT5.1_OUT",
+      "target_device": "NR1",
+      "target_port": "NR1_IN1"
+    },
+    {
+      "source_device": "GT36.3",
+      "source_port": "GT36.3_OUT",
+      "target_device": "NR1",
+      "target_port": "NR1_IN2"
+    },
+    {
+      "source_device": "RD5",
+      "source_port": "RD5_OUT2",
+      "target_device": "GT5.2",
+      "target_port": "GT5.2_IN"
+    },
+    {
+      "source_device": "RD5",
+      "source_port": "RD5_OUT3",
+      "target_device": "GT5.3",
+      "target_port": "GT5.3_IN"
+    },
+    {
+      "source_device": "RP2",
+      "source_port": "RP2_OUT",
+      "target_device": "RD2",
+      "target_port": "RD2_IN1"
+    },
+    {
+      "source_device": "RD2",
+      "source_port": "RD2_OUT1",
+      "target_device": "RD6",
+      "target_port": "RD6_IN1"
+    },
+    {
+      "source_device": "RD4",
+      "source_port": "RD4_OUT",
+      "target_device": "RD6",
+      "target_port": "RD6_IN2"
+    },
+    {
+      "source_device": "VL9",
+      "source_port": "VL9_OUT1",
+      "target_device": "RD6",
+      "target_port": "RD6_IN3"
+    },
+    {
+      "source_device": "RD6",
+      "source_port": "RD6_OUT1",
+      "target_device": "GT6.1",
+      "target_port": "GT6.1_IN"
+    },
+    {
+      "source_device": "GT6.1",
+      "source_port": "GT6.1_OUT",
+      "target_device": "NR2",
+      "target_port": "NR2_IN"
+    },
+    {
+      "source_device": "VL1",
+      "source_port": "VL1_OUT2",
+      "target_device": "RD3",
+      "target_port": "RD3_IN1"
+    },
+    {
+      "source_device": "VL2",
+      "source_port": "VL2_OUT2",
+      "target_device": "RD3",
+      "target_port": "RD3_IN2"
+    },
+    {
+      "source_device": "RD3",
+      "source_port": "RD3_OUT",
+      "target_device": "RD5",
+      "target_port": "RD5_IN2"
+    },
+    {
+      "source_device": "VL1",
+      "source_port": "VL1_OUT1",
+      "target_device": "Auto1.2",
+      "target_port": "Auto1.2_IN1"
+    },
+    {
+      "source_device": "VL2",
+      "source_port": "VL2_OUT1",
+      "target_device": "Auto1.2",
+      "target_port": "Auto1.2_IN2"
+    },
+    {
+      "source_device": "VL3",
+      "source_port": "VL3_OUT1",
+      "target_device": "RD4",
+      "target_port": "RD4_IN1"
+    },
+    {
+      "source_device": "VL4",
+      "source_port": "VL4_OUT1",
+      "target_device": "RD4",
+      "target_port": "RD4_IN2"
+    },
+    {
+      "source_device": "SEP2",
+      "source_port": "SP2_OUT2",
+      "target_device": "VL3",
+      "target_port": "VL3_IN"
+    },
+    {
+      "source_device": "SEP2",
+      "source_port": "SP2_OUT3",
+      "target_device": "VL4",
+      "target_port": "VL4_IN"
+    },
+    {
+      "source_device": "VL3",
+      "source_port": "VL3_OUT2",
+      "target_device": "Auto2.2",
+      "target_port": "Auto2.2_IN1"
+    },
+    {
+      "source_device": "VL4",
+      "source_port": "VL4_OUT2",
+      "target_device": "Auto2.2",
+      "target_port": "Auto2.2_IN2"
+    },
+    {
+      "source_device": "SEP2",
+      "source_port": "SP2_OUT1",
+      "target_device": "Auto2.1",
+      "target_port": "Auto2.1_IN"
+    },
+    {
+      "source_device": "RD6",
+      "source_port": "RD6_OUT2",
+      "target_device": "GT6.2",
+      "target_port": "GT6.2_IN"
+    },
+    {
+      "source_device": "RD6",
+      "source_port": "RD6_OUT3",
+      "target_device": "GT6.3",
+      "target_port": "GT6.3_IN"
+    },
+    {
+      "source_device": "GT15.1",
+      "source_port": "GT15.1_OUT",
+      "target_device": "RD5",
+      "target_port": "RD5_IN3"
+    },
+    {
+      "source_device": "GT15.2",
+      "source_port": "GT15.2_OUT",
+      "target_device": "VL9",
+      "target_port": "VL9_IN"
+    },
+    {
+      "source_device": "RD15",
+      "source_port": "RD15_OUT2",
+      "target_device": "GT15.2",
+      "target_port": "GT15.2_IN"
+    },
+    {
+      "source_device": "RD15",
+      "source_port": "RD15_OUT1",
+      "target_device": "GT15.1",
+      "target_port": "GT15.1_IN"
+    },
+    {
+      "source_device": "RD39",
+      "source_port": "RD39_OUT",
+      "target_device": "RD15",
+      "target_port": "RD15_IN1"
+    },
+    {
+      "source_device": "GT9.2",
+      "source_port": "GT9.2_OUT",
+      "target_device": "SLA2",
+      "target_port": "SLA2_IN"
+    },
+    {
+      "source_device": "GT9.1",
+      "source_port": "GT9.1_OUT",
+      "target_device": "SLA1",
+      "target_port": "SLA1_IN"
+    },
+    {
+      "source_device": "RD9",
+      "source_port": "RD9_OUT1",
+      "target_device": "GT9.1",
+      "target_port": "GT9.1_IN"
+    },
+    {
+      "source_device": "RD9",
+      "source_port": "RD9_OUT2",
+      "target_device": "GT9.2",
+      "target_port": "GT9.2_IN"
+    },
+    {
+      "source_device": "GT7.2",
+      "source_port": "GT7.2_OUT",
+      "target_device": "RD9",
+      "target_port": "RD9_IN"
+    },
+    {
+      "source_device": "RD7",
+      "source_port": "RD7_OUT3",
+      "target_device": "GT7.2",
+      "target_port": "GT7.2_IN"
+    },
+    {
+      "source_device": "RD7",
+      "source_port": "RD7_OUT2",
+      "target_device": "GT7.3",
+      "target_port": "GT7.3_IN"
+    },
+    {
+      "source_device": "RD7",
+      "source_port": "RD7_OUT1",
+      "target_device": "GT7.1",
+      "target_port": "GT7.1_IN"
+    },
+    {
+      "source_device": "GT7.3",
+      "source_port": "GT7.3_OUT",
+      "target_device": "DR4",
+      "target_port": "DR4_IN1"
+    },
+    {
+      "source_device": "GT7.1",
+      "source_port": "GT7.1_OUT",
+      "target_device": "DR1",
+      "target_port": "DR1_IN1"
+    },
+    {
+      "source_device": "VL30",
+      "source_port": "VL30_OUT2",
+      "target_device": "DR1",
+      "target_port": "DR1_IN2"
+    },
+    {
+      "source_device": "VL30",
+      "source_port": "VL30_OUT1",
+      "target_device": "DR4",
+      "target_port": "DR4_IN2"
+    },
+    {
+      "source_device": "NR12",
+      "source_port": "NR12_OUT",
+      "target_device": "VL30",
+      "target_port": "VL30_IN"
+    },
+    {
+      "source_device": "DR4",
+      "source_port": "DR4_OUT",
+      "target_device": "RD11",
+      "target_port": "RD11_IN1"
+    },
+    {
+      "source_device": "DR1",
+      "source_port": "DR1_OUT",
+      "target_device": "RD11",
+      "target_port": "RD11_IN2"
+    },
+    {
+      "source_device": "RD11",
+      "source_port": "RD11_OUT1",
+      "target_device": "GT11.3",
+      "target_port": "GT11.3_IN"
+    },
+    {
+      "source_device": "GT11.3",
+      "source_port": "GT11.3_OUT",
+      "target_device": "NR12",
+      "target_port": "NR12_IN"
+    },
+    {
+      "source_device": "RD11",
+      "source_port": "RD11_OUT2",
+      "target_device": "GT11.1",
+      "target_port": "GT11.1_IN"
+    },
+    {
+      "source_device": "RD11",
+      "source_port": "RD11_OUT3",
+      "target_device": "GT11.2",
+      "target_port": "GT11.2_IN"
+    },
+    {
+      "source_device": "GT11.1",
+      "source_port": "GT11.1_OUT",
+      "target_device": "VL7",
+      "target_port": "VL7_IN"
+    },
+    {
+      "source_device": "VL7",
+      "source_port": "VL7_OUT1",
+      "target_device": "VL8",
+      "target_port": "VL8_IN"
+    },
+    {
+      "source_device": "NR3",
+      "source_port": "NR3_OUT",
+      "target_device": "RD7",
+      "target_port": "RD7_IN"
+    },
+    {
+      "source_device": "VL9",
+      "source_port": "VL9_OUT2",
+      "target_device": "NR3",
+      "target_port": "NR3_IN2"
+    },
+    {
+      "source_device": "VL8",
+      "source_port": "VL8_OUT1",
+      "target_device": "NR3",
+      "target_port": "NR3_IN2"
+    },
+    {
+      "source_device": "GT6.2",
+      "source_port": "GT6.2_OUT",
+      "target_device": "VL6",
+      "target_port": "VL6_IN"
+    },
+    {
+      "source_device": "VL6",
+      "source_port": "VL6_OUT1",
+      "target_device": "NR3",
+      "target_port": "NR3_IN1"
+    },
+    {
+      "source_device": "GT5.2",
+      "source_port": "GT5.2_OUT",
+      "target_device": "VL5",
+      "target_port": "VL5_IN"
+    },
+    {
+      "source_device": "VL5",
+      "source_port": "VL5_OUT1",
+      "target_device": "NR3",
+      "target_port": "NR3_IN1"
+    },
+    {
+      "source_device": "GT36.2",
+      "source_port": "GT36.2_OUT",
+      "target_device": "NR3",
+      "target_port": "NR3_IN3"
+    },
+    {
+      "source_device": "RD36",
+      "source_port": "RD36_OUT2",
+      "target_device": "GT36.2",
+      "target_port": "GT36.2_IN"
+    },
+    {
+      "source_device": "RD36",
+      "source_port": "RD36_OUT3",
+      "target_device": "GT36.3",
+      "target_port": "GT36.3_IN"
+    },
+    {
+      "source_device": "RD36",
+      "source_port": "RD36_OUT1",
+      "target_device": "GT36.1",
+      "target_port": "GT36.1_IN"
+    },
+    {
+      "source_device": "GT6.3",
+      "source_port": "GT6.3_OUT",
+      "target_device": "RD18",
+      "target_port": "RD18_IN1"
+    },
+    {
+      "source_device": "VL7",
+      "source_port": "VL7_OUT2",
+      "target_device": "RD18",
+      "target_port": "RD18_IN2"
+    },
+    {
+      "source_device": "GT5.3",
+      "source_port": "GT5.3_OUT",
+      "target_device": "RD19",
+      "target_port": "RD19_IN1"
+    },
+    {
+      "source_device": "VL8",
+      "source_port": "VL8_OUT2",
+      "target_device": "RD19",
+      "target_port": "RD19_IN2"
+    },
+    {
+      "source_device": "GT36.1",
+      "source_port": "GT36.1_OUT",
+      "target_device": "NR6",
+      "target_port": "NR6_IN1"
+    },
+    {
+      "source_device": "GT11.2",
+      "source_port": "GT11.2_OUT",
+      "target_device": "NR6",
+      "target_port": "NR6_IN3"
+    },
+    {
+      "source_device": "VL5",
+      "source_port": "VL5_OUT2",
+      "target_device": "NR6",
+      "target_port": "NR6_IN3"
+    },
+    {
+      "source_device": "VL6",
+      "source_port": "VL6_OUT2",
+      "target_device": "NR6",
+      "target_port": "NR6_IN3"
+    },
+    {
+      "source_device": "Vl11",
+      "source_port": "VL11_OUT1",
+      "target_device": "NR3",
+      "target_port": "NR3_IN2"
+    },
+    {
+      "source_device": "Vl11",
+      "source_port": "VL11_OUT2",
+      "target_device": "NR6",
+      "target_port": "NR6_IN2"
+    },
+    {
+      "source_device": "VL30",
+      "source_port": "VL30_OUT1",
+      "target_device": "DR4",
+      "target_port": "DR4_IN1"
+    },
+    {
+      "source_device": "VL10",
+      "source_port": "VL10_OUT1",
+      "target_device": "Vl11",
+      "target_port": "VL11_IN"
+    },
+    {
+      "source_device": "VL10",
+      "source_port": "VL10_OUT2",
+      "target_device": "RD19",
+      "target_port": "RD19_IN3"
+    },
+    {
+      "source_device": "VL12",
+      "source_port": "VL12_OUT1",
+      "target_device": "RD19",
+      "target_port": "RD19_IN4"
+    },
+    {
+      "source_device": "VL12",
+      "source_port": "VL12_OUT2",
+      "target_device": "RD36",
+      "target_port": "RD36_IN1"
+    },
+    {
+      "source_device": "GT30.2",
+      "source_port": "GT30.2_OUT",
+      "target_device": "VL12",
+      "target_port": "VL12_IN"
+    },
+    {
+      "source_device": "RD30",
+      "source_port": "RD30_OUT2",
+      "target_device": "GT30.2",
+      "target_port": "GT30.2_IN"
+    },
+    {
+      "source_device": "GT30.1",
+      "source_port": "GT30.1_OUT",
+      "target_device": "VL10",
+      "target_port": "VL10_IN"
+    },
+    {
+      "source_device": "RD30",
+      "source_port": "RD30_OUT1",
+      "target_device": "GT30.1",
+      "target_port": "GT30.1_IN"
+    },
+    {
+      "source_device": "RD27",
+      "source_port": "RD27_OUT",
+      "target_device": "RD30",
+      "target_port": "RD30_IN1"
+    },
+    {
+      "source_device": "RD24",
+      "source_port": "RD24_OUT1",
+      "target_device": "GT24.1",
+      "target_port": "GT24.1_IN"
+    },
+    {
+      "source_device": "RD24",
+      "source_port": "RD24_OUT2",
+      "target_device": "GT24.2",
+      "target_port": "GT24.2_IN"
+    },
+    {
+      "source_device": "GT21.4",
+      "source_port": "GT24.1_OUT",
+      "target_device": "RD24",
+      "target_port": "RD24_IN"
+    },
+    {
+      "source_device": "RD21",
+      "source_port": "RD21_OUT4",
+      "target_device": "GT21.4",
+      "target_port": "GT21.4_IN"
+    },
+    {
+      "source_device": "RD21",
+      "source_port": "RD21_OUT3",
+      "target_device": "GT21.3",
+      "target_port": "GT21.3_IN"
+    },
+    {
+      "source_device": "RD21",
+      "source_port": "RD21_OUT2",
+      "target_device": "GT21.2",
+      "target_port": "GT21.2_IN"
+    },
+    {
+      "source_device": "RD21",
+      "source_port": "RD21_OUT1",
+      "target_device": "GT21.1",
+      "target_port": "GT21.1_IN"
+    },
+    {
+      "source_device": "NR6",
+      "source_port": "NR6_OUT",
+      "target_device": "RD21",
+      "target_port": "RD21_IN1"
+    },
+    {
+      "source_device": "GT21.1",
+      "source_port": "GT21.1_OUT",
+      "target_device": "SPA1",
+      "target_port": "SPA1_IN"
+    },
+    {
+      "source_device": "GT21.2",
+      "source_port": "GT21.2_OUT",
+      "target_device": "SPA2",
+      "target_port": "SPA2_IN"
+    },
+    {
+      "source_device": "GT21.3",
+      "source_port": "GT21.3_OUT",
+      "target_device": "SPA3",
+      "target_port": "SPA3_IN"
+    },
+    {
+      "source_device": "GT24.1",
+      "source_port": "GT24.1_OUT",
+      "target_device": "SPA4",
+      "target_port": "SPA4_IN"
+    },
+    {
+      "source_device": "GT24.2",
+      "source_port": "GT24.2_OUT",
+      "target_device": "SPA5",
+      "target_port": "SPA5_IN"
+    },
+    {
+      "source_device": "RD33",
+      "source_port": "RD33_OUT",
+      "target_device": "RD21",
+      "target_port": "RD21_IN2"
+    },
+    {
+      "source_device": "GT10.2",
+      "source_port": "GT10.2_OUT",
+      "target_device": "SLA4",
+      "target_port": "SLA4_IN"
+    },
+    {
+      "source_device": "RD10",
+      "source_port": "RD10_OUT2",
+      "target_device": "GT10.2",
+      "target_port": "GT10.2_IN"
+    },
+    {
+      "source_device": "RD10",
+      "source_port": "RD10_OUT1",
+      "target_device": "GT10.1",
+      "target_port": "GT10.1_IN"
+    },
+    {
+      "source_device": "GT10.1",
+      "source_port": "GT10.1_OUT",
+      "target_device": "SLA3",
+      "target_port": "SLA3_IN"
+    },
+    {
+      "source_device": "GT8.3",
+      "source_port": "GT8.3_OUT",
+      "target_device": "RD10",
+      "target_port": "RD10_IN"
+    },
+    {
+      "source_device": "RD8",
+      "source_port": "RD8_OUT3",
+      "target_device": "GT8.3",
+      "target_port": "GT8.3_IN"
+    },
+    {
+      "source_device": "RD8",
+      "source_port": "RD8_OUT1",
+      "target_device": "GT8.1",
+      "target_port": "GT8.1_IN"
+    },
+    {
+      "source_device": "RD8",
+      "source_port": "RD8_OUT2",
+      "target_device": "GT8.2",
+      "target_port": "GT8.2_IN"
+    },
+    {
+      "source_device": "GT8.2",
+      "source_port": "GT8.2_OUT",
+      "target_device": "DR3",
+      "target_port": "DR3_IN"
+    },
+    {
+      "source_device": "VL15",
+      "source_port": "VL15_OUT1",
+      "target_device": "DR3",
+      "target_port": "DR3_IN"
+    },
+    {
+      "source_device": "VL15",
+      "source_port": "VL15_OUT2",
+      "target_device": "DR2",
+      "target_port": "DR2_IN"
+    },
+    {
+      "source_device": "GT8.1",
+      "source_port": "GT8.1_OUT",
+      "target_device": "DR2",
+      "target_port": "DR2_IN"
+    },
+    {
+      "source_device": "NR5",
+      "source_port": "NR5_OUT",
+      "target_device": "VL15",
+      "target_port": "VL15_IN"
+    },
+    {
+      "source_device": "DR3",
+      "source_port": "DR3_OUT",
+      "target_device": "RD12",
+      "target_port": "RD12_IN"
+    },
+    {
+      "source_device": "DR2",
+      "source_port": "DR2_OUT",
+      "target_device": "RD13",
+      "target_port": "RD13_IN"
+    },
+    {
+      "source_device": "RD12",
+      "source_port": "RD12_OUT1",
+      "target_device": "GT12.1",
+      "target_port": "GT12.1_IN"
+    },
+    {
+      "source_device": "RD12",
+      "source_port": "RD12_OUT2",
+      "target_device": "GT12.2",
+      "target_port": "GT12.2_IN"
+    },
+    {
+      "source_device": "GT12.1",
+      "source_port": "GT12.1_OUT",
+      "target_device": "NR5",
+      "target_port": "NR5_IN"
+    },
+    {
+      "source_device": "RD13",
+      "source_port": "RD13_OUT",
+      "target_device": "RD14",
+      "target_port": "RD14_IN2"
+    },
+    {
+      "source_device": "GT12.2",
+      "source_port": "GT12.2_OUT",
+      "target_device": "RD14",
+      "target_port": "RD14_IN1"
+    },
+    {
+      "source_device": "RD16",
+      "source_port": "RD16_OUT",
+      "target_device": "RD17",
+      "target_port": "RD17_IN"
+    },
+    {
+      "source_device": "RD17",
+      "source_port": "RD17_OUT",
+      "target_device": "VL16",
+      "target_port": "VL16_IN"
+    },
+    {
+      "source_device": "NR4",
+      "source_port": "NR4_OUT",
+      "target_device": "RD8",
+      "target_port": "RD8_IN"
+    },
+    {
+      "source_device": "VL16",
+      "source_port": "VL16_OUT1",
+      "target_device": "NR4",
+      "target_port": "NR4_IN2"
+    },
+    {
+      "source_device": "RD14",
+      "source_port": "RD14_OUT1",
+      "target_device": "GT14.1",
+      "target_port": "GT14.1_IN"
+    },
+    {
+      "source_device": "RD14",
+      "source_port": "RD14_OUT2",
+      "target_device": "GT14.2",
+      "target_port": "GT14.2_IN"
+    },
+    {
+      "source_device": "GT14.1",
+      "source_port": "GT14.1_OUT",
+      "target_device": "VL17",
+      "target_port": "VL17_IN"
+    },
+    {
+      "source_device": "VL17",
+      "source_port": "VL17_OUT1",
+      "target_device": "NR4",
+      "target_port": "NR4_IN1"
+    },
+    {
+      "source_device": "VL17",
+      "source_port": "VL17_OUT2",
+      "target_device": "NR7",
+      "target_port": "NR7_IN2"
+    },
+    {
+      "source_device": "GT14.2",
+      "source_port": "GT14.2_OUT",
+      "target_device": "VL18",
+      "target_port": "VL18_IN"
+    },
+    {
+      "source_device": "RD18",
+      "source_port": "RD18_OUT1",
+      "target_device": "GT18.1",
+      "target_port": "GT18.1_IN"
+    },
+    {
+      "source_device": "RD18",
+      "source_port": "RD18_OUT2",
+      "target_device": "GT18.2",
+      "target_port": "GT18.2_IN"
+    },
+    {
+      "source_device": "GT18.2",
+      "source_port": "GT18.2_OUT",
+      "target_device": "RD20",
+      "target_port": "RD20_IN2"
+    },
+    {
+      "source_device": "VL16",
+      "source_port": "VL16_OUT2",
+      "target_device": "RD20",
+      "target_port": "RD20_IN2"
+    },
+    {
+      "source_device": "VL18",
+      "source_port": "VL18_OUT2",
+      "target_device": "RD20",
+      "target_port": "RD20_IN1"
+    },
+    {
+      "source_device": "VL18",
+      "source_port": "VL18_OUT1",
+      "target_device": "RD35",
+      "target_port": "RD35_IN3"
+    },
+    {
+      "source_device": "GT35.2",
+      "source_port": "GT35.2_OUT",
+      "target_device": "RD36",
+      "target_port": "RD36_IN2"
+    },
+    {
+      "source_device": "RD35",
+      "source_port": "RD35_OUT2",
+      "target_device": "GT35.2",
+      "target_port": "GT35.2_IN"
+    },
+    {
+      "source_device": "RD19",
+      "source_port": "RD19_OUT1",
+      "target_device": "GT19.1",
+      "target_port": "GT19.1_IN"
+    },
+    {
+      "source_device": "RD19",
+      "source_port": "RD19_OUT2",
+      "target_device": "GT19.2",
+      "target_port": "GT19.2_IN"
+    },
+    {
+      "source_device": "GT19.2",
+      "source_port": "GT19.2_OUT",
+      "target_device": "RD20",
+      "target_port": "RD20_IN3"
+    },
+    {
+      "source_device": "GT18.1",
+      "source_port": "GT18.1_OUT",
+      "target_device": "VL13",
+      "target_port": "VL13_IN"
+    },
+    {
+      "source_device": "VL13",
+      "source_port": "VL13_OUT2",
+      "target_device": "NR7",
+      "target_port": "NR7_IN1"
+    },
+    {
+      "source_device": "VL13",
+      "source_port": "VL13_OUT1",
+      "target_device": "NR4",
+      "target_port": "NR4_IN2"
+    },
+    {
+      "source_device": "GT19.1",
+      "source_port": "GT19.1_OUT",
+      "target_device": "VL14",
+      "target_port": "VL14_IN"
+    },
+    {
+      "source_device": "VL14",
+      "source_port": "VL14_OUT1",
+      "target_device": "NR4",
+      "target_port": "NR4_IN3"
+    },
+    {
+      "source_device": "VL14",
+      "source_port": "VL14_OUT2",
+      "target_device": "NR7",
+      "target_port": "NR7_IN3"
+    },
+    {
+      "source_device": "RD35",
+      "source_port": "RD35_OUT1",
+      "target_device": "GT35.1",
+      "target_port": "GT35.1_IN"
+    },
+    {
+      "source_device": "VL29",
+      "source_port": "VL29_OUT1",
+      "target_device": "NR4",
+      "target_port": "NR4_IN4"
+    },
+    {
+      "source_device": "VL29",
+      "source_port": "VL29_OUT2",
+      "target_device": "NR7",
+      "target_port": "NR7_IN4"
+    },
+    {
+      "source_device": "GT35.1",
+      "source_port": "GT35.1_OUT",
+      "target_device": "VL29",
+      "target_port": "VL29_IN"
+    },
+    {
+      "source_device": "VL19",
+      "source_port": "VL19_OUT1",
+      "target_device": "RD33",
+      "target_port": "RD33_IN"
+    },
+    {
+      "source_device": "NR7",
+      "source_port": "NR7_OUT",
+      "target_device": "VL19",
+      "target_port": "VL19_IN"
+    },
+    {
+      "source_device": "VL19",
+      "source_port": "VL19_OUT3",
+      "target_device": "RD22",
+      "target_port": "RD22_IN"
+    },
+    {
+      "source_device": "VL19",
+      "source_port": "VL19_OUT2",
+      "target_device": "RD34",
+      "target_port": "RD34_IN"
+    },
+    {
+      "source_device": "RD22",
+      "source_port": "RD22_OUT4",
+      "target_device": "GT22.4",
+      "target_port": "GT22.4_IN"
+    },
+    {
+      "source_device": "GT22.4",
+      "source_port": "GT22.4_OUT",
+      "target_device": "RD25",
+      "target_port": "RD25_IN"
+    },
+    {
+      "source_device": "RD22",
+      "source_port": "RD22_OUT1",
+      "target_device": "GT22.1",
+      "target_port": "GT22.1_IN"
+    },
+    {
+      "source_device": "RD22",
+      "source_port": "RD22_OUT2",
+      "target_device": "GT22.2",
+      "target_port": "GT22.2_IN"
+    },
+    {
+      "source_device": "RD22",
+      "source_port": "RD22_OUT3",
+      "target_device": "GT22.3",
+      "target_port": "GT22.3_IN"
+    },
+    {
+      "source_device": "GT22.1",
+      "source_port": "GT22.1_OUT",
+      "target_device": "SPA6",
+      "target_port": "SPA6_IN"
+    },
+    {
+      "source_device": "GT22.2",
+      "source_port": "GT22.2_OUT",
+      "target_device": "SPA7",
+      "target_port": "SPA7_IN"
+    },
+    {
+      "source_device": "GT22.3",
+      "source_port": "GT22.3_OUT",
+      "target_device": "SPA8",
+      "target_port": "SPA8_IN"
+    },
+    {
+      "source_device": "RD25",
+      "source_port": "RD25_OUT2",
+      "target_device": "GT25.2",
+      "target_port": "GT25.2_IN"
+    },
+    {
+      "source_device": "RD25",
+      "source_port": "RD25_OUT1",
+      "target_device": "GT25.1",
+      "target_port": "GT25.1_IN"
+    },
+    {
+      "source_device": "GT25.1",
+      "source_port": "GT25.1_OUT",
+      "target_device": "SPA9",
+      "target_port": "SPA9_IN"
+    },
+    {
+      "source_device": "GT25.2",
+      "source_port": "GT25.2_OUT",
+      "target_device": "SPA10",
+      "target_port": "SPA10_IN"
+    },
+    {
+      "source_device": "RD28",
+      "source_port": "RD28_OUT",
+      "target_device": "RD31",
+      "target_port": "RD31_IN1"
+    },
+    {
+      "source_device": "RD31",
+      "source_port": "RD31_OUT1",
+      "target_device": "GT31.2",
+      "target_port": "GT31.2_IN"
+    },
+    {
+      "source_device": "RD31",
+      "source_port": "RD31_OUT2",
+      "target_device": "GT31.1",
+      "target_port": "GT31.1_IN"
+    },
+    {
+      "source_device": "GT31.2",
+      "source_port": "GT31.2_OUT",
+      "target_device": "RD35",
+      "target_port": "RD35_IN1"
+    },
+    {
+      "source_device": "GT31.1",
+      "source_port": "GT31.1_OUT",
+      "target_device": "VL20",
+      "target_port": "VL20_IN"
+    },
+    {
+      "source_device": "VL20",
+      "source_port": "VL20_OUT1",
+      "target_device": "NR7",
+      "target_port": "NR7_IN5"
+    },
+    {
+      "source_device": "VL20",
+      "source_port": "VL20_OUT2",
+      "target_device": "RD20",
+      "target_port": "RD20_IN4"
+    },
+    {
+      "source_device": "RD34",
+      "source_port": "RD34_OUT",
+      "target_device": "RD23",
+      "target_port": "RD23_IN1"
+    },
+    {
+      "source_device": "RD23",
+      "source_port": "RD23_OUT1",
+      "target_device": "GT23.1",
+      "target_port": "GT23.1_IN"
+    },
+    {
+      "source_device": "RD23",
+      "source_port": "RD23_OUT2",
+      "target_device": "GT23.2",
+      "target_port": "GT23.2_IN"
+    },
+    {
+      "source_device": "RD23",
+      "source_port": "RD23_OUT3",
+      "target_device": "GT23.3",
+      "target_port": "GT23.3_IN"
+    },
+    {
+      "source_device": "RD23",
+      "source_port": "RD23_OUT4",
+      "target_device": "GT23.4",
+      "target_port": "GT23.4_IN"
+    },
+    {
+      "source_device": "GT23.1",
+      "source_port": "GT23.1_OUT",
+      "target_device": "SPA11",
+      "target_port": "SPA11_IN"
+    },
+    {
+      "source_device": "GT23.4",
+      "source_port": "GT23.4_OUT",
+      "target_device": "RD26",
+      "target_port": "RD26_IN"
+    },
+    {
+      "source_device": "RD26",
+      "source_port": "RD26_OUT1",
+      "target_device": "GT26.1",
+      "target_port": "GT26.1_IN"
+    },
+    {
+      "source_device": "RD26",
+      "source_port": "RD26_OUT2",
+      "target_device": "GT26.2",
+      "target_port": "GT26.2_IN"
+    },
+    {
+      "source_device": "GT26.2",
+      "source_port": "GT26.2_OUT",
+      "target_device": "SPA15",
+      "target_port": "SPA15_IN"
+    },
+    {
+      "source_device": "GT26.1",
+      "source_port": "GT26.1_OUT",
+      "target_device": "SPA14",
+      "target_port": "SPA14_IN"
+    },
+    {
+      "source_device": "GT23.2",
+      "source_port": "GT23.2_OUT",
+      "target_device": "SPA12",
+      "target_port": "SPA12_IN"
+    },
+    {
+      "source_device": "GT23.3",
+      "source_port": "GT23.3_OUT",
+      "target_device": "SPA13",
+      "target_port": "SPA13_IN"
+    },
+    {
+      "source_device": "RD29",
+      "source_port": "RD29_OUT",
+      "target_device": "RD32",
+      "target_port": "RD32_IN1"
+    },
+    {
+      "source_device": "RD32",
+      "source_port": "RD32_OUT2",
+      "target_device": "GT32.2",
+      "target_port": "GT32.2_IN"
+    },
+    {
+      "source_device": "RD32",
+      "source_port": "RD32_OUT1",
+      "target_device": "GT32.1",
+      "target_port": "GT32.1_IN"
+    },
+    {
+      "source_device": "GT32.2",
+      "source_port": "GT32.2_OUT",
+      "target_device": "VL24",
+      "target_port": "VL24_IN"
+    },
+    {
+      "source_device": "VL24",
+      "source_port": "VL24_OUT1",
+      "target_device": "RD35",
+      "target_port": "RD35_IN2"
+    },
+    {
+      "source_device": "VL24",
+      "source_port": "VL24_OUT2",
+      "target_device": "VL25",
+      "target_port": "VL25_IN"
+    },
+    {
+      "source_device": "VL25",
+      "source_port": "VL25_OUT1",
+      "target_device": "NR9",
+      "target_port": "NR9_IN1"
+    },
+    {
+      "source_device": "VL22",
+      "source_port": "VL22_OUT1",
+      "target_device": "NR9",
+      "target_port": "NR9_IN2"
+    },
+    {
+      "source_device": "SEP3",
+      "source_port": "SP3_OUT1",
+      "target_device": "Auto3.1",
+      "target_port": "Auto3.1_IN"
+    },
+    {
+      "source_device": "VL26",
+      "source_port": "VL26_OUT1",
+      "target_device": "Auto3.2",
+      "target_port": "Auto3.2_IN1"
+    },
+    {
+      "source_device": "VL27",
+      "source_port": "VL27_OUT1",
+      "target_device": "Auto3.2",
+      "target_port": "Auto3.2_IN2"
+    },
+    {
+      "source_device": "SEP3",
+      "source_port": "SP3_OUT2",
+      "target_device": "VL26",
+      "target_port": "VL26_IN"
+    },
+    {
+      "source_device": "SEP3",
+      "source_port": "SP3_OUT3",
+      "target_device": "VL27",
+      "target_port": "VL27_IN"
+    },
+    {
+      "source_device": "NR8",
+      "source_port": "NR8_OUT",
+      "target_device": "RD23",
+      "target_port": "RD23_IN2"
+    },
+    {
+      "source_device": "VL22",
+      "source_port": "VL22_OUT2",
+      "target_device": "NR11",
+      "target_port": "NR11_IN1"
+    },
+    {
+      "source_device": "VL25",
+      "source_port": "VL25_OUt2",
+      "target_device": "NR11",
+      "target_port": "NR11_IN2"
+    },
+    {
+      "source_device": "VL21",
+      "source_port": "VL21_OUT1",
+      "target_device": "NR8",
+      "target_port": "NR8_IN"
+    },
+    {
+      "source_device": "VL23",
+      "source_port": "VL23_OUT2",
+      "target_device": "NR10",
+      "target_port": "NR10_IN1"
+    },
+    {
+      "source_device": "VL23",
+      "source_port": "VL23_OUT1",
+      "target_device": "NR8",
+      "target_port": "NR8_IN"
+    },
+    {
+      "source_device": "VL21",
+      "source_port": "VL21_OUT2",
+      "target_device": "VL23",
+      "target_port": "VL23_IN"
+    },
+    {
+      "source_device": "GT32.1",
+      "source_port": "GT32.1_OUT",
+      "target_device": "VL23",
+      "target_port": "VL23_IN"
+    },
+    {
+      "source_device": "VL27",
+      "source_port": "VL27_OUT2",
+      "target_device": "VL28",
+      "target_port": "VL28_IN"
+    },
+    {
+      "source_device": "VL26",
+      "source_port": "VL26_OUT2",
+      "target_device": "VL28",
+      "target_port": "VL28_IN"
+    },
+    {
+      "source_device": "VL28",
+      "source_port": "VL28_OUT1",
+      "target_device": "NR10",
+      "target_port": "NR10_IN2"
+    },
+    {
+      "source_device": "VL28",
+      "source_port": "VL28_OUT2",
+      "target_device": "NR11",
+      "target_port": "NR11_IN3"
+    },
+    {
+      "source_device": "RD20",
+      "source_port": "RD20_OUT1",
+      "target_device": "GT20.1",
+      "target_port": "GT20.1_IN"
+    },
+    {
+      "source_device": "GT20.1",
+      "source_port": "GT20.1_OUT",
+      "target_device": "VL21",
+      "target_port": "VL21_IN"
+    },
+    {
+      "source_device": "RD20",
+      "source_port": "RD20_OUT2",
+      "target_device": "GT20.2",
+      "target_port": "GT20.2_IN"
+    },
+    {
+      "source_device": "GT20.2",
+      "source_port": "GT20.2_OUT",
+      "target_device": "VL22",
+      "target_port": "VL22_IN"
+    },
+    {
+      "source_device": "NR10",
+      "source_port": "NR10_OUT",
+      "target_device": "RD37",
+      "target_port": "RD37_IN"
+    },
+    {
+      "source_device": "RD37",
+      "source_port": "RD37_OUT",
+      "target_device": "ZHD",
+      "target_port": "ZHD_IN1"
+    },
+    {
+      "source_device": "NR11",
+      "source_port": "NR11_OUT",
+      "target_device": "RD38",
+      "target_port": "RD38_IN"
+    },
+    {
+      "source_device": "RD38",
+      "source_port": "RD38_OUT1",
+      "target_device": "GT38.1",
+      "target_port": "GT38.1_IN"
+    },
+    {
+      "source_device": "RD38",
+      "source_port": "RD38_OUT2",
+      "target_device": "GT38.2",
+      "target_port": "GT38.2_IN"
+    },
+    {
+      "source_device": "GT38.2",
+      "source_port": "GT38.2_OUT",
+      "target_device": "ARB2",
+      "target_port": "ARB2_IN"
+    },
+    {
+      "source_device": "GT38.1",
+      "source_port": "GT38.1_OUT",
+      "target_device": "ARB1",
+      "target_port": "ARB1_IN"
+    },
+    {
+      "source_device": "SLA2",
+      "source_port": "SLA2_OUT",
+      "target_device": "RD39",
+      "target_port": "RD39_IN"
+    },
+    {
+      "source_device": "SLA1",
+      "source_port": "SLA1_OUT",
+      "target_device": "RD15",
+      "target_port": "RD15_IN2"
+    },
+    {
+      "source_device": "SPA1",
+      "source_port": "SPA1_OUT",
+      "target_device": "RD30",
+      "target_port": "RD30_IN4"
+    },
+    {
+      "source_device": "SPA2",
+      "source_port": "SPA2_OUT",
+      "target_device": "RD30",
+      "target_port": "RD30_IN3"
+    },
+    {
+      "source_device": "SPA3",
+      "source_port": "SPA3_OUT",
+      "target_device": "RD30",
+      "target_port": "RD30_IN2"
+    },
+    {
+      "source_device": "SPA4",
+      "source_port": "SPA4_OUT",
+      "target_device": "RD27",
+      "target_port": "RD27_IN2"
+    },
+    {
+      "source_device": "SPA4",
+      "source_port": "SPA4_OUT",
+      "target_device": "RD27",
+      "target_port": "RD27_IN1"
+    },
+    {
+      "source_device": "SPA5",
+      "source_port": "SPA5_OUT",
+      "target_device": "RD27",
+      "target_port": "RD27_IN1"
+    },
+    {
+      "source_device": "SLA4",
+      "source_port": "SLA4_OUT",
+      "target_device": "RD16",
+      "target_port": "RD16_IN1"
+    },
+    {
+      "source_device": "SLA3",
+      "source_port": "SLA3_OUT",
+      "target_device": "RD16",
+      "target_port": "RD16_IN2"
+    },
+    {
+      "source_device": "SPA6",
+      "source_port": "SPA6_OUT",
+      "target_device": "RD31",
+      "target_port": "RD31_IN4"
+    },
+    {
+      "source_device": "SPA7",
+      "source_port": "SPA7_OUT",
+      "target_device": "RD31",
+      "target_port": "RD31_IN3"
+    },
+    {
+      "source_device": "SPA8",
+      "source_port": "SPA8_OUT",
+      "target_device": "RD31",
+      "target_port": "RD31_IN2"
+    },
+    {
+      "source_device": "SPA9",
+      "source_port": "SPA9_OUT",
+      "target_device": "RD28",
+      "target_port": "RD28_IN1"
+    },
+    {
+      "source_device": "SPA10",
+      "source_port": "SPA10_OUT",
+      "target_device": "RD28",
+      "target_port": "RD28_IN2"
+    },
+    {
+      "source_device": "SPA11",
+      "source_port": "SPA11_OUT",
+      "target_device": "RD32",
+      "target_port": "RD32_IN4"
+    },
+    {
+      "source_device": "SPA12",
+      "source_port": "SPA12_OUT",
+      "target_device": "RD32",
+      "target_port": "RD32_IN3"
+    },
+    {
+      "source_device": "SPA13",
+      "source_port": "SPA13_OUT",
+      "target_device": "RD32",
+      "target_port": "RD32_IN2"
+    },
+    {
+      "source_device": "SPA14",
+      "source_port": "SPA14_OUT",
+      "target_device": "RD29",
+      "target_port": "RD29_N1"
+    },
+    {
+      "source_device": "SPA15",
+      "source_port": "SPA15_OUT",
+      "target_device": "RD29",
+      "target_port": "RD29_N2"
+    },
+    {
+      "source_device": "NR1",
+      "source_port": "NR1_OUT",
+      "target_device": "FN1",
+      "target_port": "FN1_IN"
+    },
+    {
+      "source_device": "FN1",
+      "source_port": "FN1_OUT",
+      "target_device": "FD1",
+      "target_port": "FD1_IN"
+    },
+    {
+      "source_device": "FD1",
+      "source_port": "FD1_OUT",
+      "target_device": "SEP1",
+      "target_port": "SP1_IN"
+    },
+    {
+      "source_device": "SEP1",
+      "source_port": "SP1_OUT1",
+      "target_device": "Auto1.1",
+      "target_port": "Auto1.1_IN"
+    },
+    {
+      "source_device": "SEP1",
+      "source_port": "SP1_OUT2",
+      "target_device": "VL1",
+      "target_port": "VL1_IN"
+    },
+    {
+      "source_device": "SEP1",
+      "source_port": "SP1_OUT3",
+      "target_device": "VL2",
+      "target_port": "VL2_IN"
+    },
+    {
+      "source_device": "NR2",
+      "source_port": "NR2_OUT",
+      "target_device": "FN2",
+      "target_port": "FN2_IN"
+    },
+    {
+      "source_device": "FN2",
+      "source_port": "FN2_OUT",
+      "target_device": "FD2",
+      "target_port": "FD2_IN"
+    },
+    {
+      "source_device": "FD2",
+      "source_port": "FD2_OUT",
+      "target_device": "SEP2",
+      "target_port": "SP2_IN"
+    },
+    {
+      "source_device": "FD3",
+      "source_port": "FD3_OUT",
+      "target_device": "SEP3",
+      "target_port": "SP3_IN"
+    },
+    {
+      "source_device": "NR9",
+      "source_port": "NR9_OUT",
+      "target_device": "FN3",
+      "target_port": "FN3_IN"
+    },
+    {
+      "source_device": "FN3",
+      "source_port": "FN3_OUT",
+      "target_device": "FD3",
+      "target_port": "FD3_IN"
+    }
+  ]
+}

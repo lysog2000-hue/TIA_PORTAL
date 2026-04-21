@@ -1,0 +1,165 @@
+﻿FUNCTION "FC_SimFeeder" : Void
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 1.0
+// ==============================================================================
+// FC_SimFeeder - Ð¡Ð¸Ð¼ÑƒÐ»ÑÑ‚Ð¾Ñ€ Ñ„Ñ–Ð·Ð¸ÐºÐ¸ Ñ‚Ð° Ð½ÐµÑÐ¿Ñ€Ð°Ð²Ð½Ð¾ÑÑ‚ÐµÐ¹ Ñ„Ñ–Ð´ÐµÑ€Ð°
+// ==============================================================================
+// Ð’ÐµÑ€ÑÑ–Ñ: 1.0.0
+// Ð”Ð°Ñ‚Ð°: 2026-04-09
+// ==============================================================================
+// ÐŸÑ€Ð¸Ð·Ð½Ð°Ñ‡ÐµÐ½Ð½Ñ:
+//   Ð†Ð¼Ñ–Ñ‚ÑƒÑ” Ñ„Ñ–Ð·Ð¸Ñ‡Ð½Ðµ Ð·Ð°Ð»Ñ–Ð·Ð¾ Ñ„Ñ–Ð´ÐµÑ€Ð° Ð´Ð»Ñ Ñ‚ÐµÑÑ‚ÑƒÐ²Ð°Ð½Ð½Ñ FC_Feeder Ð±ÐµÐ· Ð¾Ð±Ð»Ð°Ð´Ð½Ð°Ð½Ð½Ñ
+//
+// ÐšÐ¾Ð¼ÑƒÐ½Ñ–ÐºÐ°Ñ†Ñ–Ñ Ð· FC_Feeder Ð¢Ð†Ð›Ð¬ÐšÐ˜ Ñ‡ÐµÑ€ÐµÐ· 3 ÑÐ¸Ð³Ð½Ð°Ð»Ð¸:
+//   - Ð§Ð¸Ñ‚Ð°Ñ”:  DB_Mechs.Feeder[Idx].DO_Run
+//   - ÐŸÐ¸ÑˆÐµ:   DB_Mechs.Feeder[Idx].DI_Breaker_OK
+//             DB_Mechs.Feeder[Idx].DI_Feedback_OK
+//
+// Ð’Ð¸ÐºÐ¾Ñ€Ð¸ÑÑ‚Ð°Ð½Ð½Ñ Ð² OB1:
+//   // Ð¡Ð¸Ð¼ÑƒÐ»ÑÑ†Ñ–Ñ Ñ„Ñ–Ð´ÐµÑ€Ð° 0
+//   "FC_SimFeeder"(
+//       FeederIdx := 0,
+//       StartupTime_ms := 3000,
+//       StopTime_ms := 2000,
+//       SimFault_Breaker := FALSE,
+//       FaultTime_Breaker_ms := 10000
+//   );
+//
+//   FC_DeviceRunner(...);  // Ð²Ð¸ÐºÐ»Ð¸ÐºÐ°Ñ” FC_Feeder ÑÐº Ð·Ð°Ð·Ð²Ð¸Ñ‡Ð°Ð¹
+//
+// ÐžÑÐ¾Ð±Ð»Ð¸Ð²Ð¾ÑÑ‚Ñ– Ñ„Ñ–Ð´ÐµÑ€Ð°:
+//   - DI_Feedback_OK Ð·'ÑÐ²Ð»ÑÑ”Ñ‚ÑŒÑÑ Ð¿Ñ–ÑÐ»Ñ StartupTime_ms (ÐºÐ¾Ð½Ñ‚Ð°ÐºÑ‚Ð¾Ñ€ Ð¿Ñ–Ð´Ñ‚ÑÐ³Ð½ÑƒÐ²ÑÑ)
+//   - Ð—Ð½Ð¸ÐºÐ°Ñ” Ð¿Ñ–ÑÐ»Ñ StopTime_ms (Ð²Ð¸Ð±Ñ–Ð³)
+//   - ÐÐµÐ¼Ð°Ñ” Ð´Ð¾Ð´Ð°Ñ‚ÐºÐ¾Ð²Ð¸Ñ… Ð°Ð²Ð°Ñ€Ñ–Ð¹ ÐºÑ€Ñ–Ð¼ Breaker Ñ‚Ð° Feedback
+//
+// ==============================================================================
+   VAR_INPUT 
+      FeederIdx : UInt;   // Ñ–Ð½Ð´ÐµÐºÑ Ñƒ DB_Mechs.Feeder[] (0..N) === Ð¤Ñ–Ð·Ð¸ÐºÐ° Ð¼Ð¾Ñ‚Ð¾Ñ€Ð° ===
+      StartupTime_ms : DInt;   // Ñ‡Ð°Ñ Ñ€Ð¾Ð·Ð³Ð¾Ð½Ñƒ Ð´Ð¾ Ñ„Ñ–Ð´Ð±ÐµÐºÑƒ (Ð¼Ñ)
+      StopTime_ms : DInt;   // Ñ‡Ð°Ñ Ð·Ð½Ð¸ÐºÐ½ÐµÐ½Ð½Ñ Ñ„Ñ–Ð´Ð±ÐµÐºÑƒ Ð¿Ñ–ÑÐ»Ñ Ð·ÑƒÐ¿Ð¸Ð½ÐºÐ¸ (Ð¼Ñ) === Ð¡Ð¸Ð¼ÑƒÐ»ÑÑ†Ñ–Ñ Ð°Ð²Ð°Ñ€Ñ–Ñ— Ð°Ð²Ñ‚Ð¾Ð¼Ð°Ñ‚Ð° ===
+      SimFault_Breaker : Bool;   // ÑƒÐ²Ñ–Ð¼ÐºÐ½ÑƒÑ‚Ð¸ ÑÐ¸Ð¼ÑƒÐ»ÑÑ†Ñ–ÑŽ FLT_BREAKER
+      FaultTime_Breaker_ms : DInt;   // Ñ‡Ð°Ñ Ð´Ð¾ Ð°Ð²Ð°Ñ€Ñ–Ñ— Ð²Ñ–Ð´ Ð¿ÑƒÑÐºÑƒ Ð¼Ð¾Ñ‚Ð¾Ñ€Ð° (Ð¼Ñ) === Ð ÑƒÑ‡Ð½Ð¸Ð¹ ÑÐºÐ¸Ð´ Ð°Ð²Ð°Ñ€Ñ–Ð¹ ===
+      ManualReset : Bool;   // ÑÐºÐ¸Ð½ÑƒÑ‚Ð¸ Ð»Ð°Ñ‚Ñ‡Ð¾Ð²Ð°Ð½Ñ– Ð°Ð²Ð°Ñ€Ñ–Ñ— (Breaker) === Ð†Ð½Ð´ÐµÐºÑ Ñƒ Ð¼Ð°ÑÐ¸Ð²Ñ– ===
+   END_VAR
+
+   VAR_TEMP 
+      idx : UInt;   // === Ð”Ð¾Ð¿Ð¾Ð¼Ñ–Ð¶Ð½Ñ– ===
+      elapsedMs : DInt;   // Ð´Ð»Ñ FC_TimeElapsedMs
+      nowTck : DInt;   // Ð¿Ð¾Ñ‚Ð¾Ñ‡Ð½Ð¸Ð¹ TIME_TCK
+      startupTimeout : Bool;   // Ñ„Ð»Ð°Ð³ Ð¿Ð¾ÑÐ²Ð¸ Ñ„Ñ–Ð´Ð±ÐµÐºÑƒ
+      stopTimeout : Bool;   // Ñ„Ð»Ð°Ð³ Ð·Ð½Ð¸ÐºÐ½ÐµÐ½Ð½Ñ Ñ„Ñ–Ð´Ð±ÐµÐºÑƒ
+      breakerTimeout : Bool;   // Ñ„Ð»Ð°Ð³ ÑÐ¿Ñ€Ð°Ñ†ÑŽÐ²Ð°Ð½Ð½Ñ breaker
+   END_VAR
+
+
+BEGIN
+	
+	// =========================================================
+	// VALIDATE INDEX
+	// =========================================================
+	IF #FeederIdx >= "FEEDERS_COUNT" THEN  // Ð¾Ð±Ð¼ÐµÐ¶ÐµÐ½Ð½Ñ Ñ€Ð¾Ð·Ð¼Ñ–Ñ€Ñƒ Ð¼Ð°ÑÐ¸Ð²Ñƒ DB_SimMechs
+	    RETURN;  // Ñ–Ð½Ð´ÐµÐºÑ Ð·Ð° Ð¼ÐµÐ¶Ð°Ð¼Ð¸ - Ð½Ñ–Ñ‡Ð¾Ð³Ð¾ Ð½Ðµ Ñ€Ð¾Ð±Ð¸Ð¼Ð¾
+	END_IF;
+	
+	// ÐšÐ¾Ð¿Ñ–ÑŽÑ”Ð¼Ð¾ Ñ–Ð½Ð´ÐµÐºÑ Ñƒ temp Ð·Ð¼Ñ–Ð½Ð½Ñƒ Ð´Ð»Ñ Ð·Ñ€ÑƒÑ‡Ð½Ð¾ÑÑ‚Ñ–
+	#idx := #FeederIdx;
+	
+	// =========================================================
+	// PHASE 0: Ð ÑƒÑ‡Ð½Ð¸Ð¹ ÑÐºÐ¸Ð´ Ð°Ð²Ð°Ñ€Ñ–Ð¹
+	// =========================================================
+	IF #ManualReset THEN
+	    "DB_SimMechs".Feeder[#idx].Breaker_Tripped := FALSE;
+	END_IF;
+	
+	// =========================================================
+	// PHASE 1: Edge detection DO_Run (ÐºÐ¾Ð¼Ð°Ð½Ð´Ð° Ð²Ñ–Ð´ FC_Feeder)
+	// =========================================================
+	
+	// Ð”ÐµÑ‚ÐµÐºÑ‚ Ñ„Ñ€Ð¾Ð½Ñ‚Ñƒ 0â†’1 (Ð¿ÑƒÑÐº Ð¼Ð¾Ñ‚Ð¾Ñ€Ð°)
+	IF "DB_Mechs".Feeder[#idx].DO_Run AND NOT "DB_SimMechs".Feeder[#idx].LastDO_Run THEN
+	    "DB_SimMechs".Feeder[#idx].MotorStartTck := TIME_TCK();
+	    "DB_SimMechs".Feeder[#idx].FaultStartTck := TIME_TCK();
+	    "DB_SimMechs".Feeder[#idx].IsMotorRunning := TRUE;
+	    "DB_SimMechs".Feeder[#idx].IsSpinningUp := TRUE;
+	    "DB_SimMechs".Feeder[#idx].IsSpinningDown := FALSE;
+	END_IF;
+	
+	// Ð”ÐµÑ‚ÐµÐºÑ‚ Ñ„Ñ€Ð¾Ð½Ñ‚Ñƒ 1â†’0 (Ð·ÑƒÐ¿Ð¸Ð½ÐºÐ° Ð¼Ð¾Ñ‚Ð¾Ñ€Ð°)
+	IF NOT "DB_Mechs".Feeder[#idx].DO_Run AND "DB_SimMechs".Feeder[#idx].LastDO_Run THEN
+	    "DB_SimMechs".Feeder[#idx].MotorStopTck := TIME_TCK();
+	    "DB_SimMechs".Feeder[#idx].IsMotorRunning := FALSE;
+	    "DB_SimMechs".Feeder[#idx].IsSpinningUp := FALSE;
+	    "DB_SimMechs".Feeder[#idx].IsSpinningDown := TRUE;
+	END_IF;
+	
+	"DB_SimMechs".Feeder[#idx].LastDO_Run := "DB_Mechs".Feeder[#idx].DO_Run;
+	
+	// =========================================================
+	// PHASE 2: Ð¡Ð¸Ð¼ÑƒÐ»ÑÑ†Ñ–Ñ DI_Feedback_OK (Ñ„Ñ–Ð·Ð¸ÐºÐ° Ñ€Ð¾Ð·Ð³Ð¾Ð½Ñƒ/Ð²Ð¸Ð±Ñ–Ð³Ñƒ)
+	// =========================================================
+	
+	IF "DB_SimMechs".Feeder[#idx].IsSpinningUp THEN
+	    // Ð Ð¾Ð·Ð³Ñ–Ð½: FALSE â†’ TRUE Ñ‡ÐµÑ€ÐµÐ· StartupTime_ms
+	    #startupTimeout := "FC_TimeElapsedMs"(
+	                                          StartTck := "DB_SimMechs".Feeder[#idx].MotorStartTck,
+	                                          TimeoutMs := #StartupTime_ms,
+	                                          ElapsedMs => #elapsedMs,
+	                                          NowTck => #nowTck
+	    );
+	    
+	    IF #startupTimeout THEN
+	        "DB_Mechs".Feeder[#idx].DI_Feedback_OK := TRUE;
+	        "DB_SimMechs".Feeder[#idx].IsSpinningUp := FALSE;  // Ñ€Ð¾Ð·Ð³Ñ–Ð½ Ð·Ð°Ð²ÐµÑ€ÑˆÐµÐ½Ð¾
+	    ELSE
+	        "DB_Mechs".Feeder[#idx].DI_Feedback_OK := FALSE;  // Ñ‰Ðµ Ñ€Ð¾Ð·Ð³Ð°Ð½ÑÑ”Ñ‚ÑŒÑÑ
+	    END_IF;
+	    
+	ELSIF "DB_SimMechs".Feeder[#idx].IsSpinningDown THEN
+	    // Ð’Ð¸Ð±Ñ–Ð³: TRUE â†’ FALSE Ñ‡ÐµÑ€ÐµÐ· StopTime_ms
+	    #stopTimeout := "FC_TimeElapsedMs"(
+	                                       StartTck := "DB_SimMechs".Feeder[#idx].MotorStopTck,
+	                                       TimeoutMs := #StopTime_ms,
+	                                       ElapsedMs => #elapsedMs,
+	                                       NowTck => #nowTck
+	    );
+	    
+	    IF #stopTimeout THEN
+	        "DB_Mechs".Feeder[#idx].DI_Feedback_OK := FALSE;
+	        "DB_SimMechs".Feeder[#idx].IsSpinningDown := FALSE;  // Ð²Ð¸Ð±Ñ–Ð³ Ð·Ð°Ð²ÐµÑ€ÑˆÐµÐ½Ð¾
+	    ELSE
+	        "DB_Mechs".Feeder[#idx].DI_Feedback_OK := TRUE;  // Ñ‰Ðµ ÐºÑ€ÑƒÑ‚Ð¸Ñ‚ÑŒÑÑ Ð·Ð° Ñ–Ð½ÐµÑ€Ñ†Ñ–Ñ”ÑŽ
+	    END_IF;
+	    
+	ELSIF "DB_SimMechs".Feeder[#idx].IsMotorRunning THEN
+	    // ÐÐ¾Ñ€Ð¼Ð°Ð»ÑŒÐ½Ð° Ñ€Ð¾Ð±Ð¾Ñ‚Ð° (Ñ€Ð¾Ð·Ð³Ñ–Ð½ Ð·Ð°Ð²ÐµÑ€ÑˆÐµÐ½Ð¾, Ñ‰Ðµ Ð½Ðµ Ð·ÑƒÐ¿Ð¸Ð½Ð¸Ð²ÑÑ)
+	    "DB_Mechs".Feeder[#idx].DI_Feedback_OK := TRUE;
+	    
+	ELSE
+	    // ÐœÐ¾Ñ‚Ð¾Ñ€ ÑÑ‚Ð¾Ñ—Ñ‚ÑŒ
+	    "DB_Mechs".Feeder[#idx].DI_Feedback_OK := FALSE;
+	END_IF;
+	
+	// =========================================================
+	// PHASE 3: Ð¡Ð¸Ð¼ÑƒÐ»ÑÑ†Ñ–Ñ Ð°Ð²Ð°Ñ€Ñ–Ñ— BREAKER
+	// =========================================================
+	
+	// ÐŸÐµÑ€ÐµÐ²Ñ–Ñ€ÐºÐ° Ñ‚Ð°Ð¹Ð¼ÐµÑ€Ð° Ð°Ð²Ð°Ñ€Ñ–Ñ— (Ñ‚Ñ–Ð»ÑŒÐºÐ¸ ÑÐºÑ‰Ð¾ ÑƒÐ²Ñ–Ð¼ÐºÐ½ÐµÐ½Ð¾ Ñ‚Ð° Ð¼Ð¾Ñ‚Ð¾Ñ€ Ð¿Ñ€Ð°Ñ†ÑŽÑ”)
+	IF #SimFault_Breaker AND "DB_SimMechs".Feeder[#idx].IsMotorRunning AND NOT "DB_SimMechs".Feeder[#idx].Breaker_Tripped THEN
+	    #breakerTimeout := "FC_TimeElapsedMs"(
+	                                          StartTck := "DB_SimMechs".Feeder[#idx].FaultStartTck,
+	                                          TimeoutMs := #FaultTime_Breaker_ms,
+	                                          ElapsedMs => #elapsedMs,
+	                                          NowTck => #nowTck
+	    );
+	    
+	    IF #breakerTimeout THEN
+	        "DB_SimMechs".Feeder[#idx].Breaker_Tripped := TRUE;  // Ð»Ð°Ñ‚Ñ‡ Ð°Ð²Ð°Ñ€Ñ–Ñ—
+	    END_IF;
+	END_IF;
+	
+	// Ð—Ð°Ð¿Ð¸Ñ DI (Ñ–Ð½Ð²ÐµÑ€Ð·Ñ–Ñ: Tripped=TRUE â†’ DI_OK=FALSE)
+	"DB_Mechs".Feeder[#idx].DI_Breaker_OK := NOT "DB_SimMechs".Feeder[#idx].Breaker_Tripped;
+	
+	
+END_FUNCTION
+

@@ -1,26 +1,422 @@
 ﻿// ==============================================================================
 // DB_SimConfig - Конфігурація симуляторів механізмів
 // ==============================================================================
-// Generated: 2026-02-26 16:22:16
+// Generated: 2026-03-20 09:40:14
 // Source   : graph.json
 // ==============================================================================
 
 DATA_BLOCK "DB_SimConfig"
 { S7_Optimized_Access := 'TRUE' }
-VERSION : 2.1
+VERSION : 2.2
 
 VAR
-    Redler : ARRAY[0.."REDLERS_COUNT"] OF "UDT_SimRedlerConfig";
-    Noria  : ARRAY[0.."NORIAS_COUNT"] OF "UDT_SimNoriaConfig";
-    Gate2P : ARRAY[0.."GATES2P_COUNT"] OF "UDT_SimGate2PConfig";
-    Fan    : ARRAY[0.."FANS_COUNT"] OF "UDT_SimFanConfig";
+    Redler        : ARRAY[0.."REDLERS_COUNT"] OF "UDT_SimRedlerConfig";
+    Noria         : ARRAY[0.."NORIAS_COUNT"] OF "UDT_SimNoriaConfig";
+    Gate2P        : ARRAY[0.."GATES2P_COUNT"] OF "UDT_SimGate2PConfig";
+    ReceivingPit  : ARRAY[0.."RECEIVING_PITS_COUNT"] OF "UDT_SimReceivingPitConfig";
+    Valve3P       : ARRAY[0.."VALVES3P_COUNT"] OF "UDT_SimValve3PConfig";
+    Silos         : ARRAY[0.."SILOS_COUNT"] OF "UDT_SimSilosConfig";
+    Sushka        : ARRAY[0.."SUSHKAS_COUNT"] OF "UDT_SimSushkaConfig";
+    Fan           : ARRAY[0.."FANS_COUNT"] OF "UDT_SimFanConfig";
+    Separator     : ARRAY[0.."SEPARATORS_COUNT"] OF "UDT_SimSeparatorConfig";
+    Feeder        : ARRAY[0.."FEEDERS_COUNT"] OF "UDT_SimFeederConfig";
 END_VAR
 
-BEGIN
 
+BEGIN
+    // === Redler ===
+    // Redler "RD1" (id=1, TypedIndex=0)
+    Redler[0].Enable := TRUE;
+    Redler[0].StartupTime_ms := 3000;
+    Redler[0].StopTime_ms := 2000;
+    Redler[0].SimFault_Breaker := FALSE;
+    Redler[0].FaultTime_Breaker_ms := 10000;
+    Redler[0].SimFault_Overflow := FALSE;
+    Redler[0].FaultTime_Overflow_ms := 15000;
+    Redler[0].ManualReset := FALSE;
+
+    // Redler "RD2" (id=2, TypedIndex=1)
+    Redler[1].Enable := TRUE;
+    Redler[1].StartupTime_ms := 3000;
+    Redler[1].StopTime_ms := 2000;
+    Redler[1].SimFault_Breaker := FALSE;
+    Redler[1].FaultTime_Breaker_ms := 10000;
+    Redler[1].SimFault_Overflow := FALSE;
+    Redler[1].FaultTime_Overflow_ms := 15000;
+    Redler[1].ManualReset := FALSE;
+
+    // Redler "RD3" (id=3, TypedIndex=2)
+    Redler[2].Enable := TRUE;
+    Redler[2].StartupTime_ms := 3000;
+    Redler[2].StopTime_ms := 2000;
+    Redler[2].SimFault_Breaker := FALSE;
+    Redler[2].FaultTime_Breaker_ms := 10000;
+    Redler[2].SimFault_Overflow := FALSE;
+    Redler[2].FaultTime_Overflow_ms := 15000;
+    Redler[2].ManualReset := FALSE;
+
+    // Redler "RD4" (id=4, TypedIndex=3)
+    Redler[3].Enable := TRUE;
+    Redler[3].StartupTime_ms := 3000;
+    Redler[3].StopTime_ms := 2000;
+    Redler[3].SimFault_Breaker := FALSE;
+    Redler[3].FaultTime_Breaker_ms := 10000;
+    Redler[3].SimFault_Overflow := FALSE;
+    Redler[3].FaultTime_Overflow_ms := 15000;
+    Redler[3].ManualReset := FALSE;
+
+    // Redler "RD5" (id=5, TypedIndex=4)
+    Redler[4].Enable := TRUE;
+    Redler[4].StartupTime_ms := 3000;
+    Redler[4].StopTime_ms := 2000;
+    Redler[4].SimFault_Breaker := FALSE;
+    Redler[4].FaultTime_Breaker_ms := 10000;
+    Redler[4].SimFault_Overflow := FALSE;
+    Redler[4].FaultTime_Overflow_ms := 15000;
+    Redler[4].ManualReset := FALSE;
+
+    // Redler "RD6" (id=6, TypedIndex=5)
+    Redler[5].Enable := TRUE;
+    Redler[5].StartupTime_ms := 3000;
+    Redler[5].StopTime_ms := 2000;
+    Redler[5].SimFault_Breaker := FALSE;
+    Redler[5].FaultTime_Breaker_ms := 10000;
+    Redler[5].SimFault_Overflow := FALSE;
+    Redler[5].FaultTime_Overflow_ms := 15000;
+    Redler[5].ManualReset := FALSE;
+
+    // Redler "RD7" (id=7, TypedIndex=6)
+    Redler[6].Enable := TRUE;
+    Redler[6].StartupTime_ms := 3000;
+    Redler[6].StopTime_ms := 2000;
+    Redler[6].SimFault_Breaker := FALSE;
+    Redler[6].FaultTime_Breaker_ms := 10000;
+    Redler[6].SimFault_Overflow := FALSE;
+    Redler[6].FaultTime_Overflow_ms := 15000;
+    Redler[6].ManualReset := FALSE;
+
+    // Redler "RD8" (id=8, TypedIndex=7)
+    Redler[7].Enable := TRUE;
+    Redler[7].StartupTime_ms := 3000;
+    Redler[7].StopTime_ms := 2000;
+    Redler[7].SimFault_Breaker := FALSE;
+    Redler[7].FaultTime_Breaker_ms := 10000;
+    Redler[7].SimFault_Overflow := FALSE;
+    Redler[7].FaultTime_Overflow_ms := 15000;
+    Redler[7].ManualReset := FALSE;
+
+    // Redler "RD9" (id=9, TypedIndex=8)
+    Redler[8].Enable := TRUE;
+    Redler[8].StartupTime_ms := 3000;
+    Redler[8].StopTime_ms := 2000;
+    Redler[8].SimFault_Breaker := FALSE;
+    Redler[8].FaultTime_Breaker_ms := 10000;
+    Redler[8].SimFault_Overflow := FALSE;
+    Redler[8].FaultTime_Overflow_ms := 15000;
+    Redler[8].ManualReset := FALSE;
+
+    // Redler "RD10" (id=10, TypedIndex=9)
+    Redler[9].Enable := TRUE;
+    Redler[9].StartupTime_ms := 3000;
+    Redler[9].StopTime_ms := 2000;
+    Redler[9].SimFault_Breaker := FALSE;
+    Redler[9].FaultTime_Breaker_ms := 10000;
+    Redler[9].SimFault_Overflow := FALSE;
+    Redler[9].FaultTime_Overflow_ms := 15000;
+    Redler[9].ManualReset := FALSE;
+
+    // Redler "RD11" (id=11, TypedIndex=10)
+    Redler[10].Enable := TRUE;
+    Redler[10].StartupTime_ms := 3000;
+    Redler[10].StopTime_ms := 2000;
+    Redler[10].SimFault_Breaker := FALSE;
+    Redler[10].FaultTime_Breaker_ms := 10000;
+    Redler[10].SimFault_Overflow := FALSE;
+    Redler[10].FaultTime_Overflow_ms := 15000;
+    Redler[10].ManualReset := FALSE;
+
+    // Redler "RD12" (id=12, TypedIndex=11)
+    Redler[11].Enable := TRUE;
+    Redler[11].StartupTime_ms := 3000;
+    Redler[11].StopTime_ms := 2000;
+    Redler[11].SimFault_Breaker := FALSE;
+    Redler[11].FaultTime_Breaker_ms := 10000;
+    Redler[11].SimFault_Overflow := FALSE;
+    Redler[11].FaultTime_Overflow_ms := 15000;
+    Redler[11].ManualReset := FALSE;
+
+    // Redler "RD13" (id=13, TypedIndex=12)
+    Redler[12].Enable := TRUE;
+    Redler[12].StartupTime_ms := 3000;
+    Redler[12].StopTime_ms := 2000;
+    Redler[12].SimFault_Breaker := FALSE;
+    Redler[12].FaultTime_Breaker_ms := 10000;
+    Redler[12].SimFault_Overflow := FALSE;
+    Redler[12].FaultTime_Overflow_ms := 15000;
+    Redler[12].ManualReset := FALSE;
+
+    // Redler "RD14" (id=14, TypedIndex=13)
+    Redler[13].Enable := TRUE;
+    Redler[13].StartupTime_ms := 3000;
+    Redler[13].StopTime_ms := 2000;
+    Redler[13].SimFault_Breaker := FALSE;
+    Redler[13].FaultTime_Breaker_ms := 10000;
+    Redler[13].SimFault_Overflow := FALSE;
+    Redler[13].FaultTime_Overflow_ms := 15000;
+    Redler[13].ManualReset := FALSE;
+
+    // Redler "RD15" (id=15, TypedIndex=14)
+    Redler[14].Enable := TRUE;
+    Redler[14].StartupTime_ms := 3000;
+    Redler[14].StopTime_ms := 2000;
+    Redler[14].SimFault_Breaker := FALSE;
+    Redler[14].FaultTime_Breaker_ms := 10000;
+    Redler[14].SimFault_Overflow := FALSE;
+    Redler[14].FaultTime_Overflow_ms := 15000;
+    Redler[14].ManualReset := FALSE;
+
+    // Redler "RD16" (id=16, TypedIndex=15)
+    Redler[15].Enable := TRUE;
+    Redler[15].StartupTime_ms := 3000;
+    Redler[15].StopTime_ms := 2000;
+    Redler[15].SimFault_Breaker := FALSE;
+    Redler[15].FaultTime_Breaker_ms := 10000;
+    Redler[15].SimFault_Overflow := FALSE;
+    Redler[15].FaultTime_Overflow_ms := 15000;
+    Redler[15].ManualReset := FALSE;
+
+    // Redler "RD17" (id=17, TypedIndex=16)
+    Redler[16].Enable := TRUE;
+    Redler[16].StartupTime_ms := 3000;
+    Redler[16].StopTime_ms := 2000;
+    Redler[16].SimFault_Breaker := FALSE;
+    Redler[16].FaultTime_Breaker_ms := 10000;
+    Redler[16].SimFault_Overflow := FALSE;
+    Redler[16].FaultTime_Overflow_ms := 15000;
+    Redler[16].ManualReset := FALSE;
+
+    // Redler "RD18" (id=18, TypedIndex=17)
+    Redler[17].Enable := TRUE;
+    Redler[17].StartupTime_ms := 3000;
+    Redler[17].StopTime_ms := 2000;
+    Redler[17].SimFault_Breaker := FALSE;
+    Redler[17].FaultTime_Breaker_ms := 10000;
+    Redler[17].SimFault_Overflow := FALSE;
+    Redler[17].FaultTime_Overflow_ms := 15000;
+    Redler[17].ManualReset := FALSE;
+
+    // Redler "RD19" (id=19, TypedIndex=18)
+    Redler[18].Enable := TRUE;
+    Redler[18].StartupTime_ms := 3000;
+    Redler[18].StopTime_ms := 2000;
+    Redler[18].SimFault_Breaker := FALSE;
+    Redler[18].FaultTime_Breaker_ms := 10000;
+    Redler[18].SimFault_Overflow := FALSE;
+    Redler[18].FaultTime_Overflow_ms := 15000;
+    Redler[18].ManualReset := FALSE;
+
+    // Redler "RD20" (id=20, TypedIndex=19)
+    Redler[19].Enable := TRUE;
+    Redler[19].StartupTime_ms := 3000;
+    Redler[19].StopTime_ms := 2000;
+    Redler[19].SimFault_Breaker := FALSE;
+    Redler[19].FaultTime_Breaker_ms := 10000;
+    Redler[19].SimFault_Overflow := FALSE;
+    Redler[19].FaultTime_Overflow_ms := 15000;
+    Redler[19].ManualReset := FALSE;
+
+    // Redler "RD21" (id=21, TypedIndex=20)
+    Redler[20].Enable := TRUE;
+    Redler[20].StartupTime_ms := 3000;
+    Redler[20].StopTime_ms := 2000;
+    Redler[20].SimFault_Breaker := FALSE;
+    Redler[20].FaultTime_Breaker_ms := 10000;
+    Redler[20].SimFault_Overflow := FALSE;
+    Redler[20].FaultTime_Overflow_ms := 15000;
+    Redler[20].ManualReset := FALSE;
+
+    // Redler "RD22" (id=22, TypedIndex=21)
+    Redler[21].Enable := TRUE;
+    Redler[21].StartupTime_ms := 3000;
+    Redler[21].StopTime_ms := 2000;
+    Redler[21].SimFault_Breaker := FALSE;
+    Redler[21].FaultTime_Breaker_ms := 10000;
+    Redler[21].SimFault_Overflow := FALSE;
+    Redler[21].FaultTime_Overflow_ms := 15000;
+    Redler[21].ManualReset := FALSE;
+
+    // Redler "RD23" (id=23, TypedIndex=22)
+    Redler[22].Enable := TRUE;
+    Redler[22].StartupTime_ms := 3000;
+    Redler[22].StopTime_ms := 2000;
+    Redler[22].SimFault_Breaker := FALSE;
+    Redler[22].FaultTime_Breaker_ms := 10000;
+    Redler[22].SimFault_Overflow := FALSE;
+    Redler[22].FaultTime_Overflow_ms := 15000;
+    Redler[22].ManualReset := FALSE;
+
+    // Redler "RD24" (id=24, TypedIndex=23)
+    Redler[23].Enable := TRUE;
+    Redler[23].StartupTime_ms := 3000;
+    Redler[23].StopTime_ms := 2000;
+    Redler[23].SimFault_Breaker := FALSE;
+    Redler[23].FaultTime_Breaker_ms := 10000;
+    Redler[23].SimFault_Overflow := FALSE;
+    Redler[23].FaultTime_Overflow_ms := 15000;
+    Redler[23].ManualReset := FALSE;
+
+    // Redler "RD25" (id=25, TypedIndex=24)
+    Redler[24].Enable := TRUE;
+    Redler[24].StartupTime_ms := 3000;
+    Redler[24].StopTime_ms := 2000;
+    Redler[24].SimFault_Breaker := FALSE;
+    Redler[24].FaultTime_Breaker_ms := 10000;
+    Redler[24].SimFault_Overflow := FALSE;
+    Redler[24].FaultTime_Overflow_ms := 15000;
+    Redler[24].ManualReset := FALSE;
+
+    // Redler "RD26" (id=26, TypedIndex=25)
+    Redler[25].Enable := TRUE;
+    Redler[25].StartupTime_ms := 3000;
+    Redler[25].StopTime_ms := 2000;
+    Redler[25].SimFault_Breaker := FALSE;
+    Redler[25].FaultTime_Breaker_ms := 10000;
+    Redler[25].SimFault_Overflow := FALSE;
+    Redler[25].FaultTime_Overflow_ms := 15000;
+    Redler[25].ManualReset := FALSE;
+
+    // Redler "RD27" (id=27, TypedIndex=26)
+    Redler[26].Enable := TRUE;
+    Redler[26].StartupTime_ms := 3000;
+    Redler[26].StopTime_ms := 2000;
+    Redler[26].SimFault_Breaker := FALSE;
+    Redler[26].FaultTime_Breaker_ms := 10000;
+    Redler[26].SimFault_Overflow := FALSE;
+    Redler[26].FaultTime_Overflow_ms := 15000;
+    Redler[26].ManualReset := FALSE;
+
+    // Redler "RD28" (id=28, TypedIndex=27)
+    Redler[27].Enable := TRUE;
+    Redler[27].StartupTime_ms := 3000;
+    Redler[27].StopTime_ms := 2000;
+    Redler[27].SimFault_Breaker := FALSE;
+    Redler[27].FaultTime_Breaker_ms := 10000;
+    Redler[27].SimFault_Overflow := FALSE;
+    Redler[27].FaultTime_Overflow_ms := 15000;
+    Redler[27].ManualReset := FALSE;
+
+    // Redler "RD29" (id=29, TypedIndex=28)
+    Redler[28].Enable := TRUE;
+    Redler[28].StartupTime_ms := 3000;
+    Redler[28].StopTime_ms := 2000;
+    Redler[28].SimFault_Breaker := FALSE;
+    Redler[28].FaultTime_Breaker_ms := 10000;
+    Redler[28].SimFault_Overflow := FALSE;
+    Redler[28].FaultTime_Overflow_ms := 15000;
+    Redler[28].ManualReset := FALSE;
+
+    // Redler "RD30" (id=30, TypedIndex=29)
+    Redler[29].Enable := TRUE;
+    Redler[29].StartupTime_ms := 3000;
+    Redler[29].StopTime_ms := 2000;
+    Redler[29].SimFault_Breaker := FALSE;
+    Redler[29].FaultTime_Breaker_ms := 10000;
+    Redler[29].SimFault_Overflow := FALSE;
+    Redler[29].FaultTime_Overflow_ms := 15000;
+    Redler[29].ManualReset := FALSE;
+
+    // Redler "RD31" (id=31, TypedIndex=30)
+    Redler[30].Enable := TRUE;
+    Redler[30].StartupTime_ms := 3000;
+    Redler[30].StopTime_ms := 2000;
+    Redler[30].SimFault_Breaker := FALSE;
+    Redler[30].FaultTime_Breaker_ms := 10000;
+    Redler[30].SimFault_Overflow := FALSE;
+    Redler[30].FaultTime_Overflow_ms := 15000;
+    Redler[30].ManualReset := FALSE;
+
+    // Redler "RD32" (id=32, TypedIndex=31)
+    Redler[31].Enable := TRUE;
+    Redler[31].StartupTime_ms := 3000;
+    Redler[31].StopTime_ms := 2000;
+    Redler[31].SimFault_Breaker := FALSE;
+    Redler[31].FaultTime_Breaker_ms := 10000;
+    Redler[31].SimFault_Overflow := FALSE;
+    Redler[31].FaultTime_Overflow_ms := 15000;
+    Redler[31].ManualReset := FALSE;
+
+    // Redler "RD33" (id=33, TypedIndex=32)
+    Redler[32].Enable := TRUE;
+    Redler[32].StartupTime_ms := 3000;
+    Redler[32].StopTime_ms := 2000;
+    Redler[32].SimFault_Breaker := FALSE;
+    Redler[32].FaultTime_Breaker_ms := 10000;
+    Redler[32].SimFault_Overflow := FALSE;
+    Redler[32].FaultTime_Overflow_ms := 15000;
+    Redler[32].ManualReset := FALSE;
+
+    // Redler "RD34" (id=34, TypedIndex=33)
+    Redler[33].Enable := TRUE;
+    Redler[33].StartupTime_ms := 3000;
+    Redler[33].StopTime_ms := 2000;
+    Redler[33].SimFault_Breaker := FALSE;
+    Redler[33].FaultTime_Breaker_ms := 10000;
+    Redler[33].SimFault_Overflow := FALSE;
+    Redler[33].FaultTime_Overflow_ms := 15000;
+    Redler[33].ManualReset := FALSE;
+
+    // Redler "RD35" (id=35, TypedIndex=34)
+    Redler[34].Enable := TRUE;
+    Redler[34].StartupTime_ms := 3000;
+    Redler[34].StopTime_ms := 2000;
+    Redler[34].SimFault_Breaker := FALSE;
+    Redler[34].FaultTime_Breaker_ms := 10000;
+    Redler[34].SimFault_Overflow := FALSE;
+    Redler[34].FaultTime_Overflow_ms := 15000;
+    Redler[34].ManualReset := FALSE;
+
+    // Redler "RD36" (id=36, TypedIndex=35)
+    Redler[35].Enable := TRUE;
+    Redler[35].StartupTime_ms := 3000;
+    Redler[35].StopTime_ms := 2000;
+    Redler[35].SimFault_Breaker := FALSE;
+    Redler[35].FaultTime_Breaker_ms := 10000;
+    Redler[35].SimFault_Overflow := FALSE;
+    Redler[35].FaultTime_Overflow_ms := 15000;
+    Redler[35].ManualReset := FALSE;
+
+    // Redler "RD37" (id=37, TypedIndex=36)
+    Redler[36].Enable := TRUE;
+    Redler[36].StartupTime_ms := 3000;
+    Redler[36].StopTime_ms := 2000;
+    Redler[36].SimFault_Breaker := FALSE;
+    Redler[36].FaultTime_Breaker_ms := 10000;
+    Redler[36].SimFault_Overflow := FALSE;
+    Redler[36].FaultTime_Overflow_ms := 15000;
+    Redler[36].ManualReset := FALSE;
+
+    // Redler "RD38" (id=38, TypedIndex=37)
+    Redler[37].Enable := TRUE;
+    Redler[37].StartupTime_ms := 3000;
+    Redler[37].StopTime_ms := 2000;
+    Redler[37].SimFault_Breaker := FALSE;
+    Redler[37].FaultTime_Breaker_ms := 10000;
+    Redler[37].SimFault_Overflow := FALSE;
+    Redler[37].FaultTime_Overflow_ms := 15000;
+    Redler[37].ManualReset := FALSE;
+
+    // Redler "RD39" (id=39, TypedIndex=38)
+    Redler[38].Enable := TRUE;
+    Redler[38].StartupTime_ms := 3000;
+    Redler[38].StopTime_ms := 2000;
+    Redler[38].SimFault_Breaker := FALSE;
+    Redler[38].FaultTime_Breaker_ms := 10000;
+    Redler[38].SimFault_Overflow := FALSE;
+    Redler[38].FaultTime_Overflow_ms := 15000;
+    Redler[38].ManualReset := FALSE;
 
     // === Noria ===
-    // Noria "Noria" (id=0, TypedIndex=0)
+    // Noria "NR1" (id=51, TypedIndex=0)
     Noria[0].Enable := TRUE;
     Noria[0].StartupTime_ms := 4000;
     Noria[0].StopTime_ms := 3000;
@@ -32,8 +428,7 @@ BEGIN
     Noria[0].FaultTime_Overflow_ms := 15000;
     Noria[0].ManualReset := FALSE;
 
-    // === Noria ===
-    // Noria "Noria" (id=1, TypedIndex=1)
+    // Noria "NR2" (id=52, TypedIndex=1)
     Noria[1].Enable := TRUE;
     Noria[1].StartupTime_ms := 4000;
     Noria[1].StopTime_ms := 3000;
@@ -45,8 +440,7 @@ BEGIN
     Noria[1].FaultTime_Overflow_ms := 15000;
     Noria[1].ManualReset := FALSE;
 
-    // === Noria ===
-    // Noria "Noria" (id=2, TypedIndex=2)
+    // Noria "NR3" (id=53, TypedIndex=2)
     Noria[2].Enable := TRUE;
     Noria[2].StartupTime_ms := 4000;
     Noria[2].StopTime_ms := 3000;
@@ -58,8 +452,116 @@ BEGIN
     Noria[2].FaultTime_Overflow_ms := 15000;
     Noria[2].ManualReset := FALSE;
 
+    // Noria "NR4" (id=54, TypedIndex=3)
+    Noria[3].Enable := TRUE;
+    Noria[3].StartupTime_ms := 4000;
+    Noria[3].StopTime_ms := 3000;
+    Noria[3].SimFault_Breaker := FALSE;
+    Noria[3].FaultTime_Breaker_ms := 10000;
+    Noria[3].SimFault_Alignment := FALSE;
+    Noria[3].FaultTime_Alignment_ms := 20000;
+    Noria[3].SimFault_Overflow := FALSE;
+    Noria[3].FaultTime_Overflow_ms := 15000;
+    Noria[3].ManualReset := FALSE;
+
+    // Noria "NR5" (id=55, TypedIndex=4)
+    Noria[4].Enable := TRUE;
+    Noria[4].StartupTime_ms := 4000;
+    Noria[4].StopTime_ms := 3000;
+    Noria[4].SimFault_Breaker := FALSE;
+    Noria[4].FaultTime_Breaker_ms := 10000;
+    Noria[4].SimFault_Alignment := FALSE;
+    Noria[4].FaultTime_Alignment_ms := 20000;
+    Noria[4].SimFault_Overflow := FALSE;
+    Noria[4].FaultTime_Overflow_ms := 15000;
+    Noria[4].ManualReset := FALSE;
+
+    // Noria "NR6" (id=56, TypedIndex=5)
+    Noria[5].Enable := TRUE;
+    Noria[5].StartupTime_ms := 4000;
+    Noria[5].StopTime_ms := 3000;
+    Noria[5].SimFault_Breaker := FALSE;
+    Noria[5].FaultTime_Breaker_ms := 10000;
+    Noria[5].SimFault_Alignment := FALSE;
+    Noria[5].FaultTime_Alignment_ms := 20000;
+    Noria[5].SimFault_Overflow := FALSE;
+    Noria[5].FaultTime_Overflow_ms := 15000;
+    Noria[5].ManualReset := FALSE;
+
+    // Noria "NR7" (id=57, TypedIndex=6)
+    Noria[6].Enable := TRUE;
+    Noria[6].StartupTime_ms := 4000;
+    Noria[6].StopTime_ms := 3000;
+    Noria[6].SimFault_Breaker := FALSE;
+    Noria[6].FaultTime_Breaker_ms := 10000;
+    Noria[6].SimFault_Alignment := FALSE;
+    Noria[6].FaultTime_Alignment_ms := 20000;
+    Noria[6].SimFault_Overflow := FALSE;
+    Noria[6].FaultTime_Overflow_ms := 15000;
+    Noria[6].ManualReset := FALSE;
+
+    // Noria "NR8" (id=58, TypedIndex=7)
+    Noria[7].Enable := TRUE;
+    Noria[7].StartupTime_ms := 4000;
+    Noria[7].StopTime_ms := 3000;
+    Noria[7].SimFault_Breaker := FALSE;
+    Noria[7].FaultTime_Breaker_ms := 10000;
+    Noria[7].SimFault_Alignment := FALSE;
+    Noria[7].FaultTime_Alignment_ms := 20000;
+    Noria[7].SimFault_Overflow := FALSE;
+    Noria[7].FaultTime_Overflow_ms := 15000;
+    Noria[7].ManualReset := FALSE;
+
+    // Noria "NR9" (id=59, TypedIndex=8)
+    Noria[8].Enable := TRUE;
+    Noria[8].StartupTime_ms := 4000;
+    Noria[8].StopTime_ms := 3000;
+    Noria[8].SimFault_Breaker := FALSE;
+    Noria[8].FaultTime_Breaker_ms := 10000;
+    Noria[8].SimFault_Alignment := FALSE;
+    Noria[8].FaultTime_Alignment_ms := 20000;
+    Noria[8].SimFault_Overflow := FALSE;
+    Noria[8].FaultTime_Overflow_ms := 15000;
+    Noria[8].ManualReset := FALSE;
+
+    // Noria "NR10" (id=60, TypedIndex=9)
+    Noria[9].Enable := TRUE;
+    Noria[9].StartupTime_ms := 4000;
+    Noria[9].StopTime_ms := 3000;
+    Noria[9].SimFault_Breaker := FALSE;
+    Noria[9].FaultTime_Breaker_ms := 10000;
+    Noria[9].SimFault_Alignment := FALSE;
+    Noria[9].FaultTime_Alignment_ms := 20000;
+    Noria[9].SimFault_Overflow := FALSE;
+    Noria[9].FaultTime_Overflow_ms := 15000;
+    Noria[9].ManualReset := FALSE;
+
+    // Noria "NR11" (id=61, TypedIndex=10)
+    Noria[10].Enable := TRUE;
+    Noria[10].StartupTime_ms := 4000;
+    Noria[10].StopTime_ms := 3000;
+    Noria[10].SimFault_Breaker := FALSE;
+    Noria[10].FaultTime_Breaker_ms := 10000;
+    Noria[10].SimFault_Alignment := FALSE;
+    Noria[10].FaultTime_Alignment_ms := 20000;
+    Noria[10].SimFault_Overflow := FALSE;
+    Noria[10].FaultTime_Overflow_ms := 15000;
+    Noria[10].ManualReset := FALSE;
+
+    // Noria "NR12" (id=62, TypedIndex=11)
+    Noria[11].Enable := TRUE;
+    Noria[11].StartupTime_ms := 4000;
+    Noria[11].StopTime_ms := 3000;
+    Noria[11].SimFault_Breaker := FALSE;
+    Noria[11].FaultTime_Breaker_ms := 10000;
+    Noria[11].SimFault_Alignment := FALSE;
+    Noria[11].FaultTime_Alignment_ms := 20000;
+    Noria[11].SimFault_Overflow := FALSE;
+    Noria[11].FaultTime_Overflow_ms := 15000;
+    Noria[11].ManualReset := FALSE;
+
     // === Gate2P ===
-    // Gate2P "Gate2P" (id=3, TypedIndex=0)
+    // Gate2P "GT1" (id=101, TypedIndex=0)
     Gate2P[0].Enable := TRUE;
     Gate2P[0].InitAtPos0 := TRUE;
     Gate2P[0].TravelTime_ms := 5000;
@@ -67,5 +569,1006 @@ BEGIN
     Gate2P[0].FaultTime_Breaker_ms := 10000;
     Gate2P[0].ManualReset := FALSE;
 
+    // Gate2P "GT2" (id=102, TypedIndex=1)
+    Gate2P[1].Enable := TRUE;
+    Gate2P[1].InitAtPos0 := TRUE;
+    Gate2P[1].TravelTime_ms := 5000;
+    Gate2P[1].SimFault_Breaker := FALSE;
+    Gate2P[1].FaultTime_Breaker_ms := 10000;
+    Gate2P[1].ManualReset := FALSE;
 
+    // Gate2P "GT3" (id=103, TypedIndex=2)
+    Gate2P[2].Enable := TRUE;
+    Gate2P[2].InitAtPos0 := TRUE;
+    Gate2P[2].TravelTime_ms := 5000;
+    Gate2P[2].SimFault_Breaker := FALSE;
+    Gate2P[2].FaultTime_Breaker_ms := 10000;
+    Gate2P[2].ManualReset := FALSE;
+
+    // Gate2P "GT4" (id=104, TypedIndex=3)
+    Gate2P[3].Enable := TRUE;
+    Gate2P[3].InitAtPos0 := TRUE;
+    Gate2P[3].TravelTime_ms := 5000;
+    Gate2P[3].SimFault_Breaker := FALSE;
+    Gate2P[3].FaultTime_Breaker_ms := 10000;
+    Gate2P[3].ManualReset := FALSE;
+
+    // Gate2P "GT5" (id=105, TypedIndex=4)
+    Gate2P[4].Enable := TRUE;
+    Gate2P[4].InitAtPos0 := TRUE;
+    Gate2P[4].TravelTime_ms := 5000;
+    Gate2P[4].SimFault_Breaker := FALSE;
+    Gate2P[4].FaultTime_Breaker_ms := 10000;
+    Gate2P[4].ManualReset := FALSE;
+
+    // Gate2P "GT6" (id=106, TypedIndex=5)
+    Gate2P[5].Enable := TRUE;
+    Gate2P[5].InitAtPos0 := TRUE;
+    Gate2P[5].TravelTime_ms := 5000;
+    Gate2P[5].SimFault_Breaker := FALSE;
+    Gate2P[5].FaultTime_Breaker_ms := 10000;
+    Gate2P[5].ManualReset := FALSE;
+
+    // Gate2P "GT7" (id=107, TypedIndex=6)
+    Gate2P[6].Enable := TRUE;
+    Gate2P[6].InitAtPos0 := TRUE;
+    Gate2P[6].TravelTime_ms := 5000;
+    Gate2P[6].SimFault_Breaker := FALSE;
+    Gate2P[6].FaultTime_Breaker_ms := 10000;
+    Gate2P[6].ManualReset := FALSE;
+
+    // Gate2P "GT8" (id=108, TypedIndex=7)
+    Gate2P[7].Enable := TRUE;
+    Gate2P[7].InitAtPos0 := TRUE;
+    Gate2P[7].TravelTime_ms := 5000;
+    Gate2P[7].SimFault_Breaker := FALSE;
+    Gate2P[7].FaultTime_Breaker_ms := 10000;
+    Gate2P[7].ManualReset := FALSE;
+
+    // Gate2P "GT9" (id=109, TypedIndex=8)
+    Gate2P[8].Enable := TRUE;
+    Gate2P[8].InitAtPos0 := TRUE;
+    Gate2P[8].TravelTime_ms := 5000;
+    Gate2P[8].SimFault_Breaker := FALSE;
+    Gate2P[8].FaultTime_Breaker_ms := 10000;
+    Gate2P[8].ManualReset := FALSE;
+
+    // Gate2P "GT10" (id=110, TypedIndex=9)
+    Gate2P[9].Enable := TRUE;
+    Gate2P[9].InitAtPos0 := TRUE;
+    Gate2P[9].TravelTime_ms := 5000;
+    Gate2P[9].SimFault_Breaker := FALSE;
+    Gate2P[9].FaultTime_Breaker_ms := 10000;
+    Gate2P[9].ManualReset := FALSE;
+
+    // Gate2P "GT11" (id=111, TypedIndex=10)
+    Gate2P[10].Enable := TRUE;
+    Gate2P[10].InitAtPos0 := TRUE;
+    Gate2P[10].TravelTime_ms := 5000;
+    Gate2P[10].SimFault_Breaker := FALSE;
+    Gate2P[10].FaultTime_Breaker_ms := 10000;
+    Gate2P[10].ManualReset := FALSE;
+
+    // Gate2P "GT12" (id=112, TypedIndex=11)
+    Gate2P[11].Enable := TRUE;
+    Gate2P[11].InitAtPos0 := TRUE;
+    Gate2P[11].TravelTime_ms := 5000;
+    Gate2P[11].SimFault_Breaker := FALSE;
+    Gate2P[11].FaultTime_Breaker_ms := 10000;
+    Gate2P[11].ManualReset := FALSE;
+
+    // Gate2P "GT13" (id=113, TypedIndex=12)
+    Gate2P[12].Enable := TRUE;
+    Gate2P[12].InitAtPos0 := TRUE;
+    Gate2P[12].TravelTime_ms := 5000;
+    Gate2P[12].SimFault_Breaker := FALSE;
+    Gate2P[12].FaultTime_Breaker_ms := 10000;
+    Gate2P[12].ManualReset := FALSE;
+
+    // Gate2P "GT14" (id=114, TypedIndex=13)
+    Gate2P[13].Enable := TRUE;
+    Gate2P[13].InitAtPos0 := TRUE;
+    Gate2P[13].TravelTime_ms := 5000;
+    Gate2P[13].SimFault_Breaker := FALSE;
+    Gate2P[13].FaultTime_Breaker_ms := 10000;
+    Gate2P[13].ManualReset := FALSE;
+
+    // Gate2P "GT15" (id=115, TypedIndex=14)
+    Gate2P[14].Enable := TRUE;
+    Gate2P[14].InitAtPos0 := TRUE;
+    Gate2P[14].TravelTime_ms := 5000;
+    Gate2P[14].SimFault_Breaker := FALSE;
+    Gate2P[14].FaultTime_Breaker_ms := 10000;
+    Gate2P[14].ManualReset := FALSE;
+
+    // Gate2P "GT5.1" (id=116, TypedIndex=15)
+    Gate2P[15].Enable := TRUE;
+    Gate2P[15].InitAtPos0 := TRUE;
+    Gate2P[15].TravelTime_ms := 5000;
+    Gate2P[15].SimFault_Breaker := FALSE;
+    Gate2P[15].FaultTime_Breaker_ms := 10000;
+    Gate2P[15].ManualReset := FALSE;
+
+    // Gate2P "GT5.2" (id=117, TypedIndex=16)
+    Gate2P[16].Enable := TRUE;
+    Gate2P[16].InitAtPos0 := TRUE;
+    Gate2P[16].TravelTime_ms := 5000;
+    Gate2P[16].SimFault_Breaker := FALSE;
+    Gate2P[16].FaultTime_Breaker_ms := 10000;
+    Gate2P[16].ManualReset := FALSE;
+
+    // Gate2P "GT5.3" (id=118, TypedIndex=17)
+    Gate2P[17].Enable := TRUE;
+    Gate2P[17].InitAtPos0 := TRUE;
+    Gate2P[17].TravelTime_ms := 5000;
+    Gate2P[17].SimFault_Breaker := FALSE;
+    Gate2P[17].FaultTime_Breaker_ms := 10000;
+    Gate2P[17].ManualReset := FALSE;
+
+    // Gate2P "GT36.3" (id=119, TypedIndex=18)
+    Gate2P[18].Enable := TRUE;
+    Gate2P[18].InitAtPos0 := TRUE;
+    Gate2P[18].TravelTime_ms := 5000;
+    Gate2P[18].SimFault_Breaker := FALSE;
+    Gate2P[18].FaultTime_Breaker_ms := 10000;
+    Gate2P[18].ManualReset := FALSE;
+
+    // Gate2P "GT01" (id=121, TypedIndex=19)
+    Gate2P[19].Enable := TRUE;
+    Gate2P[19].InitAtPos0 := TRUE;
+    Gate2P[19].TravelTime_ms := 5000;
+    Gate2P[19].SimFault_Breaker := FALSE;
+    Gate2P[19].FaultTime_Breaker_ms := 10000;
+    Gate2P[19].ManualReset := FALSE;
+
+    // Gate2P "GT02" (id=122, TypedIndex=20)
+    Gate2P[20].Enable := TRUE;
+    Gate2P[20].InitAtPos0 := TRUE;
+    Gate2P[20].TravelTime_ms := 5000;
+    Gate2P[20].SimFault_Breaker := FALSE;
+    Gate2P[20].FaultTime_Breaker_ms := 10000;
+    Gate2P[20].ManualReset := FALSE;
+
+    // Gate2P "GT03" (id=123, TypedIndex=21)
+    Gate2P[21].Enable := TRUE;
+    Gate2P[21].InitAtPos0 := TRUE;
+    Gate2P[21].TravelTime_ms := 5000;
+    Gate2P[21].SimFault_Breaker := FALSE;
+    Gate2P[21].FaultTime_Breaker_ms := 10000;
+    Gate2P[21].ManualReset := FALSE;
+
+    // Gate2P "GT04" (id=124, TypedIndex=22)
+    Gate2P[22].Enable := TRUE;
+    Gate2P[22].InitAtPos0 := TRUE;
+    Gate2P[22].TravelTime_ms := 5000;
+    Gate2P[22].SimFault_Breaker := FALSE;
+    Gate2P[22].FaultTime_Breaker_ms := 10000;
+    Gate2P[22].ManualReset := FALSE;
+
+    // Gate2P "GT15.1" (id=125, TypedIndex=23)
+    Gate2P[23].Enable := TRUE;
+    Gate2P[23].InitAtPos0 := TRUE;
+    Gate2P[23].TravelTime_ms := 5000;
+    Gate2P[23].SimFault_Breaker := FALSE;
+    Gate2P[23].FaultTime_Breaker_ms := 10000;
+    Gate2P[23].ManualReset := FALSE;
+
+    // Gate2P "GT15.2" (id=126, TypedIndex=24)
+    Gate2P[24].Enable := TRUE;
+    Gate2P[24].InitAtPos0 := TRUE;
+    Gate2P[24].TravelTime_ms := 5000;
+    Gate2P[24].SimFault_Breaker := FALSE;
+    Gate2P[24].FaultTime_Breaker_ms := 10000;
+    Gate2P[24].ManualReset := FALSE;
+
+    // Gate2P "GT6.1" (id=127, TypedIndex=25)
+    Gate2P[25].Enable := TRUE;
+    Gate2P[25].InitAtPos0 := TRUE;
+    Gate2P[25].TravelTime_ms := 5000;
+    Gate2P[25].SimFault_Breaker := FALSE;
+    Gate2P[25].FaultTime_Breaker_ms := 10000;
+    Gate2P[25].ManualReset := FALSE;
+
+    // Gate2P "GT6.2" (id=128, TypedIndex=26)
+    Gate2P[26].Enable := TRUE;
+    Gate2P[26].InitAtPos0 := TRUE;
+    Gate2P[26].TravelTime_ms := 5000;
+    Gate2P[26].SimFault_Breaker := FALSE;
+    Gate2P[26].FaultTime_Breaker_ms := 10000;
+    Gate2P[26].ManualReset := FALSE;
+
+    // Gate2P "GT6.3" (id=129, TypedIndex=27)
+    Gate2P[27].Enable := TRUE;
+    Gate2P[27].InitAtPos0 := TRUE;
+    Gate2P[27].TravelTime_ms := 5000;
+    Gate2P[27].SimFault_Breaker := FALSE;
+    Gate2P[27].FaultTime_Breaker_ms := 10000;
+    Gate2P[27].ManualReset := FALSE;
+
+    // Gate2P "GT36.2" (id=130, TypedIndex=28)
+    Gate2P[28].Enable := TRUE;
+    Gate2P[28].InitAtPos0 := TRUE;
+    Gate2P[28].TravelTime_ms := 5000;
+    Gate2P[28].SimFault_Breaker := FALSE;
+    Gate2P[28].FaultTime_Breaker_ms := 10000;
+    Gate2P[28].ManualReset := FALSE;
+
+    // Gate2P "GT9.2" (id=131, TypedIndex=29)
+    Gate2P[29].Enable := TRUE;
+    Gate2P[29].InitAtPos0 := TRUE;
+    Gate2P[29].TravelTime_ms := 5000;
+    Gate2P[29].SimFault_Breaker := FALSE;
+    Gate2P[29].FaultTime_Breaker_ms := 10000;
+    Gate2P[29].ManualReset := FALSE;
+
+    // Gate2P "GT7.2" (id=132, TypedIndex=30)
+    Gate2P[30].Enable := TRUE;
+    Gate2P[30].InitAtPos0 := TRUE;
+    Gate2P[30].TravelTime_ms := 5000;
+    Gate2P[30].SimFault_Breaker := FALSE;
+    Gate2P[30].FaultTime_Breaker_ms := 10000;
+    Gate2P[30].ManualReset := FALSE;
+
+    // Gate2P "GT9.1" (id=133, TypedIndex=31)
+    Gate2P[31].Enable := TRUE;
+    Gate2P[31].InitAtPos0 := TRUE;
+    Gate2P[31].TravelTime_ms := 5000;
+    Gate2P[31].SimFault_Breaker := FALSE;
+    Gate2P[31].FaultTime_Breaker_ms := 10000;
+    Gate2P[31].ManualReset := FALSE;
+
+    // Gate2P "GT11.3" (id=134, TypedIndex=32)
+    Gate2P[32].Enable := TRUE;
+    Gate2P[32].InitAtPos0 := TRUE;
+    Gate2P[32].TravelTime_ms := 5000;
+    Gate2P[32].SimFault_Breaker := FALSE;
+    Gate2P[32].FaultTime_Breaker_ms := 10000;
+    Gate2P[32].ManualReset := FALSE;
+
+    // Gate2P "GT7.3" (id=135, TypedIndex=33)
+    Gate2P[33].Enable := TRUE;
+    Gate2P[33].InitAtPos0 := TRUE;
+    Gate2P[33].TravelTime_ms := 5000;
+    Gate2P[33].SimFault_Breaker := FALSE;
+    Gate2P[33].FaultTime_Breaker_ms := 10000;
+    Gate2P[33].ManualReset := FALSE;
+
+    // Gate2P "GT11.1" (id=136, TypedIndex=34)
+    Gate2P[34].Enable := TRUE;
+    Gate2P[34].InitAtPos0 := TRUE;
+    Gate2P[34].TravelTime_ms := 5000;
+    Gate2P[34].SimFault_Breaker := FALSE;
+    Gate2P[34].FaultTime_Breaker_ms := 10000;
+    Gate2P[34].ManualReset := FALSE;
+
+    // Gate2P "GT7.1" (id=137, TypedIndex=35)
+    Gate2P[35].Enable := TRUE;
+    Gate2P[35].InitAtPos0 := TRUE;
+    Gate2P[35].TravelTime_ms := 5000;
+    Gate2P[35].SimFault_Breaker := FALSE;
+    Gate2P[35].FaultTime_Breaker_ms := 10000;
+    Gate2P[35].ManualReset := FALSE;
+
+    // Gate2P "GT11.2" (id=138, TypedIndex=36)
+    Gate2P[36].Enable := TRUE;
+    Gate2P[36].InitAtPos0 := TRUE;
+    Gate2P[36].TravelTime_ms := 5000;
+    Gate2P[36].SimFault_Breaker := FALSE;
+    Gate2P[36].FaultTime_Breaker_ms := 10000;
+    Gate2P[36].ManualReset := FALSE;
+
+    // Gate2P "GT21.1" (id=139, TypedIndex=37)
+    Gate2P[37].Enable := TRUE;
+    Gate2P[37].InitAtPos0 := TRUE;
+    Gate2P[37].TravelTime_ms := 5000;
+    Gate2P[37].SimFault_Breaker := FALSE;
+    Gate2P[37].FaultTime_Breaker_ms := 10000;
+    Gate2P[37].ManualReset := FALSE;
+
+    // Gate2P "GT36.1" (id=140, TypedIndex=38)
+    Gate2P[38].Enable := TRUE;
+    Gate2P[38].InitAtPos0 := TRUE;
+    Gate2P[38].TravelTime_ms := 5000;
+    Gate2P[38].SimFault_Breaker := FALSE;
+    Gate2P[38].FaultTime_Breaker_ms := 10000;
+    Gate2P[38].ManualReset := FALSE;
+
+    // Gate2P "GT30.2" (id=141, TypedIndex=39)
+    Gate2P[39].Enable := TRUE;
+    Gate2P[39].InitAtPos0 := TRUE;
+    Gate2P[39].TravelTime_ms := 5000;
+    Gate2P[39].SimFault_Breaker := FALSE;
+    Gate2P[39].FaultTime_Breaker_ms := 10000;
+    Gate2P[39].ManualReset := FALSE;
+
+    // Gate2P "GT30.1" (id=142, TypedIndex=40)
+    Gate2P[40].Enable := TRUE;
+    Gate2P[40].InitAtPos0 := TRUE;
+    Gate2P[40].TravelTime_ms := 5000;
+    Gate2P[40].SimFault_Breaker := FALSE;
+    Gate2P[40].FaultTime_Breaker_ms := 10000;
+    Gate2P[40].ManualReset := FALSE;
+
+    // Gate2P "GT21.2" (id=143, TypedIndex=41)
+    Gate2P[41].Enable := TRUE;
+    Gate2P[41].InitAtPos0 := TRUE;
+    Gate2P[41].TravelTime_ms := 5000;
+    Gate2P[41].SimFault_Breaker := FALSE;
+    Gate2P[41].FaultTime_Breaker_ms := 10000;
+    Gate2P[41].ManualReset := FALSE;
+
+    // Gate2P "GT21.3" (id=144, TypedIndex=42)
+    Gate2P[42].Enable := TRUE;
+    Gate2P[42].InitAtPos0 := TRUE;
+    Gate2P[42].TravelTime_ms := 5000;
+    Gate2P[42].SimFault_Breaker := FALSE;
+    Gate2P[42].FaultTime_Breaker_ms := 10000;
+    Gate2P[42].ManualReset := FALSE;
+
+    // Gate2P "GT24.1" (id=145, TypedIndex=43)
+    Gate2P[43].Enable := TRUE;
+    Gate2P[43].InitAtPos0 := TRUE;
+    Gate2P[43].TravelTime_ms := 5000;
+    Gate2P[43].SimFault_Breaker := FALSE;
+    Gate2P[43].FaultTime_Breaker_ms := 10000;
+    Gate2P[43].ManualReset := FALSE;
+
+    // Gate2P "GT21.4" (id=146, TypedIndex=44)
+    Gate2P[44].Enable := TRUE;
+    Gate2P[44].InitAtPos0 := TRUE;
+    Gate2P[44].TravelTime_ms := 5000;
+    Gate2P[44].SimFault_Breaker := FALSE;
+    Gate2P[44].FaultTime_Breaker_ms := 10000;
+    Gate2P[44].ManualReset := FALSE;
+
+    // Gate2P "GT24.2" (id=147, TypedIndex=45)
+    Gate2P[45].Enable := TRUE;
+    Gate2P[45].InitAtPos0 := TRUE;
+    Gate2P[45].TravelTime_ms := 5000;
+    Gate2P[45].SimFault_Breaker := FALSE;
+    Gate2P[45].FaultTime_Breaker_ms := 10000;
+    Gate2P[45].ManualReset := FALSE;
+
+    // Gate2P "GT18.1" (id=148, TypedIndex=46)
+    Gate2P[46].Enable := TRUE;
+    Gate2P[46].InitAtPos0 := TRUE;
+    Gate2P[46].TravelTime_ms := 5000;
+    Gate2P[46].SimFault_Breaker := FALSE;
+    Gate2P[46].FaultTime_Breaker_ms := 10000;
+    Gate2P[46].ManualReset := FALSE;
+
+    // Gate2P "GT18.2" (id=149, TypedIndex=47)
+    Gate2P[47].Enable := TRUE;
+    Gate2P[47].InitAtPos0 := TRUE;
+    Gate2P[47].TravelTime_ms := 5000;
+    Gate2P[47].SimFault_Breaker := FALSE;
+    Gate2P[47].FaultTime_Breaker_ms := 10000;
+    Gate2P[47].ManualReset := FALSE;
+
+    // Gate2P "GT19.1" (id=150, TypedIndex=48)
+    Gate2P[48].Enable := TRUE;
+    Gate2P[48].InitAtPos0 := TRUE;
+    Gate2P[48].TravelTime_ms := 5000;
+    Gate2P[48].SimFault_Breaker := FALSE;
+    Gate2P[48].FaultTime_Breaker_ms := 10000;
+    Gate2P[48].ManualReset := FALSE;
+
+    // Gate2P "GT19.2" (id=151, TypedIndex=49)
+    Gate2P[49].Enable := TRUE;
+    Gate2P[49].InitAtPos0 := TRUE;
+    Gate2P[49].TravelTime_ms := 5000;
+    Gate2P[49].SimFault_Breaker := FALSE;
+    Gate2P[49].FaultTime_Breaker_ms := 10000;
+    Gate2P[49].ManualReset := FALSE;
+
+    // Gate2P "GT35.2" (id=152, TypedIndex=50)
+    Gate2P[50].Enable := TRUE;
+    Gate2P[50].InitAtPos0 := TRUE;
+    Gate2P[50].TravelTime_ms := 5000;
+    Gate2P[50].SimFault_Breaker := FALSE;
+    Gate2P[50].FaultTime_Breaker_ms := 10000;
+    Gate2P[50].ManualReset := FALSE;
+
+    // Gate2P "GT10.2" (id=153, TypedIndex=51)
+    Gate2P[51].Enable := TRUE;
+    Gate2P[51].InitAtPos0 := TRUE;
+    Gate2P[51].TravelTime_ms := 5000;
+    Gate2P[51].SimFault_Breaker := FALSE;
+    Gate2P[51].FaultTime_Breaker_ms := 10000;
+    Gate2P[51].ManualReset := FALSE;
+
+    // Gate2P "GT10.1" (id=154, TypedIndex=52)
+    Gate2P[52].Enable := TRUE;
+    Gate2P[52].InitAtPos0 := TRUE;
+    Gate2P[52].TravelTime_ms := 5000;
+    Gate2P[52].SimFault_Breaker := FALSE;
+    Gate2P[52].FaultTime_Breaker_ms := 10000;
+    Gate2P[52].ManualReset := FALSE;
+
+    // Gate2P "GT8.3" (id=155, TypedIndex=53)
+    Gate2P[53].Enable := TRUE;
+    Gate2P[53].InitAtPos0 := TRUE;
+    Gate2P[53].TravelTime_ms := 5000;
+    Gate2P[53].SimFault_Breaker := FALSE;
+    Gate2P[53].FaultTime_Breaker_ms := 10000;
+    Gate2P[53].ManualReset := FALSE;
+
+    // Gate2P "GT8.2" (id=156, TypedIndex=54)
+    Gate2P[54].Enable := TRUE;
+    Gate2P[54].InitAtPos0 := TRUE;
+    Gate2P[54].TravelTime_ms := 5000;
+    Gate2P[54].SimFault_Breaker := FALSE;
+    Gate2P[54].FaultTime_Breaker_ms := 10000;
+    Gate2P[54].ManualReset := FALSE;
+
+    // Gate2P "GT12.1" (id=157, TypedIndex=55)
+    Gate2P[55].Enable := TRUE;
+    Gate2P[55].InitAtPos0 := TRUE;
+    Gate2P[55].TravelTime_ms := 5000;
+    Gate2P[55].SimFault_Breaker := FALSE;
+    Gate2P[55].FaultTime_Breaker_ms := 10000;
+    Gate2P[55].ManualReset := FALSE;
+
+    // Gate2P "GT8.1" (id=158, TypedIndex=56)
+    Gate2P[56].Enable := TRUE;
+    Gate2P[56].InitAtPos0 := TRUE;
+    Gate2P[56].TravelTime_ms := 5000;
+    Gate2P[56].SimFault_Breaker := FALSE;
+    Gate2P[56].FaultTime_Breaker_ms := 10000;
+    Gate2P[56].ManualReset := FALSE;
+
+    // Gate2P "GT12.2" (id=159, TypedIndex=57)
+    Gate2P[57].Enable := TRUE;
+    Gate2P[57].InitAtPos0 := TRUE;
+    Gate2P[57].TravelTime_ms := 5000;
+    Gate2P[57].SimFault_Breaker := FALSE;
+    Gate2P[57].FaultTime_Breaker_ms := 10000;
+    Gate2P[57].ManualReset := FALSE;
+
+    // Gate2P "GT35.1" (id=160, TypedIndex=58)
+    Gate2P[58].Enable := TRUE;
+    Gate2P[58].InitAtPos0 := TRUE;
+    Gate2P[58].TravelTime_ms := 5000;
+    Gate2P[58].SimFault_Breaker := FALSE;
+    Gate2P[58].FaultTime_Breaker_ms := 10000;
+    Gate2P[58].ManualReset := FALSE;
+
+    // Gate2P "GT14.2" (id=161, TypedIndex=59)
+    Gate2P[59].Enable := TRUE;
+    Gate2P[59].InitAtPos0 := TRUE;
+    Gate2P[59].TravelTime_ms := 5000;
+    Gate2P[59].SimFault_Breaker := FALSE;
+    Gate2P[59].FaultTime_Breaker_ms := 10000;
+    Gate2P[59].ManualReset := FALSE;
+
+    // Gate2P "GT14.1" (id=162, TypedIndex=60)
+    Gate2P[60].Enable := TRUE;
+    Gate2P[60].InitAtPos0 := TRUE;
+    Gate2P[60].TravelTime_ms := 5000;
+    Gate2P[60].SimFault_Breaker := FALSE;
+    Gate2P[60].FaultTime_Breaker_ms := 10000;
+    Gate2P[60].ManualReset := FALSE;
+
+    // Gate2P "GT31.2" (id=163, TypedIndex=61)
+    Gate2P[61].Enable := TRUE;
+    Gate2P[61].InitAtPos0 := TRUE;
+    Gate2P[61].TravelTime_ms := 5000;
+    Gate2P[61].SimFault_Breaker := FALSE;
+    Gate2P[61].FaultTime_Breaker_ms := 10000;
+    Gate2P[61].ManualReset := FALSE;
+
+    // Gate2P "GT31.1" (id=164, TypedIndex=62)
+    Gate2P[62].Enable := TRUE;
+    Gate2P[62].InitAtPos0 := TRUE;
+    Gate2P[62].TravelTime_ms := 5000;
+    Gate2P[62].SimFault_Breaker := FALSE;
+    Gate2P[62].FaultTime_Breaker_ms := 10000;
+    Gate2P[62].ManualReset := FALSE;
+
+    // Gate2P "GT22.1" (id=165, TypedIndex=63)
+    Gate2P[63].Enable := TRUE;
+    Gate2P[63].InitAtPos0 := TRUE;
+    Gate2P[63].TravelTime_ms := 5000;
+    Gate2P[63].SimFault_Breaker := FALSE;
+    Gate2P[63].FaultTime_Breaker_ms := 10000;
+    Gate2P[63].ManualReset := FALSE;
+
+    // Gate2P "GT22.2" (id=166, TypedIndex=64)
+    Gate2P[64].Enable := TRUE;
+    Gate2P[64].InitAtPos0 := TRUE;
+    Gate2P[64].TravelTime_ms := 5000;
+    Gate2P[64].SimFault_Breaker := FALSE;
+    Gate2P[64].FaultTime_Breaker_ms := 10000;
+    Gate2P[64].ManualReset := FALSE;
+
+    // Gate2P "GT22.3" (id=167, TypedIndex=65)
+    Gate2P[65].Enable := TRUE;
+    Gate2P[65].InitAtPos0 := TRUE;
+    Gate2P[65].TravelTime_ms := 5000;
+    Gate2P[65].SimFault_Breaker := FALSE;
+    Gate2P[65].FaultTime_Breaker_ms := 10000;
+    Gate2P[65].ManualReset := FALSE;
+
+    // Gate2P "GT22.4" (id=168, TypedIndex=66)
+    Gate2P[66].Enable := TRUE;
+    Gate2P[66].InitAtPos0 := TRUE;
+    Gate2P[66].TravelTime_ms := 5000;
+    Gate2P[66].SimFault_Breaker := FALSE;
+    Gate2P[66].FaultTime_Breaker_ms := 10000;
+    Gate2P[66].ManualReset := FALSE;
+
+    // Gate2P "GT25.1" (id=169, TypedIndex=67)
+    Gate2P[67].Enable := TRUE;
+    Gate2P[67].InitAtPos0 := TRUE;
+    Gate2P[67].TravelTime_ms := 5000;
+    Gate2P[67].SimFault_Breaker := FALSE;
+    Gate2P[67].FaultTime_Breaker_ms := 10000;
+    Gate2P[67].ManualReset := FALSE;
+
+    // Gate2P "GT25.2" (id=170, TypedIndex=68)
+    Gate2P[68].Enable := TRUE;
+    Gate2P[68].InitAtPos0 := TRUE;
+    Gate2P[68].TravelTime_ms := 5000;
+    Gate2P[68].SimFault_Breaker := FALSE;
+    Gate2P[68].FaultTime_Breaker_ms := 10000;
+    Gate2P[68].ManualReset := FALSE;
+
+    // Gate2P "GT32.2" (id=171, TypedIndex=69)
+    Gate2P[69].Enable := TRUE;
+    Gate2P[69].InitAtPos0 := TRUE;
+    Gate2P[69].TravelTime_ms := 5000;
+    Gate2P[69].SimFault_Breaker := FALSE;
+    Gate2P[69].FaultTime_Breaker_ms := 10000;
+    Gate2P[69].ManualReset := FALSE;
+
+    // Gate2P "GT20.1" (id=172, TypedIndex=70)
+    Gate2P[70].Enable := TRUE;
+    Gate2P[70].InitAtPos0 := TRUE;
+    Gate2P[70].TravelTime_ms := 5000;
+    Gate2P[70].SimFault_Breaker := FALSE;
+    Gate2P[70].FaultTime_Breaker_ms := 10000;
+    Gate2P[70].ManualReset := FALSE;
+
+    // Gate2P "GT20.2" (id=173, TypedIndex=71)
+    Gate2P[71].Enable := TRUE;
+    Gate2P[71].InitAtPos0 := TRUE;
+    Gate2P[71].TravelTime_ms := 5000;
+    Gate2P[71].SimFault_Breaker := FALSE;
+    Gate2P[71].FaultTime_Breaker_ms := 10000;
+    Gate2P[71].ManualReset := FALSE;
+
+    // Gate2P "GT32.1" (id=174, TypedIndex=72)
+    Gate2P[72].Enable := TRUE;
+    Gate2P[72].InitAtPos0 := TRUE;
+    Gate2P[72].TravelTime_ms := 5000;
+    Gate2P[72].SimFault_Breaker := FALSE;
+    Gate2P[72].FaultTime_Breaker_ms := 10000;
+    Gate2P[72].ManualReset := FALSE;
+
+    // Gate2P "GT23.1" (id=175, TypedIndex=73)
+    Gate2P[73].Enable := TRUE;
+    Gate2P[73].InitAtPos0 := TRUE;
+    Gate2P[73].TravelTime_ms := 5000;
+    Gate2P[73].SimFault_Breaker := FALSE;
+    Gate2P[73].FaultTime_Breaker_ms := 10000;
+    Gate2P[73].ManualReset := FALSE;
+
+    // Gate2P "GT23.2" (id=176, TypedIndex=74)
+    Gate2P[74].Enable := TRUE;
+    Gate2P[74].InitAtPos0 := TRUE;
+    Gate2P[74].TravelTime_ms := 5000;
+    Gate2P[74].SimFault_Breaker := FALSE;
+    Gate2P[74].FaultTime_Breaker_ms := 10000;
+    Gate2P[74].ManualReset := FALSE;
+
+    // Gate2P "GT23.3" (id=177, TypedIndex=75)
+    Gate2P[75].Enable := TRUE;
+    Gate2P[75].InitAtPos0 := TRUE;
+    Gate2P[75].TravelTime_ms := 5000;
+    Gate2P[75].SimFault_Breaker := FALSE;
+    Gate2P[75].FaultTime_Breaker_ms := 10000;
+    Gate2P[75].ManualReset := FALSE;
+
+    // Gate2P "GT23.4" (id=178, TypedIndex=76)
+    Gate2P[76].Enable := TRUE;
+    Gate2P[76].InitAtPos0 := TRUE;
+    Gate2P[76].TravelTime_ms := 5000;
+    Gate2P[76].SimFault_Breaker := FALSE;
+    Gate2P[76].FaultTime_Breaker_ms := 10000;
+    Gate2P[76].ManualReset := FALSE;
+
+    // Gate2P "GT26.1" (id=179, TypedIndex=77)
+    Gate2P[77].Enable := TRUE;
+    Gate2P[77].InitAtPos0 := TRUE;
+    Gate2P[77].TravelTime_ms := 5000;
+    Gate2P[77].SimFault_Breaker := FALSE;
+    Gate2P[77].FaultTime_Breaker_ms := 10000;
+    Gate2P[77].ManualReset := FALSE;
+
+    // Gate2P "GT26.2" (id=180, TypedIndex=78)
+    Gate2P[78].Enable := TRUE;
+    Gate2P[78].InitAtPos0 := TRUE;
+    Gate2P[78].TravelTime_ms := 5000;
+    Gate2P[78].SimFault_Breaker := FALSE;
+    Gate2P[78].FaultTime_Breaker_ms := 10000;
+    Gate2P[78].ManualReset := FALSE;
+
+    // Gate2P "GT38.1" (id=181, TypedIndex=79)
+    Gate2P[79].Enable := TRUE;
+    Gate2P[79].InitAtPos0 := TRUE;
+    Gate2P[79].TravelTime_ms := 5000;
+    Gate2P[79].SimFault_Breaker := FALSE;
+    Gate2P[79].FaultTime_Breaker_ms := 10000;
+    Gate2P[79].ManualReset := FALSE;
+
+    // Gate2P "GT38.2" (id=182, TypedIndex=80)
+    Gate2P[80].Enable := TRUE;
+    Gate2P[80].InitAtPos0 := TRUE;
+    Gate2P[80].TravelTime_ms := 5000;
+    Gate2P[80].SimFault_Breaker := FALSE;
+    Gate2P[80].FaultTime_Breaker_ms := 10000;
+    Gate2P[80].ManualReset := FALSE;
+
+    // === ReceivingPit (заглушки) ===
+    // ReceivingPit "RP1" (id=305, TypedIndex=0)
+    ReceivingPit[0].Enable := TRUE;
+    
+    // ReceivingPit "RP2" (id=306, TypedIndex=1)
+    ReceivingPit[1].Enable := TRUE;
+
+    // === Valve3P ===
+    // Valve3P[0] (TypedIndex=0)
+    Valve3P[0].Enable := TRUE;
+    Valve3P[0].TravelTime_ms := 8000;
+    Valve3P[0].InitPosition := 0;
+    Valve3P[0].SimFault_Breaker := FALSE;
+    Valve3P[0].FaultTime_Breaker_ms := 10000;
+    Valve3P[0].ManualReset := FALSE;
+
+    // Valve3P[1] (TypedIndex=1)
+    Valve3P[1].Enable := TRUE;
+    Valve3P[1].TravelTime_ms := 8000;
+    Valve3P[1].InitPosition := 0;
+    Valve3P[1].SimFault_Breaker := FALSE;
+    Valve3P[1].FaultTime_Breaker_ms := 10000;
+    Valve3P[1].ManualReset := FALSE;
+
+    // Valve3P[2] (TypedIndex=2)
+    Valve3P[2].Enable := TRUE;
+    Valve3P[2].TravelTime_ms := 8000;
+    Valve3P[2].InitPosition := 0;
+    Valve3P[2].SimFault_Breaker := FALSE;
+    Valve3P[2].FaultTime_Breaker_ms := 10000;
+    Valve3P[2].ManualReset := FALSE;
+
+    // Valve3P[3] (TypedIndex=3)
+    Valve3P[3].Enable := TRUE;
+    Valve3P[3].TravelTime_ms := 8000;
+    Valve3P[3].InitPosition := 0;
+    Valve3P[3].SimFault_Breaker := FALSE;
+    Valve3P[3].FaultTime_Breaker_ms := 10000;
+    Valve3P[3].ManualReset := FALSE;
+
+    // Valve3P[4] (TypedIndex=4)
+    Valve3P[4].Enable := TRUE;
+    Valve3P[4].TravelTime_ms := 8000;
+    Valve3P[4].InitPosition := 0;
+    Valve3P[4].SimFault_Breaker := FALSE;
+    Valve3P[4].FaultTime_Breaker_ms := 10000;
+    Valve3P[4].ManualReset := FALSE;
+
+    // Valve3P[5] (TypedIndex=5)
+    Valve3P[5].Enable := TRUE;
+    Valve3P[5].TravelTime_ms := 8000;
+    Valve3P[5].InitPosition := 0;
+    Valve3P[5].SimFault_Breaker := FALSE;
+    Valve3P[5].FaultTime_Breaker_ms := 10000;
+    Valve3P[5].ManualReset := FALSE;
+
+    // Valve3P[6] (TypedIndex=6)
+    Valve3P[6].Enable := TRUE;
+    Valve3P[6].TravelTime_ms := 8000;
+    Valve3P[6].InitPosition := 0;
+    Valve3P[6].SimFault_Breaker := FALSE;
+    Valve3P[6].FaultTime_Breaker_ms := 10000;
+    Valve3P[6].ManualReset := FALSE;
+
+    // Valve3P[7] (TypedIndex=7)
+    Valve3P[7].Enable := TRUE;
+    Valve3P[7].TravelTime_ms := 8000;
+    Valve3P[7].InitPosition := 0;
+    Valve3P[7].SimFault_Breaker := FALSE;
+    Valve3P[7].FaultTime_Breaker_ms := 10000;
+    Valve3P[7].ManualReset := FALSE;
+
+    // Valve3P[8] (TypedIndex=8)
+    Valve3P[8].Enable := TRUE;
+    Valve3P[8].TravelTime_ms := 8000;
+    Valve3P[8].InitPosition := 0;
+    Valve3P[8].SimFault_Breaker := FALSE;
+    Valve3P[8].FaultTime_Breaker_ms := 10000;
+    Valve3P[8].ManualReset := FALSE;
+
+    // Valve3P[9] (TypedIndex=9)
+    Valve3P[9].Enable := TRUE;
+    Valve3P[9].TravelTime_ms := 8000;
+    Valve3P[9].InitPosition := 0;
+    Valve3P[9].SimFault_Breaker := FALSE;
+    Valve3P[9].FaultTime_Breaker_ms := 10000;
+    Valve3P[9].ManualReset := FALSE;
+
+    // Valve3P[10] (TypedIndex=10)
+    Valve3P[10].Enable := TRUE;
+    Valve3P[10].TravelTime_ms := 8000;
+    Valve3P[10].InitPosition := 0;
+    Valve3P[10].SimFault_Breaker := FALSE;
+    Valve3P[10].FaultTime_Breaker_ms := 10000;
+    Valve3P[10].ManualReset := FALSE;
+
+    // Valve3P[11] (TypedIndex=11)
+    Valve3P[11].Enable := TRUE;
+    Valve3P[11].TravelTime_ms := 8000;
+    Valve3P[11].InitPosition := 0;
+    Valve3P[11].SimFault_Breaker := FALSE;
+    Valve3P[11].FaultTime_Breaker_ms := 10000;
+    Valve3P[11].ManualReset := FALSE;
+
+    // Valve3P[12] (TypedIndex=12)
+    Valve3P[12].Enable := TRUE;
+    Valve3P[12].TravelTime_ms := 8000;
+    Valve3P[12].InitPosition := 0;
+    Valve3P[12].SimFault_Breaker := FALSE;
+    Valve3P[12].FaultTime_Breaker_ms := 10000;
+    Valve3P[12].ManualReset := FALSE;
+
+    // Valve3P[13] (TypedIndex=13)
+    Valve3P[13].Enable := TRUE;
+    Valve3P[13].TravelTime_ms := 8000;
+    Valve3P[13].InitPosition := 0;
+    Valve3P[13].SimFault_Breaker := FALSE;
+    Valve3P[13].FaultTime_Breaker_ms := 10000;
+    Valve3P[13].ManualReset := FALSE;
+
+    // Valve3P[14] (TypedIndex=14)
+    Valve3P[14].Enable := TRUE;
+    Valve3P[14].TravelTime_ms := 8000;
+    Valve3P[14].InitPosition := 0;
+    Valve3P[14].SimFault_Breaker := FALSE;
+    Valve3P[14].FaultTime_Breaker_ms := 10000;
+    Valve3P[14].ManualReset := FALSE;
+
+    // Valve3P[15] (TypedIndex=15)
+    Valve3P[15].Enable := TRUE;
+    Valve3P[15].TravelTime_ms := 8000;
+    Valve3P[15].InitPosition := 0;
+    Valve3P[15].SimFault_Breaker := FALSE;
+    Valve3P[15].FaultTime_Breaker_ms := 10000;
+    Valve3P[15].ManualReset := FALSE;
+
+    // Valve3P[16] (TypedIndex=16)
+    Valve3P[16].Enable := TRUE;
+    Valve3P[16].TravelTime_ms := 8000;
+    Valve3P[16].InitPosition := 0;
+    Valve3P[16].SimFault_Breaker := FALSE;
+    Valve3P[16].FaultTime_Breaker_ms := 10000;
+    Valve3P[16].ManualReset := FALSE;
+
+    // Valve3P[17] (TypedIndex=17)
+    Valve3P[17].Enable := TRUE;
+    Valve3P[17].TravelTime_ms := 8000;
+    Valve3P[17].InitPosition := 0;
+    Valve3P[17].SimFault_Breaker := FALSE;
+    Valve3P[17].FaultTime_Breaker_ms := 10000;
+    Valve3P[17].ManualReset := FALSE;
+
+    // Valve3P[18] (TypedIndex=18)
+    Valve3P[18].Enable := TRUE;
+    Valve3P[18].TravelTime_ms := 8000;
+    Valve3P[18].InitPosition := 0;
+    Valve3P[18].SimFault_Breaker := FALSE;
+    Valve3P[18].FaultTime_Breaker_ms := 10000;
+    Valve3P[18].ManualReset := FALSE;
+
+    // Valve3P[19] (TypedIndex=19)
+    Valve3P[19].Enable := TRUE;
+    Valve3P[19].TravelTime_ms := 8000;
+    Valve3P[19].InitPosition := 0;
+    Valve3P[19].SimFault_Breaker := FALSE;
+    Valve3P[19].FaultTime_Breaker_ms := 10000;
+    Valve3P[19].ManualReset := FALSE;
+
+    // Valve3P[20] (TypedIndex=20)
+    Valve3P[20].Enable := TRUE;
+    Valve3P[20].TravelTime_ms := 8000;
+    Valve3P[20].InitPosition := 0;
+    Valve3P[20].SimFault_Breaker := FALSE;
+    Valve3P[20].FaultTime_Breaker_ms := 10000;
+    Valve3P[20].ManualReset := FALSE;
+
+    // Valve3P[21] (TypedIndex=21)
+    Valve3P[21].Enable := TRUE;
+    Valve3P[21].TravelTime_ms := 8000;
+    Valve3P[21].InitPosition := 0;
+    Valve3P[21].SimFault_Breaker := FALSE;
+    Valve3P[21].FaultTime_Breaker_ms := 10000;
+    Valve3P[21].ManualReset := FALSE;
+
+    // Valve3P[22] (TypedIndex=22)
+    Valve3P[22].Enable := TRUE;
+    Valve3P[22].TravelTime_ms := 8000;
+    Valve3P[22].InitPosition := 0;
+    Valve3P[22].SimFault_Breaker := FALSE;
+    Valve3P[22].FaultTime_Breaker_ms := 10000;
+    Valve3P[22].ManualReset := FALSE;
+
+    // Valve3P[23] (TypedIndex=23)
+    Valve3P[23].Enable := TRUE;
+    Valve3P[23].TravelTime_ms := 8000;
+    Valve3P[23].InitPosition := 0;
+    Valve3P[23].SimFault_Breaker := FALSE;
+    Valve3P[23].FaultTime_Breaker_ms := 10000;
+    Valve3P[23].ManualReset := FALSE;
+
+    // Valve3P[24] (TypedIndex=24)
+    Valve3P[24].Enable := TRUE;
+    Valve3P[24].TravelTime_ms := 8000;
+    Valve3P[24].InitPosition := 0;
+    Valve3P[24].SimFault_Breaker := FALSE;
+    Valve3P[24].FaultTime_Breaker_ms := 10000;
+    Valve3P[24].ManualReset := FALSE;
+
+    // Valve3P[25] (TypedIndex=25)
+    Valve3P[25].Enable := TRUE;
+    Valve3P[25].TravelTime_ms := 8000;
+    Valve3P[25].InitPosition := 0;
+    Valve3P[25].SimFault_Breaker := FALSE;
+    Valve3P[25].FaultTime_Breaker_ms := 10000;
+    Valve3P[25].ManualReset := FALSE;
+
+    // Valve3P[26] (TypedIndex=26)
+    Valve3P[26].Enable := TRUE;
+    Valve3P[26].TravelTime_ms := 8000;
+    Valve3P[26].InitPosition := 0;
+    Valve3P[26].SimFault_Breaker := FALSE;
+    Valve3P[26].FaultTime_Breaker_ms := 10000;
+    Valve3P[26].ManualReset := FALSE;
+
+    // Valve3P[27] (TypedIndex=27)
+    Valve3P[27].Enable := TRUE;
+    Valve3P[27].TravelTime_ms := 8000;
+    Valve3P[27].InitPosition := 0;
+    Valve3P[27].SimFault_Breaker := FALSE;
+    Valve3P[27].FaultTime_Breaker_ms := 10000;
+    Valve3P[27].ManualReset := FALSE;
+
+    // Valve3P[28] (TypedIndex=28)
+    Valve3P[28].Enable := TRUE;
+    Valve3P[28].TravelTime_ms := 8000;
+    Valve3P[28].InitPosition := 0;
+    Valve3P[28].SimFault_Breaker := FALSE;
+    Valve3P[28].FaultTime_Breaker_ms := 10000;
+    Valve3P[28].ManualReset := FALSE;
+
+    // Valve3P[29] (TypedIndex=29)
+    Valve3P[29].Enable := TRUE;
+    Valve3P[29].TravelTime_ms := 8000;
+    Valve3P[29].InitPosition := 0;
+    Valve3P[29].SimFault_Breaker := FALSE;
+    Valve3P[29].FaultTime_Breaker_ms := 10000;
+    Valve3P[29].ManualReset := FALSE;
+
+    // === Silos (заглушки) ===
+    // Silos індекси 0..27
+
+        Silos[0].Enable := TRUE;
+Silos[1].Enable := TRUE;
+Silos[2].Enable := TRUE;
+Silos[3].Enable := TRUE;
+Silos[4].Enable := TRUE;
+Silos[5].Enable := TRUE;
+Silos[6].Enable := TRUE;
+Silos[7].Enable := TRUE;
+Silos[8].Enable := TRUE;
+Silos[9].Enable := TRUE;
+Silos[10].Enable := TRUE;
+Silos[11].Enable := TRUE;
+Silos[12].Enable := TRUE;
+Silos[13].Enable := TRUE;
+Silos[14].Enable := TRUE;
+Silos[15].Enable := TRUE;
+Silos[16].Enable := TRUE;
+Silos[17].Enable := TRUE;
+Silos[18].Enable := TRUE;
+Silos[19].Enable := TRUE;
+Silos[20].Enable := TRUE;
+Silos[21].Enable := TRUE;
+Silos[22].Enable := TRUE;
+Silos[23].Enable := TRUE;
+Silos[24].Enable := TRUE;
+Silos[25].Enable := TRUE;
+Silos[26].Enable := TRUE;
+Silos[27].Enable := TRUE;
+
+    // === Sushka (заглушки) ===
+    // Sushka індекси 0..3
+
+        Sushka[0].Enable := TRUE;
+Sushka[1].Enable := TRUE;
+Sushka[2].Enable := TRUE;
+Sushka[3].Enable := TRUE;
+
+    // === Separator ===
+    // Separator "SEP1" (TypedIndex=0)
+    Separator[0].Enable := TRUE;
+    Separator[0].StartupTime_ms := 3000;
+    Separator[0].StopTime_ms := 2000;
+    Separator[0].SimFault_Breaker := FALSE;
+    Separator[0].FaultTime_Breaker_ms := 10000;
+    Separator[0].ManualReset := FALSE;
+
+    // Separator "SEP2" (TypedIndex=1)
+    Separator[1].Enable := TRUE;
+    Separator[1].StartupTime_ms := 3000;
+    Separator[1].StopTime_ms := 2000;
+    Separator[1].SimFault_Breaker := FALSE;
+    Separator[1].FaultTime_Breaker_ms := 10000;
+    Separator[1].ManualReset := FALSE;
+
+    // Separator "SEP3" (TypedIndex=2)
+    Separator[2].Enable := TRUE;
+    Separator[2].StartupTime_ms := 3000;
+    Separator[2].StopTime_ms := 2000;
+    Separator[2].SimFault_Breaker := FALSE;
+    Separator[2].FaultTime_Breaker_ms := 10000;
+    Separator[2].ManualReset := FALSE;
+
+    // === Fan ===
+    // Fan "FN1" (TypedIndex=0)
+    Fan[0].Enable := TRUE;
+    Fan[0].StartupTime_ms := 3000;
+    Fan[0].StopTime_ms := 2000;
+    Fan[0].SimFault_Breaker := FALSE;
+    Fan[0].FaultTime_Breaker_ms := 10000;
+    Fan[0].ManualReset := FALSE;
+
+    // Fan "FN2" (TypedIndex=1)
+    Fan[1].Enable := TRUE;
+    Fan[1].StartupTime_ms := 3000;
+    Fan[1].StopTime_ms := 2000;
+    Fan[1].SimFault_Breaker := FALSE;
+    Fan[1].FaultTime_Breaker_ms := 10000;
+    Fan[1].ManualReset := FALSE;
+
+    // Fan "FN3" (TypedIndex=2)
+    Fan[2].Enable := TRUE;
+    Fan[2].StartupTime_ms := 3000;
+    Fan[2].StopTime_ms := 2000;
+    Fan[2].SimFault_Breaker := FALSE;
+    Fan[2].FaultTime_Breaker_ms := 10000;
+    Fan[2].ManualReset := FALSE;
+
+    // === Feeder ===
+    // Feeder "FD1" (TypedIndex=0)
+    Feeder[0].Enable := TRUE;
+    Feeder[0].StartupTime_ms := 3000;
+    Feeder[0].StopTime_ms := 2000;
+    Feeder[0].SimFault_Breaker := FALSE;
+    Feeder[0].FaultTime_Breaker_ms := 10000;
+    Feeder[0].ManualReset := FALSE;
+
+    // Feeder "FD2" (TypedIndex=1)
+    Feeder[1].Enable := TRUE;
+    Feeder[1].StartupTime_ms := 3000;
+    Feeder[1].StopTime_ms := 2000;
+    Feeder[1].SimFault_Breaker := FALSE;
+    Feeder[1].FaultTime_Breaker_ms := 10000;
+    Feeder[1].ManualReset := FALSE;
+
+    // Feeder "FD3" (TypedIndex=2)
+    Feeder[2].Enable := TRUE;
+    Feeder[2].StartupTime_ms := 3000;
+    Feeder[2].StopTime_ms := 2000;
+    Feeder[2].SimFault_Breaker := FALSE;
+    Feeder[2].FaultTime_Breaker_ms := 10000;
+    Feeder[2].ManualReset := FALSE;
 END_DATA_BLOCK

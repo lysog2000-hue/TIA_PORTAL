@@ -1,14 +1,22 @@
-﻿TYPE "UDT_Noria" :
+﻿TYPE "UDT_Noria"
+VERSION : 0.3
 STRUCT
     // ===== Дискретні входи/виходи (HAL / залізо) =====
-    DI_Speed_OK     : BOOL;    // контроль швидкості
+    DI_Speed_OK     : BOOL;    // контроль швидкості (тахо)
     DI_Breaker_OK   : BOOL;    // автомат захисту
-	DI_Overflow_OK: BOOL; 
-    DI_Alingment_OK: BOOL;    // 
+    DI_Overflow_OK  : BOOL;    // датчик переповнення
+    DI_Alingment_OK : BOOL;    // контроль вирівнювання
+    DI_Feedback_OK  : BOOL;    // зворотний зв'язок контактора
     DO_Run          : BOOL;    // вихід на контактор
 
     // ===== Стан/таймінги норії =====
     StartMs         : DINT;    // час старту (мітка)
     SpeedLostMs     : DINT;    // мітка втрати Speed_OK
+    FeedbackLostMs  : DINT;    // мітка втрати Feedback_OK
+    StopMs          : DINT;    // мітка початку зупинки (для таймауту вибігу)
+
+    // ===== Індивідуальні задержки (мс) =====
+    StartDelayMs    : DINT;
+    StopDelayMs     : DINT;
 END_STRUCT;
 END_TYPE

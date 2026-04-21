@@ -375,17 +375,29 @@ class PLCCodeGenerator:
         max_silos        = max([s['TypedIdx'] for s in self.silos],         default=-1) + 1 if self.silos         else 0
         max_sushkas      = max([s['TypedIdx'] for s in self.sushkas],       default=-1) + 1 if self.sushkas       else 0
 
+        # Найбільший SlotId серед усіх механізмів
+        all_slots = ([r['Slot'] for r in self.redlers] +
+                     [n['Slot'] for n in self.norias] +
+                     [g['Slot'] for g in self.gates] +
+                     [f['Slot'] for f in self.fans] +
+                     [r['Slot'] for r in self.receiving_pits] +
+                     [s['Slot'] for s in self.separators] +
+                     [v['Slot'] for v in self.valves3p] +
+                     [s['Slot'] for s in self.silos] +
+                     [s['Slot'] for s in self.sushkas])
+        max_slot_id = max(all_slots) if all_slots else 255
+
         code = self._get_header("DB_Mechs - Масиви механізмів")
-        code += '''
+        code += f'''
 DATA_BLOCK "DB_Mechs"
-{ S7_Optimized_Access := 'TRUE' }
+{{ S7_Optimized_Access := 'TRUE' }}
 VERSION : 1.0
 
 VAR
     // ===================================================================
-    // Базова шина механізмів (усі слоти 0..255)
+    // Базова шина механізмів (усі слоти 0..{max_slot_id})
     // ===================================================================
-    Mechs : ARRAY [0..255] OF "UDT_BaseMechanism";
+    Mechs : ARRAY [0..{max_slot_id}] OF "UDT_BaseMechanism";
 
 '''
 

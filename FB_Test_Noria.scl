@@ -1,0 +1,246 @@
+FUNCTION_BLOCK "FB_Test_Noria"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.2
+   VAR_INPUT 
+      Run : Bool;   // TRUE = виконати тест
+      CaseId : Int; // номер тест-кейсу
+   END_VAR
+
+   VAR_OUTPUT 
+      Passed : Bool;
+      Failed : Bool;
+      FailMask : DWord;
+   END_VAR
+
+   VAR 
+      N : "UDT_Noria";
+      B : "UDT_BaseMechanism";
+      now : DInt;
+      Exp_Status : UInt;
+      Exp_FLTCode : UInt;
+      Exp_DO_Run : Bool;
+   END_VAR
+
+
+BEGIN
+	#Passed := FALSE;
+	#Failed := FALSE;
+	#FailMask := 0;
+	
+	IF NOT #Run THEN
+	    RETURN;
+	END_IF;
+	
+	#now := TIME_TCK();
+	
+	// ------------------------------------------------------------------
+	// ARRANGE — базовий "здоровий" стан
+	// ------------------------------------------------------------------
+	#B.Enable_OK    := TRUE;
+	#B.LocalManual  := FALSE;
+	#B.DeviceType   := "TYPE_NORIA";
+	#B.Cmd          := "CMD_NONE";
+	#B.CmdParam1    := 0;
+	#B.LastCmd      := "CMD_NONE";
+	#B.Force_Code   := 0;
+	#B.OwnerCur     := 123;
+	#B.OwnerCurId   := 456;
+	#B.Status       := "STS_IDLE";
+	#B.FLTCode      := "FLT_NONE";
+	
+	#N.StartMs        := 0;
+	#N.SpeedLostMs    := 0;
+	#N.FeedbackLostMs := 0;
+	
+	// HAL — здоровий стан
+	#N.DI_Breaker_OK  := TRUE;
+	#N.DI_Overflow_OK := TRUE;
+	#N.DI_Alingment_OK := TRUE;
+	#N.DI_Speed_OK    := FALSE;
+	#N.DI_Feedback_OK := FALSE;
+	
+	// дефолт очікувань
+	#Exp_Status  := #B.Status;
+	#Exp_FLTCode := #B.FLTCode;
+	#Exp_DO_Run  := FALSE;
+	
+	// ------------------------------------------------------------------
+	// TEST CASES
+	// ------------------------------------------------------------------
+	CASE #CaseId OF
+	    
+	    // A1: Enable_OK = FALSE → DISABLED
+	    1:
+	        #B.Enable_OK := FALSE;
+	        #Exp_Status  := "STS_DISABLED";
+	    
+	    // A2: LocalManual = TRUE → LOCAL
+	    2:
+	        #B.LocalManual := TRUE;
+	        #Exp_Status    := "STS_LOCAL";
+	    
+	    // B1: RESET скидає FAULT (FLT_OVERFLOW) і таймінги
+	    3:
+	        #B.Status         := "STS_FAULT";
+	        #B.FLTCode        := "FLT_OVERFLOW";
+	        #N.DI_Overflow_OK := TRUE;
+	        #N.StartMs        := 111;
+	        #N.SpeedLostMs    := 222;
+	        #N.FeedbackLostMs := 333;
+	        #B.Cmd            := "CMD_RESET";
+	        #Exp_Status       := "STS_IDLE";
+	        #Exp_FLTCode      := "FLT_NONE";
+	    
+	    // B2: RESET скидає FLT_NO_RUNFB
+	    14:
+	        #B.Status      := "STS_FAULT";
+	        #B.FLTCode     := "FLT_NO_RUNFB";
+	        #N.DI_Speed_OK := TRUE;
+	        #B.Cmd         := "CMD_RESET";
+	        #Exp_Status    := "STS_IDLE";
+	        #Exp_FLTCode   := "FLT_NONE";
+	    
+	    // B3: RESET скидає FLT_NO_FEEDBACK
+	    15:
+	        #B.Status         := "STS_FAULT";
+	        #B.FLTCode        := "FLT_NO_FEEDBACK";
+	        #N.DI_Feedback_OK := TRUE;
+	        #B.Cmd            := "CMD_RESET";
+	        #Exp_Status       := "STS_IDLE";
+	        #Exp_FLTCode      := "FLT_NONE";
+	    
+	    // C1: Breaker аварія
+	    4:
+	        #N.DI_Breaker_OK := FALSE;
+	        #Exp_Status      := "STS_FAULT";
+	        #Exp_FLTCode     := "FLT_BREAKER";
+	    
+	    // C2: Alignment аварія
+	    5:
+	        #N.DI_Alingment_OK := FALSE;
+	        #Exp_Status        := "STS_FAULT";
+	        #Exp_FLTCode       := "FLT_ALINGMENT";
+	    
+	    // C3: Overflow аварія
+	    16:
+	        #N.DI_Overflow_OK := FALSE;
+	        #Exp_Status       := "STS_FAULT";
+	        #Exp_FLTCode      := "FLT_OVERFLOW";
+	    
+	    // C4: Breaker > Alignment > Overflow (пріоритет)
+	    6:
+	        #N.DI_Breaker_OK   := FALSE;
+	        #N.DI_Alingment_OK := FALSE;
+	        #Exp_Status        := "STS_FAULT";
+	        #Exp_FLTCode       := "FLT_BREAKER";
+	    
+	    // C5: Форсування Breaker (BIT0=1)
+	    7:
+	        #N.DI_Breaker_OK := FALSE;
+	        #B.Force_Code    := 1;
+	        #Exp_Status      := "STS_IDLE";
+	    
+	    // C6: Форсування Alignment (BIT3=8)
+	    8:
+	        #N.DI_Alingment_OK := FALSE;
+	        #B.Force_Code      := 8;
+	        #Exp_Status        := "STS_IDLE";
+	    
+	    // D1: CMD_START → STS_STARTING
+	    9:
+	        #B.Cmd      := "CMD_START";
+	        #Exp_Status := "STS_STARTING";
+	        #Exp_DO_Run := TRUE;
+	    
+	    // D2: STARTING + DI_Speed_OK → RUNNING
+	    10:
+	        #B.Status      := "STS_STARTING";
+	        #N.DI_Speed_OK := TRUE;
+	        #Exp_Status    := "STS_RUNNING";
+	        #Exp_DO_Run    := TRUE;
+	    
+	    // D3: STARTING таймаут → FLT_NO_RUNFB
+	    11:
+	        #B.Status    := "STS_STARTING";
+	        #N.StartMs   := #now - "TimeoutMs_Noria_Start" - 1;
+	        #Exp_Status  := "STS_FAULT";
+	        #Exp_FLTCode := "FLT_NO_RUNFB";
+	    
+	    // D4: RUNNING — втрата тахо з таймаутом → FLT_NO_RUNFB
+	    12:
+	        #B.Status         := "STS_RUNNING";
+	        #N.DI_Speed_OK    := FALSE;
+	        #N.DI_Feedback_OK := TRUE;
+	        #N.SpeedLostMs    := #now - "TimeoutMs_Noria_SpeedPause" - 1;
+	        #Exp_Status       := "STS_FAULT";
+	        #Exp_FLTCode      := "FLT_NO_RUNFB";
+	    
+	    // D5: RUNNING — втрата фідбеку контактора з таймаутом → FLT_NO_FEEDBACK
+	    17:
+	        #B.Status         := "STS_RUNNING";
+	        #N.DI_Speed_OK    := TRUE;
+	        #N.DI_Feedback_OK := FALSE;
+	        #N.FeedbackLostMs := #now - "TimeoutMs_Noria_FeedbackPause" - 1;
+	        #Exp_Status       := "STS_FAULT";
+	        #Exp_FLTCode      := "FLT_NO_FEEDBACK";
+	    
+	    // D6: STOPPING + DI_Speed_OK=FALSE → IDLE
+	    13:
+	        #B.Status      := "STS_STOPPING";
+	        #N.DI_Speed_OK := FALSE;
+	        #Exp_Status    := "STS_IDLE";
+	    
+	    // D7: STOPPING + DI_Speed_OK=TRUE → залишається STOPPING
+	    18:
+	        #B.Status      := "STS_STOPPING";
+	        #N.DI_Speed_OK := TRUE;
+	        #Exp_Status    := "STS_STOPPING";
+	        #Exp_DO_Run    := TRUE;
+	    
+	    // D8: Форсування Speed (BIT2=4) — STOPPING → IDLE навіть при Speed_OK=TRUE
+	    19:
+	        #B.Status      := "STS_STOPPING";
+	        #N.DI_Speed_OK := TRUE;
+	        #B.Force_Code  := 4;
+	        #Exp_Status    := "STS_IDLE";
+	    
+	    ELSE
+	        RETURN;
+	END_CASE;
+	
+	// ------------------------------------------------------------------
+	// ACT
+	// ------------------------------------------------------------------
+	"FC_Noria"(B := #B, N := #N);
+	"Opened" := #N.DO_Run;
+	
+	// ------------------------------------------------------------------
+	// ASSERT
+	// ------------------------------------------------------------------
+	IF #B.Status <> #Exp_Status THEN
+	    #FailMask := #FailMask OR 16#0001;
+	END_IF;
+	IF #B.FLTCode <> #Exp_FLTCode THEN
+	    #FailMask := #FailMask OR 16#0002;
+	END_IF;
+	IF #N.DO_Run <> #Exp_DO_Run THEN
+	    #FailMask := #FailMask OR 16#0004;
+	END_IF;
+	
+	// RESET: таймінги повинні обнулитися
+	IF #CaseId = 3 THEN
+	    IF #N.StartMs <> 0 THEN
+	        #FailMask := #FailMask OR 16#0010;
+	    END_IF;
+	    IF #N.SpeedLostMs <> 0 THEN
+	        #FailMask := #FailMask OR 16#0020;
+	    END_IF;
+	    IF #N.FeedbackLostMs <> 0 THEN
+	        #FailMask := #FailMask OR 16#0040;
+	    END_IF;
+	END_IF;
+	
+	#Failed := (#FailMask <> 0);
+	#Passed := NOT #Failed;
+	
+END_FUNCTION_BLOCK

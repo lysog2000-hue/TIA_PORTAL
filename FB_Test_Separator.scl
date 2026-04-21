@@ -1,0 +1,360 @@
+FUNCTION_BLOCK "FB_Test_Separator"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   VAR_INPUT
+      Run : Bool;   // TRUE = виконати тест
+      CaseId : Int;   // номер тест-кейсу
+   END_VAR
+
+   VAR_OUTPUT
+      Passed : Bool;
+      Failed : Bool;
+      FailMask : DWord;
+   END_VAR
+
+   VAR
+      S : "UDT_Separator";
+      B : "UDT_BaseMechanism";
+      now : DInt;   // поточний час
+      Exp_Status : UInt;
+      Exp_FLTCode : UInt;
+      Exp_DO_Run : Bool;
+   END_VAR
+
+
+BEGIN
+	#Passed := FALSE;
+	#Failed := FALSE;
+	#FailMask := 0;
+
+	IF NOT #Run THEN
+	    RETURN;
+	END_IF;
+
+	#now := TIME_TCK();
+
+	// ------------------------------------------------------------------
+	// ARRANGE — базовий "здоровий" стан
+	// ------------------------------------------------------------------
+	// Base
+	#B.Enable_OK := TRUE;
+	#B.LocalManual := FALSE;
+	#B.DeviceType := "TYPE_NONE";
+	#B.Cmd := "CMD_NONE";
+	#B.CmdParam1 := 0;
+	#B.LastCmd := "CMD_NONE";
+	#B.Force_Code := 0;
+
+	#B.OwnerCur := 0;
+	#B.OwnerCurId := 0;
+
+	#B.Status := "STS_IDLE";
+	#B.FLTCode := "FLT_NONE";
+
+	// Таймінги
+	#S.StartMs := 0;
+	#S.FeedbackLostMs := 0;
+
+	// HAL
+	#S.DI_Breaker_OK := TRUE;
+	#S.DI_Feedback_OK := FALSE;
+
+	// дефолт очікувань
+	#Exp_Status := #B.Status;
+	#Exp_FLTCode := #B.FLTCode;
+	#Exp_DO_Run := FALSE;
+
+	// ------------------------------------------------------------------
+	// TEST CASES
+	// ------------------------------------------------------------------
+	CASE #CaseId OF
+
+	    // A1: Enable_OK = FALSE → DISABLED
+	    1:
+	        #B.Enable_OK := FALSE;
+	        #Exp_Status := "STS_DISABLED";
+
+	    // A2: LocalManual = TRUE → LOCAL
+	    2:
+	        #B.LocalManual := TRUE;
+	        #Exp_Status := "STS_LOCAL";
+
+	    // B1: RESET скидає FLT_BREAKER коли DI_Breaker_OK = TRUE
+	    3:
+	        #B.Status := "STS_FAULT";
+	        #B.FLTCode := "FLT_BREAKER";
+	        #S.DI_Breaker_OK := TRUE;
+	        #B.Cmd := "CMD_RESET";
+
+	        #Exp_Status := "STS_IDLE";
+	        #Exp_FLTCode := "FLT_NONE";
+
+	    // B2: RESET скидає FLT_NO_FEEDBACK коли DI_Feedback_OK = TRUE
+	    4:
+	        #B.Status := "STS_FAULT";
+	        #B.FLTCode := "FLT_NO_FEEDBACK";
+	        #S.DI_Feedback_OK := TRUE;
+	        #B.Cmd := "CMD_RESET";
+
+	        #Exp_Status := "STS_IDLE";
+	        #Exp_FLTCode := "FLT_NONE";
+
+	    // B3: RESET НЕ скидає FLT_BREAKER коли DI_Breaker_OK = FALSE
+	    5:
+	        #B.Status := "STS_FAULT";
+	        #B.FLTCode := "FLT_BREAKER";
+	        #S.DI_Breaker_OK := FALSE;
+	        #B.Cmd := "CMD_RESET";
+
+	        #Exp_Status := "STS_FAULT";
+	        #Exp_FLTCode := "FLT_BREAKER";
+
+	    // B4: RESET НЕ скидає FLT_NO_FEEDBACK коли DI_Feedback_OK = FALSE
+	    6:
+	        #B.Status := "STS_FAULT";
+	        #B.FLTCode := "FLT_NO_FEEDBACK";
+	        #S.DI_Feedback_OK := FALSE;
+	        #B.Cmd := "CMD_RESET";
+
+	        #Exp_Status := "STS_FAULT";
+	        #Exp_FLTCode := "FLT_NO_FEEDBACK";
+
+	    // C1: Breaker аварія
+	    7:
+	        #S.DI_Breaker_OK := FALSE;
+	        #Exp_Status := "STS_FAULT";
+	        #Exp_FLTCode := "FLT_BREAKER";
+
+	    // C2: No_Feedback аварія (під час RUNNING)
+	    8:
+	        #B.Status := "STS_RUNNING";
+	        #S.DI_Feedback_OK := FALSE;
+	        #S.FeedbackLostMs := #now - "TimeoutMs_Separator_FeedbackPause" - 1;
+	        #Exp_Status := "STS_FAULT";
+	        #Exp_FLTCode := "FLT_NO_FEEDBACK";
+
+	    // C3: Breaker пріоритет над No_Feedback
+	    9:
+	        #B.Status := "STS_RUNNING";
+	        #S.DI_Breaker_OK := FALSE;
+	        #S.DI_Feedback_OK := FALSE;
+	        #Exp_Status := "STS_FAULT";
+	        #Exp_FLTCode := "FLT_BREAKER";
+
+	    // C4: Форсування BREAKER (BIT0) — latch ставить FLTCode, але статус не FAULT
+	    10:
+	        #S.DI_Breaker_OK := FALSE;
+	        #B.Force_Code := 1; // BIT0
+	        #Exp_Status := "STS_IDLE";
+	        #Exp_FLTCode := "FLT_BREAKER";
+
+	    // C5: Форсування FEEDBACK (BIT8)
+	    11:
+	        #B.Status := "STS_RUNNING";
+	        #S.DI_Feedback_OK := FALSE;
+	        #B.Force_Code := 256; // BIT8
+	        #Exp_Status := "STS_RUNNING";
+	        #Exp_FLTCode := "FLT_NONE";
+	        #Exp_DO_Run := TRUE;
+
+	    // C6: RESET з форсуванням BREAKER — RESET clears, але latch знову ставить
+	    12:
+	        #B.Status := "STS_FAULT";
+	        #B.FLTCode := "FLT_BREAKER";
+	        #S.DI_Breaker_OK := FALSE;
+	        #B.Force_Code := 1; // BIT0
+	        #B.Cmd := "CMD_RESET";
+
+	        #Exp_Status := "STS_IDLE";
+	        #Exp_FLTCode := "FLT_BREAKER"; // latch знову спрацював
+
+	    // C7: RESET з форсуванням FEEDBACK
+	    13:
+	        #B.Status := "STS_FAULT";
+	        #B.FLTCode := "FLT_NO_FEEDBACK";
+	        #S.DI_Feedback_OK := FALSE;
+	        #B.Force_Code := 256; // BIT8
+	        #B.Cmd := "CMD_RESET";
+
+	        #Exp_Status := "STS_IDLE";
+	        #Exp_FLTCode := "FLT_NONE";
+
+	    // D1: START → STARTING
+	    14:
+	        #B.Cmd := "CMD_START";
+	        #Exp_Status := "STS_STARTING";
+	        #Exp_DO_Run := TRUE;
+
+	    // D2: STARTING + Feedback_Ok → RUNNING
+	    15:
+	        #B.Status := "STS_STARTING";
+	        #S.DI_Feedback_OK := TRUE;
+	        #Exp_Status := "STS_RUNNING";
+	        #Exp_DO_Run := TRUE;
+
+	    // D3: STARTING + Feedback_Ok з форсуванням → RUNNING
+	    16:
+	        #B.Status := "STS_STARTING";
+	        #S.DI_Feedback_OK := FALSE;
+	        #B.Force_Code := 256; // BIT8
+	        #Exp_Status := "STS_RUNNING";
+	        #Exp_DO_Run := TRUE;
+
+	    // D4: STARTING timeout → FLT_NO_FEEDBACK
+	    17:
+	        #B.Status := "STS_STARTING";
+	        #S.StartMs := #now - "TimeoutMs_Separator_Feedback" - 1;
+	        #S.DI_Feedback_OK := FALSE;
+	        #Exp_Status := "STS_FAULT";
+	        #Exp_FLTCode := "FLT_NO_FEEDBACK";
+
+	    // D5: RUNNING + Feedback втрачено → ще не аварія (менше таймауту)
+	    18:
+	        #B.Status := "STS_RUNNING";
+	        #S.DI_Feedback_OK := FALSE;
+	        #S.FeedbackLostMs := #now - 100; // ще не вийшов таймаут
+	        #Exp_Status := "STS_RUNNING";
+	        #Exp_FLTCode := "FLT_NONE";
+	        #Exp_DO_Run := TRUE;
+
+	    // D6: RUNNING + Feedback втрачено з таймаутом → FLT_NO_FEEDBACK
+	    19:
+	        #B.Status := "STS_RUNNING";
+	        #S.DI_Feedback_OK := FALSE;
+	        #S.FeedbackLostMs := #now - "TimeoutMs_Separator_FeedbackPause" - 1;
+	        #Exp_Status := "STS_FAULT";
+	        #Exp_FLTCode := "FLT_NO_FEEDBACK";
+
+	    // D7: STOPPING → IDLE (коли Feedback зник)
+	    20:
+	        #B.Status := "STS_STOPPING";
+	        #S.DI_Feedback_OK := FALSE;
+	        #Exp_Status := "STS_IDLE";
+	        #Exp_DO_Run := FALSE;
+
+	    // D8: STOPPING → IDLE (з форсуванням Feedback)
+	    21:
+	        #B.Status := "STS_STOPPING";
+	        #S.DI_Feedback_OK := TRUE;
+	        #B.Force_Code := 256; // BIT8
+	        #Exp_Status := "STS_IDLE";
+	        #Exp_DO_Run := FALSE;
+
+	    // D9: CMD_STOP → STOPPING (з RUNNING)
+	    22:
+	        #B.Status := "STS_RUNNING";
+	        #B.Cmd := "CMD_STOP";
+	        #Exp_Status := "STS_STOPPING";
+	        #Exp_DO_Run := FALSE;
+
+	    // D10: CMD_STOP → STOPPING (з STARTING) — таймаут фідбеку ставиться перед стопом
+	    23:
+	        #B.Status := "STS_STARTING";
+	        #S.StartMs := #now - "TimeoutMs_Separator_Feedback" - 1;
+	        #S.DI_Feedback_OK := FALSE;
+	        #B.Cmd := "CMD_STOP";
+	        #Exp_Status := "STS_STOPPING";
+	        #Exp_FLTCode := "FLT_NO_FEEDBACK";
+	        #Exp_DO_Run := FALSE;
+
+	    // D11: CMD_STOP в IDLE → нічого не відбувається
+	    24:
+	        #B.Cmd := "CMD_STOP";
+	        #Exp_Status := "STS_IDLE";
+	        #Exp_DO_Run := FALSE;
+
+	    // D12: Відновлення з DISABLED (Enable_OK=TRUE) → IDLE
+	    25:
+	        #B.Status := "STS_DISABLED";
+	        #B.Enable_OK := TRUE;
+	        #Exp_Status := "STS_IDLE";
+
+	    // D13: Відновлення з LOCAL (LocalManual=FALSE) → IDLE
+	    26:
+	        #B.Status := "STS_LOCAL";
+	        #B.LocalManual := FALSE;
+	        #Exp_Status := "STS_IDLE";
+
+	    // D14: RESET з IDLE (без аварії) → нічого не змінюється
+	    27:
+	        #B.Cmd := "CMD_RESET";
+	        #Exp_Status := "STS_IDLE";
+	        #Exp_FLTCode := "FLT_NONE";
+
+	    // D15: LastCmd фіксується при CMD_START
+	    28:
+	        #B.LastCmd := "CMD_NONE";
+	        #B.Cmd := "CMD_START";
+	        #Exp_Status := "STS_STARTING";
+			#Exp_DO_Run:=TRUE;
+	        // LastCmd перевіряємо в ASSERT
+
+	    // D16: CMD_RESET скидає таймінги
+	    29:
+	        #B.Status := "STS_FAULT";
+	        #B.FLTCode := "FLT_BREAKER";
+	        #S.DI_Breaker_OK := TRUE;
+	        #S.StartMs := 12345;
+	        #S.FeedbackLostMs := 67890;
+	        #B.Cmd := "CMD_RESET";
+
+	        #Exp_Status := "STS_IDLE";
+	        #Exp_FLTCode := "FLT_NONE";
+
+	    ELSE
+	        RETURN;
+	END_CASE;
+
+	// ------------------------------------------------------------------
+	// ACT
+	// ------------------------------------------------------------------
+
+	"FC_Separator"(S := #S, B := #B);
+
+	// ------------------------------------------------------------------
+	// ASSERT
+	// ------------------------------------------------------------------
+	IF #B.Status <> #Exp_Status THEN
+	    #FailMask := #FailMask OR 16#0001;
+	END_IF;
+	IF #B.FLTCode <> #Exp_FLTCode THEN
+	    #FailMask := #FailMask OR 16#0002;
+	END_IF;
+	IF #S.DO_Run <> #Exp_DO_Run THEN
+	    #FailMask := #FailMask OR 16#0004;
+	END_IF;
+
+	// RESET додаткові гарантії (таймінги повинні обнулитися)
+	IF #CaseId = 3 OR #CaseId = 4 THEN
+	    IF #S.StartMs <> 0 THEN
+	        #FailMask := #FailMask OR 16#0010;
+	    END_IF;
+	    IF #S.FeedbackLostMs <> 0 THEN
+	        #FailMask := #FailMask OR 16#0020;
+	    END_IF;
+	END_IF;
+
+	// Case 12/13: RESET з форсуванням — FLTCode не скидається (latch знову ставить)
+	// тому таймінги не обов'язково скидаються
+
+	// Case 29: RESET скидає таймінги
+	IF #CaseId = 29 THEN
+	    IF #S.StartMs <> 0 THEN
+	        #FailMask := #FailMask OR 16#0010;
+	    END_IF;
+	    IF #S.FeedbackLostMs <> 0 THEN
+	        #FailMask := #FailMask OR 16#0020;
+	    END_IF;
+	END_IF;
+
+	// LastCmd перевірка
+	IF #CaseId = 28 THEN
+	    IF #B.LastCmd <> "CMD_START" THEN
+	        #FailMask := #FailMask OR 16#0040;
+	    END_IF;
+	END_IF;
+
+	#Failed := (#FailMask <> 0);
+	#Passed := NOT #Failed;
+
+END_FUNCTION_BLOCK

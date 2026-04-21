@@ -27,14 +27,14 @@ VERSION : 2.0
         
         // === Латчовані аварії ===
         Breaker_Tripped   : BOOL;              // автомат спрацював (до ручного скидання)
+        Feedback_Tripped  : BOOL;              // втрата фідбеку контактора (до ручного скидання)
         
         // === Резерв для майбутніх фіч ===
         Reserved1         : BOOL;
         Reserved2         : BOOL;
         Reserved3         : BOOL;
         Reserved4         : BOOL;
-        Reserved5         : BOOL;
+        Reserved5         : DINT;
         Reserved6         : DINT;
-        Reserved7         : DINT;
     END_STRUCT;
 END_TYPE

@@ -1,68 +1,79 @@
 ﻿FUNCTION "FC_Silos" : Void
 { S7_Optimized_Access := 'TRUE' }
 VERSION : 0.1
-    VAR_IN_OUT
+   VAR_IN_OUT 
       F : "UDT_Silos";
       B : "UDT_BaseMechanism";
-    END_VAR
+   END_VAR
 
-    VAR_TEMP
-      isFault   : Bool;
+   VAR_TEMP 
+      isFault : Bool;
       isBlocked : Bool;
-    END_VAR
+   END_VAR
+
 
 BEGIN
-
-REGION "0) Декодування форсування"
-    // Силос пасивний — форсування не застосовується
-    ;
-END_REGION
-
-REGION "1) RESET"
-    IF #B.Cmd = "CMD_RESET" THEN
-        IF #B.FLTCode = "FLT_NONE" AND #B.Status = "STS_FAULT" THEN
-            #B.Status := "STS_IDLE";
-        END_IF;
-    END_IF;
-END_REGION
-
-REGION "2) Обробка блокувань"
-    IF NOT #B.Enable_OK THEN
-        #B.Status := "STS_DISABLED";
-        #isBlocked := TRUE;
-    ELSIF #B.LocalManual THEN
-        #B.Status := "STS_LOCAL";
-        #isBlocked := TRUE;
-    ELSE
-        #isBlocked := FALSE;
-        IF (#B.Status = "STS_DISABLED") OR (#B.Status = "STS_LOCAL") THEN
-            #B.Status := "STS_IDLE";
-        END_IF;
-    END_IF;
-END_REGION
-
-REGION "3) Моніторинг аварій (Diagnostic Latch)"
-    // TODO: контроль рівнів
-    ;
-END_REGION
-
-REGION "4) Визначення виконавчої аварії"
-    #isFault := (#B.Status = "STS_FAULT");
-END_REGION
-
-REGION "5 & 6) Машина станів та виконання команд"
-    IF (NOT #isFault) AND (NOT #isBlocked) THEN
-        IF #B.Cmd <> "CMD_NONE" THEN #B.LastCmd := #B.Cmd; END_IF;
-        // Силос пасивний — команди START/STOP не потрібні
-        IF #B.Status = "STS_IDLE" THEN
-            ; // нічого не робити
-        END_IF;
-    END_IF;
-END_REGION
-
-REGION "7) Фіналізація"
-    // TODO: Status_Param ← рівень заповнення
-    #B.Cmd := "CMD_NONE";
-END_REGION
-
+	
+	REGION "0) Декодування форсування"
+	    // Силос пасивний — форсування не застосовується
+	    ;
+	END_REGION
+	
+	REGION "1) RESET"
+	    IF #B.Cmd = "CMD_RESET" THEN
+	        IF #B.FLTCode = "FLT_NONE" AND #B.Status = "STS_FAULT" THEN
+	            #B.Status := "STS_IDLE";
+	        END_IF;
+	    END_IF;
+	END_REGION
+	
+	REGION "2) Обробка блокувань"
+	    IF NOT #B.Enable_OK THEN
+	        #B.Status := "STS_DISABLED";
+	        #isBlocked := TRUE;
+	    ELSIF #B.LocalManual THEN
+	        #B.Status := "STS_LOCAL";
+	        #isBlocked := TRUE;
+	    ELSE
+	        #isBlocked := FALSE;
+	        IF (#B.Status = "STS_DISABLED") OR (#B.Status = "STS_LOCAL") THEN
+	            #B.Status := "STS_IDLE";
+	        END_IF;
+	    END_IF;
+	END_REGION
+	
+	REGION "3) Моніторинг аварій (Diagnostic Latch)"
+	    // TODO: контроль рівнів
+	    ;
+	END_REGION
+	
+	REGION "4) Визначення виконавчої аварії"
+	    #isFault := (#B.Status = "STS_FAULT");
+	END_REGION
+	
+	REGION "5 & 6) Машина станів та виконання команд"
+	    IF (NOT #isFault) AND (NOT #isBlocked) THEN
+	        IF #B.Cmd <> "CMD_NONE" THEN
+	            #B.LastCmd := #B.Cmd;
+	        END_IF;
+	        
+	        // Силос пасивний — команди START/STOP не потрібні
+	        // Але CMD_SET_OWNER_SCADA треба скинути щоб арбітр не блокувався
+	        IF #B.Cmd = "CMD_SET_OWNER_SCADA" THEN
+	            // Силос захоплено маршрутом — команда виконана
+	            #B.Cmd := "CMD_NONE";
+	        END_IF;
+	        
+	        IF #B.Status = "STS_IDLE" THEN
+	            ; // нічого не робити
+	        END_IF;
+	    END_IF;
+	END_REGION
+	
+	REGION "7) Фіналізація"
+	    // TODO: Status_Param ← рівень заповнення
+	    #B.Cmd := "CMD_NONE";
+	END_REGION
+	
 END_FUNCTION
+

@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git checkout *)",
+      "Bash(python *)",
+      "Bash(\"c:\\users\\lysog\\appdata\\local\\python\\bin\\python.exe\" *)",
+      "Bash(py *)",
+      "Bash(del *)"
+    ]
+  },
+  "$version": 3
+}

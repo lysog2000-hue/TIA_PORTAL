@@ -1,60 +1,118 @@
+﻿FUNCTION "FC_DeviceRunner" : Void
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 3.0
 // ==============================================================================
-// FC_DeviceRunner - Виконання механізмів
+// FC_DeviceRunner - Ð’Ð¸ÐºÐ¾Ð½Ð°Ð½Ð½Ñ Ð¼ÐµÑ…Ð°Ð½Ñ–Ð·Ð¼Ñ–Ð²
 // ==============================================================================
 // Project  : Elevator_System
 // Author   : Engineering Team
-// Version  : 2.0.0
-// Generated: 2026-03-20 10:46:50
+// Version  : 3.1.0
+// Generated: 2026-03-24
 // ==============================================================================
+// Ð—Ð¼Ñ–Ð½Ð¸ v3.1.0:
+//   - Ð Ð¾Ð·ÐºÐ¾Ð¼ÐµÐ½Ñ‚Ð¾Ð²Ð°Ð½Ð¾ Ð²Ð¸ÐºÐ»Ð¸ÐºÐ¸ FC_Valve3P, FC_Silos, FC_Sushka, FC_ReceivingPit, FC_Separator
+// ==============================================================================
+   VAR_IN_OUT 
+      Mechs : Array[*] of "UDT_BaseMechanism";
+      Redler : Array[*] of "UDT_Redler";
+      Noria : Array[*] of "UDT_Noria";
+      Gate : Array[*] of "UDT_Gate2P";
+      Fan : Array[*] of "UDT_Fan";
+      ReceivingPit : Array[*] of "UDT_ReceivingPit";
+      Separator : Array[*] of "UDT_Separator";
+      Valve3P : Array[*] of "UDT_Valve3P";
+      Silos : Array[*] of "UDT_Silos";
+      Sushka : Array[*] of "UDT_Sushka";
+   END_VAR
 
-FUNCTION "FC_DeviceRunner" : VOID
-{ S7_Optimized_Access := 'TRUE' }
-VERSION : 1.0
+   VAR_TEMP 
+      slot : Int;
+      idx : UInt;
+   END_VAR
 
-VAR_IN_OUT
-    Mechs  : ARRAY[*] OF "UDT_BaseMechanism";
-    Redler : ARRAY[*] OF "UDT_Redler";
-    Noria  : ARRAY[*] OF "UDT_Noria";
-    Gate   : ARRAY[*] OF "UDT_Gate2P";
-    Fan    : ARRAY[*] OF "UDT_Fan";
-END_VAR
-
-VAR_TEMP
-    slot : INT;
-    idx  : INT;
-END_VAR
 
 BEGIN
-    // === REDLERS (slot 0..1) ===
-    FOR slot := 0 TO 1 DO
-        IF Mechs[slot].DeviceType = "DB_Const".TYPE_REDLER THEN
-            idx := Mechs[slot].TypedIndex;
-            "FC_Redler"(R := Redler[idx], B := Mechs[slot]);
-        END_IF;
-    END_FOR;
-    
-    // === NORIAS (slot 50..51) ===
-    FOR slot := 50 TO 51 DO
-        IF Mechs[slot].DeviceType = "DB_Const".TYPE_NORIA THEN
-            idx := Mechs[slot].TypedIndex;
-            "FC_Noria"(N := Noria[idx], B := Mechs[slot]);
-        END_IF;
-    END_FOR;
-    
-    // === GATES (slot 100..101) ===
-    FOR slot := 100 TO 101 DO
-        IF Mechs[slot].DeviceType = "DB_Const".TYPE_GATE2P THEN
-            idx := Mechs[slot].TypedIndex;
-            "FC_Gate2P"(G := Gate[idx], B := Mechs[slot]);
-        END_IF;
-    END_FOR;
-    
-    // === FANS (slot 150..150) ===
-    FOR slot := 150 TO 150 DO
-        IF Mechs[slot].DeviceType = "DB_Const".TYPE_FAN THEN
-            idx := Mechs[slot].TypedIndex;
-            "FC_Fan"(F := Fan[idx], B := Mechs[slot]);
-        END_IF;
-    END_FOR;
-    
+	    // === REDLERS (slot 1..39) ===
+	    FOR #slot := 1 TO 39 DO
+	        IF #Mechs[#slot].DeviceType = "TYPE_REDLER" THEN
+	            #idx := #Mechs[#slot].TypedIndex;
+	            "FC_Redler"(R := #Redler[#idx],
+	                        B := #Mechs[#slot]);
+	        END_IF;
+	    END_FOR;
+	    
+	    // === NORIAS (slot 51..62) ===
+	    FOR #slot := 51 TO 62 DO
+	        IF #Mechs[#slot].DeviceType = "TYPE_NORIA" THEN
+	            #idx := #Mechs[#slot].TypedIndex;
+	            "FC_Noria"(N := #Noria[#idx],
+	                       B := #Mechs[#slot]);
+	        END_IF;
+	    END_FOR;
+	    
+	    // === GATES (slot 101..182) ===
+	    FOR #slot := 101 TO 183 DO
+	        IF #Mechs[#slot].DeviceType = "TYPE_GATE2P" THEN
+	            #idx := #Mechs[#slot].TypedIndex;
+	            "FC_Gate2P"(G := #Gate[#idx],
+	                        B := #Mechs[#slot]);
+	        END_IF;
+	    END_FOR;
+	    
+	    // === FANS (Ð·Ð°Ð³Ð»ÑƒÑˆÐºÐ°) ===
+	    // Fan Ñ–Ð½Ð´ÐµÐºÑÐ¸ 0..FANS_COUNT (FANS_COUNT = 0)
+	    FOR #slot := 0 TO 0 DO
+	        IF #Mechs[#slot].DeviceType = "TYPE_FAN" THEN
+	            #idx := #Mechs[#slot].TypedIndex;
+	            "FC_Fan"(F := #Fan[#idx],
+	                     B := #Mechs[#slot]);
+	        END_IF;
+	    END_FOR;
+	    
+	    // === RECEIVING_PIT (slot 305..306) ===
+	    FOR #slot := 305 TO 306 DO
+	        IF #Mechs[#slot].DeviceType = "TYPE_Receiving_PIT" THEN
+	            #idx := #Mechs[#slot].TypedIndex;
+	            // "FC_ReceivingPit"(P := #ReceivingPit[#idx],
+	            //  B := #Mechs[#slot]);
+	        END_IF;
+	    END_FOR;
+	    
+	    // === SEPARATOR (slot 311..313) ===
+	    FOR #slot := 311 TO 313 DO
+	        IF #Mechs[#slot].DeviceType = "TYPE_SEPARATOR" THEN
+	            #idx := #Mechs[#slot].TypedIndex;
+	             "FC_Separator"(S := #Separator[#idx],
+	             B := #Mechs[#slot]);
+	        END_IF;
+	    END_FOR;
+	    
+	    // === VALVE3P (slot 201..229) ===
+	    FOR #slot := 201 TO 229 DO
+	        IF #Mechs[#slot].DeviceType = "TYPE_VALVE3P" THEN
+	            #idx := #Mechs[#slot].TypedIndex;
+	            "FC_Valve3P"(F := #Valve3P[#idx],
+	                         B := #Mechs[#slot]);
+	        END_IF;
+	    END_FOR;
+	    
+	    // === SILOS (slot 251..278) ===
+	    FOR #slot := 251 TO 278 DO
+	        IF #Mechs[#slot].DeviceType = "TYPE_SILOS" THEN
+	            #idx := #Mechs[#slot].TypedIndex;
+	            //"FC_Silos"(S := #Silos[#idx],
+	            //B := #Mechs[#slot]);
+	        END_IF;
+	    END_FOR;
+	    
+	    // === SUSHKA (slot 281..284) ===
+	    FOR #slot := 281 TO 284 DO
+	        IF #Mechs[#slot].DeviceType = "TYPE_SUSHKA" THEN
+	            #idx := #Mechs[#slot].TypedIndex;
+	            // "FC_Sushka"(S := #Sushka[#idx],
+	            //  B := #Mechs[#slot]);
+	        END_IF;
+	    END_FOR;
+	    
 END_FUNCTION
+

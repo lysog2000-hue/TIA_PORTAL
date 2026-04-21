@@ -2,9 +2,9 @@
 // DB_Mechs - Масиви механізмів
 // ==============================================================================
 // Project  : Elevator_System v1.0.0
-// Generated: 2026-02-26 16:22:16
-// Source   : graph.json
-// Devices  : 4 / 4
+// Generated: 2026-04-09 15:48:16
+// Source   : graph3.json
+// Devices  : 186 / 186
 // ==============================================================================
 
 DATA_BLOCK "DB_Mechs"
@@ -17,33 +17,1150 @@ VAR
     Noria  : ARRAY [0.."NORIAS_COUNT"] OF "UDT_Noria";
     Gate2P : ARRAY [0.."GATES2P_COUNT"] OF "UDT_Gate2P";
     Fan    : ARRAY [0.."FANS_COUNT"] OF "UDT_Fan";
+    ReceivingPit : ARRAY [0.."RECEIVING_PITS_COUNT"] OF "UDT_ReceivingPit";
+    Separator : ARRAY [0.."SEPARATORS_COUNT"] OF "UDT_Separator";
+    Valve3P : ARRAY [0.."VALVES3P_COUNT"] OF "UDT_Valve3P";
+    Silos  : ARRAY [0.."SILOS_COUNT"] OF "UDT_Silos";
+    Sushka : ARRAY [0.."SUSHKAS_COUNT"] OF "UDT_Sushka";
+    Feeder : ARRAY [0.."FEEDERS_COUNT"] OF "UDT_Feeder";
 END_VAR
 
 BEGIN
     // === ІНІЦІАЛІЗАЦІЯ СЛОТІВ ===
 
-    // --- Redler (slot ) ---
-    Mechs[0].SlotId     := 0;
-    Mechs[0].DeviceType := "TYPE_NORIA";
-    Mechs[0].TypedIndex := 0;
-    Mechs[0].Enable_OK  := TRUE;
-
-    // --- Redler (slot ) ---
+    // --- Redler (slots 1..39) ---
+    // Redler "RD1" (id=1)
     Mechs[1].SlotId     := 1;
-    Mechs[1].DeviceType := "TYPE_NORIA";
-    Mechs[1].TypedIndex := 1;
+    Mechs[1].DeviceType := "TYPE_REDLER";
+    Mechs[1].TypedIndex := 0;
     Mechs[1].Enable_OK  := TRUE;
 
-       // --- Redler (slot ) ---
+    // Redler "RD2" (id=2)
     Mechs[2].SlotId     := 2;
-    Mechs[2].DeviceType := "TYPE_NORIA";
-    Mechs[2].TypedIndex := 2;
+    Mechs[2].DeviceType := "TYPE_REDLER";
+    Mechs[2].TypedIndex := 1;
     Mechs[2].Enable_OK  := TRUE;
 
-
+    // Redler "RD3" (id=3)
     Mechs[3].SlotId     := 3;
-    Mechs[3].DeviceType := "TYPE_GATE2P";
-    Mechs[3].TypedIndex := 0;
+    Mechs[3].DeviceType := "TYPE_REDLER";
+    Mechs[3].TypedIndex := 2;
     Mechs[3].Enable_OK  := TRUE;
+
+    // Redler "RD4" (id=4)
+    Mechs[4].SlotId     := 4;
+    Mechs[4].DeviceType := "TYPE_REDLER";
+    Mechs[4].TypedIndex := 3;
+    Mechs[4].Enable_OK  := TRUE;
+
+    // Redler "RD5" (id=5)
+    Mechs[5].SlotId     := 5;
+    Mechs[5].DeviceType := "TYPE_REDLER";
+    Mechs[5].TypedIndex := 4;
+    Mechs[5].Enable_OK  := TRUE;
+
+    // Redler "RD6" (id=6)
+    Mechs[6].SlotId     := 6;
+    Mechs[6].DeviceType := "TYPE_REDLER";
+    Mechs[6].TypedIndex := 5;
+    Mechs[6].Enable_OK  := TRUE;
+
+    // Redler "RD7" (id=7)
+    Mechs[7].SlotId     := 7;
+    Mechs[7].DeviceType := "TYPE_REDLER";
+    Mechs[7].TypedIndex := 6;
+    Mechs[7].Enable_OK  := TRUE;
+
+    // Redler "RD8" (id=8)
+    Mechs[8].SlotId     := 8;
+    Mechs[8].DeviceType := "TYPE_REDLER";
+    Mechs[8].TypedIndex := 7;
+    Mechs[8].Enable_OK  := TRUE;
+
+    // Redler "RD9" (id=9)
+    Mechs[9].SlotId     := 9;
+    Mechs[9].DeviceType := "TYPE_REDLER";
+    Mechs[9].TypedIndex := 8;
+    Mechs[9].Enable_OK  := TRUE;
+
+    // Redler "RD10" (id=10)
+    Mechs[10].SlotId     := 10;
+    Mechs[10].DeviceType := "TYPE_REDLER";
+    Mechs[10].TypedIndex := 9;
+    Mechs[10].Enable_OK  := TRUE;
+
+    // Redler "RD11" (id=11)
+    Mechs[11].SlotId     := 11;
+    Mechs[11].DeviceType := "TYPE_REDLER";
+    Mechs[11].TypedIndex := 10;
+    Mechs[11].Enable_OK  := TRUE;
+
+    // Redler "RD12" (id=12)
+    Mechs[12].SlotId     := 12;
+    Mechs[12].DeviceType := "TYPE_REDLER";
+    Mechs[12].TypedIndex := 11;
+    Mechs[12].Enable_OK  := TRUE;
+
+    // Redler "RD13" (id=13)
+    Mechs[13].SlotId     := 13;
+    Mechs[13].DeviceType := "TYPE_REDLER";
+    Mechs[13].TypedIndex := 12;
+    Mechs[13].Enable_OK  := TRUE;
+
+    // Redler "RD14" (id=14)
+    Mechs[14].SlotId     := 14;
+    Mechs[14].DeviceType := "TYPE_REDLER";
+    Mechs[14].TypedIndex := 13;
+    Mechs[14].Enable_OK  := TRUE;
+
+    // Redler "RD15" (id=15)
+    Mechs[15].SlotId     := 15;
+    Mechs[15].DeviceType := "TYPE_REDLER";
+    Mechs[15].TypedIndex := 14;
+    Mechs[15].Enable_OK  := TRUE;
+
+    // Redler "RD16" (id=16)
+    Mechs[16].SlotId     := 16;
+    Mechs[16].DeviceType := "TYPE_REDLER";
+    Mechs[16].TypedIndex := 15;
+    Mechs[16].Enable_OK  := TRUE;
+
+    // Redler "RD17" (id=17)
+    Mechs[17].SlotId     := 17;
+    Mechs[17].DeviceType := "TYPE_REDLER";
+    Mechs[17].TypedIndex := 16;
+    Mechs[17].Enable_OK  := TRUE;
+
+    // Redler "RD18" (id=18)
+    Mechs[18].SlotId     := 18;
+    Mechs[18].DeviceType := "TYPE_REDLER";
+    Mechs[18].TypedIndex := 17;
+    Mechs[18].Enable_OK  := TRUE;
+
+    // Redler "RD19" (id=19)
+    Mechs[19].SlotId     := 19;
+    Mechs[19].DeviceType := "TYPE_REDLER";
+    Mechs[19].TypedIndex := 18;
+    Mechs[19].Enable_OK  := TRUE;
+
+    // Redler "RD20" (id=20)
+    Mechs[20].SlotId     := 20;
+    Mechs[20].DeviceType := "TYPE_REDLER";
+    Mechs[20].TypedIndex := 19;
+    Mechs[20].Enable_OK  := TRUE;
+
+    // Redler "RD21" (id=21)
+    Mechs[21].SlotId     := 21;
+    Mechs[21].DeviceType := "TYPE_REDLER";
+    Mechs[21].TypedIndex := 20;
+    Mechs[21].Enable_OK  := TRUE;
+
+    // Redler "RD22" (id=22)
+    Mechs[22].SlotId     := 22;
+    Mechs[22].DeviceType := "TYPE_REDLER";
+    Mechs[22].TypedIndex := 21;
+    Mechs[22].Enable_OK  := TRUE;
+
+    // Redler "RD23" (id=23)
+    Mechs[23].SlotId     := 23;
+    Mechs[23].DeviceType := "TYPE_REDLER";
+    Mechs[23].TypedIndex := 22;
+    Mechs[23].Enable_OK  := TRUE;
+
+    // Redler "RD24" (id=24)
+    Mechs[24].SlotId     := 24;
+    Mechs[24].DeviceType := "TYPE_REDLER";
+    Mechs[24].TypedIndex := 23;
+    Mechs[24].Enable_OK  := TRUE;
+
+    // Redler "RD25" (id=25)
+    Mechs[25].SlotId     := 25;
+    Mechs[25].DeviceType := "TYPE_REDLER";
+    Mechs[25].TypedIndex := 24;
+    Mechs[25].Enable_OK  := TRUE;
+
+    // Redler "RD26" (id=26)
+    Mechs[26].SlotId     := 26;
+    Mechs[26].DeviceType := "TYPE_REDLER";
+    Mechs[26].TypedIndex := 25;
+    Mechs[26].Enable_OK  := TRUE;
+
+    // Redler "RD27" (id=27)
+    Mechs[27].SlotId     := 27;
+    Mechs[27].DeviceType := "TYPE_REDLER";
+    Mechs[27].TypedIndex := 26;
+    Mechs[27].Enable_OK  := TRUE;
+
+    // Redler "RD28" (id=28)
+    Mechs[28].SlotId     := 28;
+    Mechs[28].DeviceType := "TYPE_REDLER";
+    Mechs[28].TypedIndex := 27;
+    Mechs[28].Enable_OK  := TRUE;
+
+    // Redler "RD29" (id=29)
+    Mechs[29].SlotId     := 29;
+    Mechs[29].DeviceType := "TYPE_REDLER";
+    Mechs[29].TypedIndex := 28;
+    Mechs[29].Enable_OK  := TRUE;
+
+    // Redler "RD30" (id=30)
+    Mechs[30].SlotId     := 30;
+    Mechs[30].DeviceType := "TYPE_REDLER";
+    Mechs[30].TypedIndex := 29;
+    Mechs[30].Enable_OK  := TRUE;
+
+    // Redler "RD31" (id=31)
+    Mechs[31].SlotId     := 31;
+    Mechs[31].DeviceType := "TYPE_REDLER";
+    Mechs[31].TypedIndex := 30;
+    Mechs[31].Enable_OK  := TRUE;
+
+    // Redler "RD32" (id=32)
+    Mechs[32].SlotId     := 32;
+    Mechs[32].DeviceType := "TYPE_REDLER";
+    Mechs[32].TypedIndex := 31;
+    Mechs[32].Enable_OK  := TRUE;
+
+    // Redler "RD33" (id=33)
+    Mechs[33].SlotId     := 33;
+    Mechs[33].DeviceType := "TYPE_REDLER";
+    Mechs[33].TypedIndex := 32;
+    Mechs[33].Enable_OK  := TRUE;
+
+    // Redler "RD34" (id=34)
+    Mechs[34].SlotId     := 34;
+    Mechs[34].DeviceType := "TYPE_REDLER";
+    Mechs[34].TypedIndex := 33;
+    Mechs[34].Enable_OK  := TRUE;
+
+    // Redler "RD35" (id=35)
+    Mechs[35].SlotId     := 35;
+    Mechs[35].DeviceType := "TYPE_REDLER";
+    Mechs[35].TypedIndex := 34;
+    Mechs[35].Enable_OK  := TRUE;
+
+    // Redler "RD36" (id=36)
+    Mechs[36].SlotId     := 36;
+    Mechs[36].DeviceType := "TYPE_REDLER";
+    Mechs[36].TypedIndex := 35;
+    Mechs[36].Enable_OK  := TRUE;
+
+    // Redler "RD37" (id=37)
+    Mechs[37].SlotId     := 37;
+    Mechs[37].DeviceType := "TYPE_REDLER";
+    Mechs[37].TypedIndex := 36;
+    Mechs[37].Enable_OK  := TRUE;
+
+    // Redler "RD38" (id=38)
+    Mechs[38].SlotId     := 38;
+    Mechs[38].DeviceType := "TYPE_REDLER";
+    Mechs[38].TypedIndex := 37;
+    Mechs[38].Enable_OK  := TRUE;
+
+    // Redler "RD39" (id=39)
+    Mechs[39].SlotId     := 39;
+    Mechs[39].DeviceType := "TYPE_REDLER";
+    Mechs[39].TypedIndex := 38;
+    Mechs[39].Enable_OK  := TRUE;
+
+
+    // --- Noria (slots 51..62) ---
+    // Noria "NR1" (id=51)
+    Mechs[51].SlotId     := 51;
+    Mechs[51].DeviceType := "TYPE_NORIA";
+    Mechs[51].TypedIndex := 0;
+    Mechs[51].Enable_OK  := TRUE;
+
+    // Noria "NR2" (id=52)
+    Mechs[52].SlotId     := 52;
+    Mechs[52].DeviceType := "TYPE_NORIA";
+    Mechs[52].TypedIndex := 1;
+    Mechs[52].Enable_OK  := TRUE;
+
+    // Noria "NR3" (id=53)
+    Mechs[53].SlotId     := 53;
+    Mechs[53].DeviceType := "TYPE_NORIA";
+    Mechs[53].TypedIndex := 2;
+    Mechs[53].Enable_OK  := TRUE;
+
+    // Noria "NR4" (id=54)
+    Mechs[54].SlotId     := 54;
+    Mechs[54].DeviceType := "TYPE_NORIA";
+    Mechs[54].TypedIndex := 3;
+    Mechs[54].Enable_OK  := TRUE;
+
+    // Noria "NR5" (id=55)
+    Mechs[55].SlotId     := 55;
+    Mechs[55].DeviceType := "TYPE_NORIA";
+    Mechs[55].TypedIndex := 4;
+    Mechs[55].Enable_OK  := TRUE;
+
+    // Noria "NR6" (id=56)
+    Mechs[56].SlotId     := 56;
+    Mechs[56].DeviceType := "TYPE_NORIA";
+    Mechs[56].TypedIndex := 5;
+    Mechs[56].Enable_OK  := TRUE;
+
+    // Noria "NR7" (id=57)
+    Mechs[57].SlotId     := 57;
+    Mechs[57].DeviceType := "TYPE_NORIA";
+    Mechs[57].TypedIndex := 6;
+    Mechs[57].Enable_OK  := TRUE;
+
+    // Noria "NR8" (id=58)
+    Mechs[58].SlotId     := 58;
+    Mechs[58].DeviceType := "TYPE_NORIA";
+    Mechs[58].TypedIndex := 7;
+    Mechs[58].Enable_OK  := TRUE;
+
+    // Noria "NR9" (id=59)
+    Mechs[59].SlotId     := 59;
+    Mechs[59].DeviceType := "TYPE_NORIA";
+    Mechs[59].TypedIndex := 8;
+    Mechs[59].Enable_OK  := TRUE;
+
+    // Noria "NR10" (id=60)
+    Mechs[60].SlotId     := 60;
+    Mechs[60].DeviceType := "TYPE_NORIA";
+    Mechs[60].TypedIndex := 9;
+    Mechs[60].Enable_OK  := TRUE;
+
+    // Noria "NR11" (id=61)
+    Mechs[61].SlotId     := 61;
+    Mechs[61].DeviceType := "TYPE_NORIA";
+    Mechs[61].TypedIndex := 10;
+    Mechs[61].Enable_OK  := TRUE;
+
+    // Noria "NR12" (id=62)
+    Mechs[62].SlotId     := 62;
+    Mechs[62].DeviceType := "TYPE_NORIA";
+    Mechs[62].TypedIndex := 11;
+    Mechs[62].Enable_OK  := TRUE;
+
+
+    // --- Gate2P (slots 116..182) ---
+    // Gate2P "GT5.1" (id=116)
+    Mechs[116].SlotId     := 116;
+    Mechs[116].DeviceType := "TYPE_GATE2P";
+    Mechs[116].TypedIndex := 0;
+    Mechs[116].Enable_OK  := TRUE;
+
+    // Gate2P "GT5.2" (id=117)
+    Mechs[117].SlotId     := 117;
+    Mechs[117].DeviceType := "TYPE_GATE2P";
+    Mechs[117].TypedIndex := 1;
+    Mechs[117].Enable_OK  := TRUE;
+
+    // Gate2P "GT5.3" (id=118)
+    Mechs[118].SlotId     := 118;
+    Mechs[118].DeviceType := "TYPE_GATE2P";
+    Mechs[118].TypedIndex := 2;
+    Mechs[118].Enable_OK  := TRUE;
+
+    // Gate2P "GT36.3" (id=119)
+    Mechs[119].SlotId     := 119;
+    Mechs[119].DeviceType := "TYPE_GATE2P";
+    Mechs[119].TypedIndex := 3;
+    Mechs[119].Enable_OK  := TRUE;
+
+    // Gate2P "GT15.1" (id=125)
+    Mechs[125].SlotId     := 125;
+    Mechs[125].DeviceType := "TYPE_GATE2P";
+    Mechs[125].TypedIndex := 4;
+    Mechs[125].Enable_OK  := TRUE;
+
+    // Gate2P "GT15.2" (id=126)
+    Mechs[126].SlotId     := 126;
+    Mechs[126].DeviceType := "TYPE_GATE2P";
+    Mechs[126].TypedIndex := 5;
+    Mechs[126].Enable_OK  := TRUE;
+
+    // Gate2P "GT6.1" (id=127)
+    Mechs[127].SlotId     := 127;
+    Mechs[127].DeviceType := "TYPE_GATE2P";
+    Mechs[127].TypedIndex := 6;
+    Mechs[127].Enable_OK  := TRUE;
+
+    // Gate2P "GT6.2" (id=128)
+    Mechs[128].SlotId     := 128;
+    Mechs[128].DeviceType := "TYPE_GATE2P";
+    Mechs[128].TypedIndex := 7;
+    Mechs[128].Enable_OK  := TRUE;
+
+    // Gate2P "GT6.3" (id=129)
+    Mechs[129].SlotId     := 129;
+    Mechs[129].DeviceType := "TYPE_GATE2P";
+    Mechs[129].TypedIndex := 8;
+    Mechs[129].Enable_OK  := TRUE;
+
+    // Gate2P "GT36.2" (id=130)
+    Mechs[130].SlotId     := 130;
+    Mechs[130].DeviceType := "TYPE_GATE2P";
+    Mechs[130].TypedIndex := 9;
+    Mechs[130].Enable_OK  := TRUE;
+
+    // Gate2P "GT9.2" (id=131)
+    Mechs[131].SlotId     := 131;
+    Mechs[131].DeviceType := "TYPE_GATE2P";
+    Mechs[131].TypedIndex := 10;
+    Mechs[131].Enable_OK  := TRUE;
+
+    // Gate2P "GT7.2" (id=132)
+    Mechs[132].SlotId     := 132;
+    Mechs[132].DeviceType := "TYPE_GATE2P";
+    Mechs[132].TypedIndex := 11;
+    Mechs[132].Enable_OK  := TRUE;
+
+    // Gate2P "GT9.1" (id=133)
+    Mechs[133].SlotId     := 133;
+    Mechs[133].DeviceType := "TYPE_GATE2P";
+    Mechs[133].TypedIndex := 12;
+    Mechs[133].Enable_OK  := TRUE;
+
+    // Gate2P "GT11.3" (id=134)
+    Mechs[134].SlotId     := 134;
+    Mechs[134].DeviceType := "TYPE_GATE2P";
+    Mechs[134].TypedIndex := 13;
+    Mechs[134].Enable_OK  := TRUE;
+
+    // Gate2P "GT7.3" (id=135)
+    Mechs[135].SlotId     := 135;
+    Mechs[135].DeviceType := "TYPE_GATE2P";
+    Mechs[135].TypedIndex := 14;
+    Mechs[135].Enable_OK  := TRUE;
+
+    // Gate2P "GT11.1" (id=136)
+    Mechs[136].SlotId     := 136;
+    Mechs[136].DeviceType := "TYPE_GATE2P";
+    Mechs[136].TypedIndex := 15;
+    Mechs[136].Enable_OK  := TRUE;
+
+    // Gate2P "GT7.1" (id=137)
+    Mechs[137].SlotId     := 137;
+    Mechs[137].DeviceType := "TYPE_GATE2P";
+    Mechs[137].TypedIndex := 16;
+    Mechs[137].Enable_OK  := TRUE;
+
+    // Gate2P "GT11.2" (id=138)
+    Mechs[138].SlotId     := 138;
+    Mechs[138].DeviceType := "TYPE_GATE2P";
+    Mechs[138].TypedIndex := 17;
+    Mechs[138].Enable_OK  := TRUE;
+
+    // Gate2P "GT21.1" (id=139)
+    Mechs[139].SlotId     := 139;
+    Mechs[139].DeviceType := "TYPE_GATE2P";
+    Mechs[139].TypedIndex := 18;
+    Mechs[139].Enable_OK  := TRUE;
+
+    // Gate2P "GT36.1" (id=140)
+    Mechs[140].SlotId     := 140;
+    Mechs[140].DeviceType := "TYPE_GATE2P";
+    Mechs[140].TypedIndex := 19;
+    Mechs[140].Enable_OK  := TRUE;
+
+    // Gate2P "GT30.2" (id=141)
+    Mechs[141].SlotId     := 141;
+    Mechs[141].DeviceType := "TYPE_GATE2P";
+    Mechs[141].TypedIndex := 20;
+    Mechs[141].Enable_OK  := TRUE;
+
+    // Gate2P "GT30.1" (id=142)
+    Mechs[142].SlotId     := 142;
+    Mechs[142].DeviceType := "TYPE_GATE2P";
+    Mechs[142].TypedIndex := 21;
+    Mechs[142].Enable_OK  := TRUE;
+
+    // Gate2P "GT21.2" (id=143)
+    Mechs[143].SlotId     := 143;
+    Mechs[143].DeviceType := "TYPE_GATE2P";
+    Mechs[143].TypedIndex := 22;
+    Mechs[143].Enable_OK  := TRUE;
+
+    // Gate2P "GT21.3" (id=144)
+    Mechs[144].SlotId     := 144;
+    Mechs[144].DeviceType := "TYPE_GATE2P";
+    Mechs[144].TypedIndex := 23;
+    Mechs[144].Enable_OK  := TRUE;
+
+    // Gate2P "GT24.1" (id=145)
+    Mechs[145].SlotId     := 145;
+    Mechs[145].DeviceType := "TYPE_GATE2P";
+    Mechs[145].TypedIndex := 24;
+    Mechs[145].Enable_OK  := TRUE;
+
+    // Gate2P "GT21.4" (id=146)
+    Mechs[146].SlotId     := 146;
+    Mechs[146].DeviceType := "TYPE_GATE2P";
+    Mechs[146].TypedIndex := 25;
+    Mechs[146].Enable_OK  := TRUE;
+
+    // Gate2P "GT24.2" (id=147)
+    Mechs[147].SlotId     := 147;
+    Mechs[147].DeviceType := "TYPE_GATE2P";
+    Mechs[147].TypedIndex := 26;
+    Mechs[147].Enable_OK  := TRUE;
+
+    // Gate2P "GT18.1" (id=148)
+    Mechs[148].SlotId     := 148;
+    Mechs[148].DeviceType := "TYPE_GATE2P";
+    Mechs[148].TypedIndex := 27;
+    Mechs[148].Enable_OK  := TRUE;
+
+    // Gate2P "GT18.2" (id=149)
+    Mechs[149].SlotId     := 149;
+    Mechs[149].DeviceType := "TYPE_GATE2P";
+    Mechs[149].TypedIndex := 28;
+    Mechs[149].Enable_OK  := TRUE;
+
+    // Gate2P "GT19.1" (id=150)
+    Mechs[150].SlotId     := 150;
+    Mechs[150].DeviceType := "TYPE_GATE2P";
+    Mechs[150].TypedIndex := 29;
+    Mechs[150].Enable_OK  := TRUE;
+
+    // Gate2P "GT19.2" (id=151)
+    Mechs[151].SlotId     := 151;
+    Mechs[151].DeviceType := "TYPE_GATE2P";
+    Mechs[151].TypedIndex := 30;
+    Mechs[151].Enable_OK  := TRUE;
+
+    // Gate2P "GT35.2" (id=152)
+    Mechs[152].SlotId     := 152;
+    Mechs[152].DeviceType := "TYPE_GATE2P";
+    Mechs[152].TypedIndex := 31;
+    Mechs[152].Enable_OK  := TRUE;
+
+    // Gate2P "GT10.2" (id=153)
+    Mechs[153].SlotId     := 153;
+    Mechs[153].DeviceType := "TYPE_GATE2P";
+    Mechs[153].TypedIndex := 32;
+    Mechs[153].Enable_OK  := TRUE;
+
+    // Gate2P "GT10.1" (id=154)
+    Mechs[154].SlotId     := 154;
+    Mechs[154].DeviceType := "TYPE_GATE2P";
+    Mechs[154].TypedIndex := 33;
+    Mechs[154].Enable_OK  := TRUE;
+
+    // Gate2P "GT8.3" (id=155)
+    Mechs[155].SlotId     := 155;
+    Mechs[155].DeviceType := "TYPE_GATE2P";
+    Mechs[155].TypedIndex := 34;
+    Mechs[155].Enable_OK  := TRUE;
+
+    // Gate2P "GT8.2" (id=156)
+    Mechs[156].SlotId     := 156;
+    Mechs[156].DeviceType := "TYPE_GATE2P";
+    Mechs[156].TypedIndex := 35;
+    Mechs[156].Enable_OK  := TRUE;
+
+    // Gate2P "GT12.1" (id=157)
+    Mechs[157].SlotId     := 157;
+    Mechs[157].DeviceType := "TYPE_GATE2P";
+    Mechs[157].TypedIndex := 36;
+    Mechs[157].Enable_OK  := TRUE;
+
+    // Gate2P "GT8.1" (id=158)
+    Mechs[158].SlotId     := 158;
+    Mechs[158].DeviceType := "TYPE_GATE2P";
+    Mechs[158].TypedIndex := 37;
+    Mechs[158].Enable_OK  := TRUE;
+
+    // Gate2P "GT12.2" (id=159)
+    Mechs[159].SlotId     := 159;
+    Mechs[159].DeviceType := "TYPE_GATE2P";
+    Mechs[159].TypedIndex := 38;
+    Mechs[159].Enable_OK  := TRUE;
+
+    // Gate2P "GT35.1" (id=160)
+    Mechs[160].SlotId     := 160;
+    Mechs[160].DeviceType := "TYPE_GATE2P";
+    Mechs[160].TypedIndex := 39;
+    Mechs[160].Enable_OK  := TRUE;
+
+    // Gate2P "GT14.2" (id=161)
+    Mechs[161].SlotId     := 161;
+    Mechs[161].DeviceType := "TYPE_GATE2P";
+    Mechs[161].TypedIndex := 40;
+    Mechs[161].Enable_OK  := TRUE;
+
+    // Gate2P "GT14.1" (id=162)
+    Mechs[162].SlotId     := 162;
+    Mechs[162].DeviceType := "TYPE_GATE2P";
+    Mechs[162].TypedIndex := 41;
+    Mechs[162].Enable_OK  := TRUE;
+
+    // Gate2P "GT31.2" (id=163)
+    Mechs[163].SlotId     := 163;
+    Mechs[163].DeviceType := "TYPE_GATE2P";
+    Mechs[163].TypedIndex := 42;
+    Mechs[163].Enable_OK  := TRUE;
+
+    // Gate2P "GT31.1" (id=164)
+    Mechs[164].SlotId     := 164;
+    Mechs[164].DeviceType := "TYPE_GATE2P";
+    Mechs[164].TypedIndex := 43;
+    Mechs[164].Enable_OK  := TRUE;
+
+    // Gate2P "GT22.1" (id=165)
+    Mechs[165].SlotId     := 165;
+    Mechs[165].DeviceType := "TYPE_GATE2P";
+    Mechs[165].TypedIndex := 44;
+    Mechs[165].Enable_OK  := TRUE;
+
+    // Gate2P "GT22.2" (id=166)
+    Mechs[166].SlotId     := 166;
+    Mechs[166].DeviceType := "TYPE_GATE2P";
+    Mechs[166].TypedIndex := 45;
+    Mechs[166].Enable_OK  := TRUE;
+
+    // Gate2P "GT22.3" (id=167)
+    Mechs[167].SlotId     := 167;
+    Mechs[167].DeviceType := "TYPE_GATE2P";
+    Mechs[167].TypedIndex := 46;
+    Mechs[167].Enable_OK  := TRUE;
+
+    // Gate2P "GT22.4" (id=168)
+    Mechs[168].SlotId     := 168;
+    Mechs[168].DeviceType := "TYPE_GATE2P";
+    Mechs[168].TypedIndex := 47;
+    Mechs[168].Enable_OK  := TRUE;
+
+    // Gate2P "GT25.1" (id=169)
+    Mechs[169].SlotId     := 169;
+    Mechs[169].DeviceType := "TYPE_GATE2P";
+    Mechs[169].TypedIndex := 48;
+    Mechs[169].Enable_OK  := TRUE;
+
+    // Gate2P "GT25.2" (id=170)
+    Mechs[170].SlotId     := 170;
+    Mechs[170].DeviceType := "TYPE_GATE2P";
+    Mechs[170].TypedIndex := 49;
+    Mechs[170].Enable_OK  := TRUE;
+
+    // Gate2P "GT32.2" (id=171)
+    Mechs[171].SlotId     := 171;
+    Mechs[171].DeviceType := "TYPE_GATE2P";
+    Mechs[171].TypedIndex := 50;
+    Mechs[171].Enable_OK  := TRUE;
+
+    // Gate2P "GT20.1" (id=172)
+    Mechs[172].SlotId     := 172;
+    Mechs[172].DeviceType := "TYPE_GATE2P";
+    Mechs[172].TypedIndex := 51;
+    Mechs[172].Enable_OK  := TRUE;
+
+    // Gate2P "GT20.2" (id=173)
+    Mechs[173].SlotId     := 173;
+    Mechs[173].DeviceType := "TYPE_GATE2P";
+    Mechs[173].TypedIndex := 52;
+    Mechs[173].Enable_OK  := TRUE;
+
+    // Gate2P "GT32.1" (id=174)
+    Mechs[174].SlotId     := 174;
+    Mechs[174].DeviceType := "TYPE_GATE2P";
+    Mechs[174].TypedIndex := 53;
+    Mechs[174].Enable_OK  := TRUE;
+
+    // Gate2P "GT23.1" (id=175)
+    Mechs[175].SlotId     := 175;
+    Mechs[175].DeviceType := "TYPE_GATE2P";
+    Mechs[175].TypedIndex := 54;
+    Mechs[175].Enable_OK  := TRUE;
+
+    // Gate2P "GT23.2" (id=176)
+    Mechs[176].SlotId     := 176;
+    Mechs[176].DeviceType := "TYPE_GATE2P";
+    Mechs[176].TypedIndex := 55;
+    Mechs[176].Enable_OK  := TRUE;
+
+    // Gate2P "GT23.3" (id=177)
+    Mechs[177].SlotId     := 177;
+    Mechs[177].DeviceType := "TYPE_GATE2P";
+    Mechs[177].TypedIndex := 56;
+    Mechs[177].Enable_OK  := TRUE;
+
+    // Gate2P "GT23.4" (id=178)
+    Mechs[178].SlotId     := 178;
+    Mechs[178].DeviceType := "TYPE_GATE2P";
+    Mechs[178].TypedIndex := 57;
+    Mechs[178].Enable_OK  := TRUE;
+
+    // Gate2P "GT26.1" (id=179)
+    Mechs[179].SlotId     := 179;
+    Mechs[179].DeviceType := "TYPE_GATE2P";
+    Mechs[179].TypedIndex := 58;
+    Mechs[179].Enable_OK  := TRUE;
+
+    // Gate2P "GT26.2" (id=180)
+    Mechs[180].SlotId     := 180;
+    Mechs[180].DeviceType := "TYPE_GATE2P";
+    Mechs[180].TypedIndex := 59;
+    Mechs[180].Enable_OK  := TRUE;
+
+    // Gate2P "GT38.1" (id=181)
+    Mechs[181].SlotId     := 181;
+    Mechs[181].DeviceType := "TYPE_GATE2P";
+    Mechs[181].TypedIndex := 60;
+    Mechs[181].Enable_OK  := TRUE;
+
+    // Gate2P "GT38.2" (id=182)
+    Mechs[182].SlotId     := 182;
+    Mechs[182].DeviceType := "TYPE_GATE2P";
+    Mechs[182].TypedIndex := 61;
+    Mechs[182].Enable_OK  := TRUE;
+
+
+    // --- Fan (slots 317..319) ---
+    // Fan "FN1" (id=317)
+    Mechs[317].SlotId     := 317;
+    Mechs[317].DeviceType := "TYPE_FAN";
+    Mechs[317].TypedIndex := 0;
+    Mechs[317].Enable_OK  := TRUE;
+
+    // Fan "FN2" (id=318)
+    Mechs[318].SlotId     := 318;
+    Mechs[318].DeviceType := "TYPE_FAN";
+    Mechs[318].TypedIndex := 1;
+    Mechs[318].Enable_OK  := TRUE;
+
+    // Fan "FN3" (id=319)
+    Mechs[319].SlotId     := 319;
+    Mechs[319].DeviceType := "TYPE_FAN";
+    Mechs[319].TypedIndex := 2;
+    Mechs[319].Enable_OK  := TRUE;
+
+
+    // --- ReceivingPit (slots 305..306) ---
+    // ReceivingPit "RP1" (id=305)
+    Mechs[305].SlotId     := 305;
+    Mechs[305].DeviceType := "TYPE_RECEIVING_PIT";
+    Mechs[305].TypedIndex := 0;
+    Mechs[305].Enable_OK  := TRUE;
+
+    // ReceivingPit "RP2" (id=306)
+    Mechs[306].SlotId     := 306;
+    Mechs[306].DeviceType := "TYPE_RECEIVING_PIT";
+    Mechs[306].TypedIndex := 1;
+    Mechs[306].Enable_OK  := TRUE;
+
+
+    // --- Separator (slots 311..313) ---
+    // Separator "SEP1" (id=311)
+    Mechs[311].SlotId     := 311;
+    Mechs[311].DeviceType := "TYPE_SEPARATOR";
+    Mechs[311].TypedIndex := 0;
+    Mechs[311].Enable_OK  := TRUE;
+
+    // Separator "SEP2" (id=312)
+    Mechs[312].SlotId     := 312;
+    Mechs[312].DeviceType := "TYPE_SEPARATOR";
+    Mechs[312].TypedIndex := 1;
+    Mechs[312].Enable_OK  := TRUE;
+
+    // Separator "SEP3" (id=313)
+    Mechs[313].SlotId     := 313;
+    Mechs[313].DeviceType := "TYPE_SEPARATOR";
+    Mechs[313].TypedIndex := 2;
+    Mechs[313].Enable_OK  := TRUE;
+
+
+    // --- Valve3P (slots 201..230) ---
+    // Valve3P "VL1" (id=201)
+    Mechs[201].SlotId     := 201;
+    Mechs[201].DeviceType := "TYPE_VALVE3P";
+    Mechs[201].TypedIndex := 0;
+    Mechs[201].Enable_OK  := TRUE;
+
+    // Valve3P "VL2" (id=202)
+    Mechs[202].SlotId     := 202;
+    Mechs[202].DeviceType := "TYPE_VALVE3P";
+    Mechs[202].TypedIndex := 1;
+    Mechs[202].Enable_OK  := TRUE;
+
+    // Valve3P "VL3" (id=203)
+    Mechs[203].SlotId     := 203;
+    Mechs[203].DeviceType := "TYPE_VALVE3P";
+    Mechs[203].TypedIndex := 2;
+    Mechs[203].Enable_OK  := TRUE;
+
+    // Valve3P "VL4" (id=204)
+    Mechs[204].SlotId     := 204;
+    Mechs[204].DeviceType := "TYPE_VALVE3P";
+    Mechs[204].TypedIndex := 3;
+    Mechs[204].Enable_OK  := TRUE;
+
+    // Valve3P "VL5" (id=205)
+    Mechs[205].SlotId     := 205;
+    Mechs[205].DeviceType := "TYPE_VALVE3P";
+    Mechs[205].TypedIndex := 4;
+    Mechs[205].Enable_OK  := TRUE;
+
+    // Valve3P "VL6" (id=206)
+    Mechs[206].SlotId     := 206;
+    Mechs[206].DeviceType := "TYPE_VALVE3P";
+    Mechs[206].TypedIndex := 5;
+    Mechs[206].Enable_OK  := TRUE;
+
+    // Valve3P "VL7" (id=207)
+    Mechs[207].SlotId     := 207;
+    Mechs[207].DeviceType := "TYPE_VALVE3P";
+    Mechs[207].TypedIndex := 6;
+    Mechs[207].Enable_OK  := TRUE;
+
+    // Valve3P "VL8" (id=208)
+    Mechs[208].SlotId     := 208;
+    Mechs[208].DeviceType := "TYPE_VALVE3P";
+    Mechs[208].TypedIndex := 7;
+    Mechs[208].Enable_OK  := TRUE;
+
+    // Valve3P "VL9" (id=209)
+    Mechs[209].SlotId     := 209;
+    Mechs[209].DeviceType := "TYPE_VALVE3P";
+    Mechs[209].TypedIndex := 8;
+    Mechs[209].Enable_OK  := TRUE;
+
+    // Valve3P "VL10" (id=210)
+    Mechs[210].SlotId     := 210;
+    Mechs[210].DeviceType := "TYPE_VALVE3P";
+    Mechs[210].TypedIndex := 9;
+    Mechs[210].Enable_OK  := TRUE;
+
+    // Valve3P "Vl11" (id=211)
+    Mechs[211].SlotId     := 211;
+    Mechs[211].DeviceType := "TYPE_VALVE3P";
+    Mechs[211].TypedIndex := 10;
+    Mechs[211].Enable_OK  := TRUE;
+
+    // Valve3P "VL12" (id=212)
+    Mechs[212].SlotId     := 212;
+    Mechs[212].DeviceType := "TYPE_VALVE3P";
+    Mechs[212].TypedIndex := 11;
+    Mechs[212].Enable_OK  := TRUE;
+
+    // Valve3P "VL13" (id=213)
+    Mechs[213].SlotId     := 213;
+    Mechs[213].DeviceType := "TYPE_VALVE3P";
+    Mechs[213].TypedIndex := 12;
+    Mechs[213].Enable_OK  := TRUE;
+
+    // Valve3P "VL14" (id=214)
+    Mechs[214].SlotId     := 214;
+    Mechs[214].DeviceType := "TYPE_VALVE3P";
+    Mechs[214].TypedIndex := 13;
+    Mechs[214].Enable_OK  := TRUE;
+
+    // Valve3P "VL15" (id=215)
+    Mechs[215].SlotId     := 215;
+    Mechs[215].DeviceType := "TYPE_VALVE3P";
+    Mechs[215].TypedIndex := 14;
+    Mechs[215].Enable_OK  := TRUE;
+
+    // Valve3P "VL16" (id=216)
+    Mechs[216].SlotId     := 216;
+    Mechs[216].DeviceType := "TYPE_VALVE3P";
+    Mechs[216].TypedIndex := 15;
+    Mechs[216].Enable_OK  := TRUE;
+
+    // Valve3P "VL17" (id=217)
+    Mechs[217].SlotId     := 217;
+    Mechs[217].DeviceType := "TYPE_VALVE3P";
+    Mechs[217].TypedIndex := 16;
+    Mechs[217].Enable_OK  := TRUE;
+
+    // Valve3P "VL18" (id=218)
+    Mechs[218].SlotId     := 218;
+    Mechs[218].DeviceType := "TYPE_VALVE3P";
+    Mechs[218].TypedIndex := 17;
+    Mechs[218].Enable_OK  := TRUE;
+
+    // Valve3P "VL19" (id=219)
+    Mechs[219].SlotId     := 219;
+    Mechs[219].DeviceType := "TYPE_VALVE3P";
+    Mechs[219].TypedIndex := 18;
+    Mechs[219].Enable_OK  := TRUE;
+
+    // Valve3P "VL20" (id=220)
+    Mechs[220].SlotId     := 220;
+    Mechs[220].DeviceType := "TYPE_VALVE3P";
+    Mechs[220].TypedIndex := 19;
+    Mechs[220].Enable_OK  := TRUE;
+
+    // Valve3P "VL21" (id=221)
+    Mechs[221].SlotId     := 221;
+    Mechs[221].DeviceType := "TYPE_VALVE3P";
+    Mechs[221].TypedIndex := 20;
+    Mechs[221].Enable_OK  := TRUE;
+
+    // Valve3P "VL22" (id=222)
+    Mechs[222].SlotId     := 222;
+    Mechs[222].DeviceType := "TYPE_VALVE3P";
+    Mechs[222].TypedIndex := 21;
+    Mechs[222].Enable_OK  := TRUE;
+
+    // Valve3P "VL23" (id=223)
+    Mechs[223].SlotId     := 223;
+    Mechs[223].DeviceType := "TYPE_VALVE3P";
+    Mechs[223].TypedIndex := 22;
+    Mechs[223].Enable_OK  := TRUE;
+
+    // Valve3P "VL24" (id=224)
+    Mechs[224].SlotId     := 224;
+    Mechs[224].DeviceType := "TYPE_VALVE3P";
+    Mechs[224].TypedIndex := 23;
+    Mechs[224].Enable_OK  := TRUE;
+
+    // Valve3P "VL25" (id=225)
+    Mechs[225].SlotId     := 225;
+    Mechs[225].DeviceType := "TYPE_VALVE3P";
+    Mechs[225].TypedIndex := 24;
+    Mechs[225].Enable_OK  := TRUE;
+
+    // Valve3P "VL26" (id=226)
+    Mechs[226].SlotId     := 226;
+    Mechs[226].DeviceType := "TYPE_VALVE3P";
+    Mechs[226].TypedIndex := 25;
+    Mechs[226].Enable_OK  := TRUE;
+
+    // Valve3P "VL27" (id=227)
+    Mechs[227].SlotId     := 227;
+    Mechs[227].DeviceType := "TYPE_VALVE3P";
+    Mechs[227].TypedIndex := 26;
+    Mechs[227].Enable_OK  := TRUE;
+
+    // Valve3P "VL28" (id=228)
+    Mechs[228].SlotId     := 228;
+    Mechs[228].DeviceType := "TYPE_VALVE3P";
+    Mechs[228].TypedIndex := 27;
+    Mechs[228].Enable_OK  := TRUE;
+
+    // Valve3P "VL29" (id=229)
+    Mechs[229].SlotId     := 229;
+    Mechs[229].DeviceType := "TYPE_VALVE3P";
+    Mechs[229].TypedIndex := 28;
+    Mechs[229].Enable_OK  := TRUE;
+
+    // Valve3P "VL30" (id=230)
+    Mechs[230].SlotId     := 230;
+    Mechs[230].DeviceType := "TYPE_VALVE3P";
+    Mechs[230].TypedIndex := 29;
+    Mechs[230].Enable_OK  := TRUE;
+
+
+    // --- Silos (slots 251..278) ---
+    // Silos "Auto1.1" (id=251)
+    Mechs[251].SlotId     := 251;
+    Mechs[251].DeviceType := "TYPE_SILOS";
+    Mechs[251].TypedIndex := 0;
+    Mechs[251].Enable_OK  := TRUE;
+
+    // Silos "Auto1.2" (id=252)
+    Mechs[252].SlotId     := 252;
+    Mechs[252].DeviceType := "TYPE_SILOS";
+    Mechs[252].TypedIndex := 1;
+    Mechs[252].Enable_OK  := TRUE;
+
+    // Silos "Auto2.2" (id=253)
+    Mechs[253].SlotId     := 253;
+    Mechs[253].DeviceType := "TYPE_SILOS";
+    Mechs[253].TypedIndex := 2;
+    Mechs[253].Enable_OK  := TRUE;
+
+    // Silos "Auto2.1" (id=254)
+    Mechs[254].SlotId     := 254;
+    Mechs[254].DeviceType := "TYPE_SILOS";
+    Mechs[254].TypedIndex := 3;
+    Mechs[254].Enable_OK  := TRUE;
+
+    // Silos "SLA1" (id=255)
+    Mechs[255].SlotId     := 255;
+    Mechs[255].DeviceType := "TYPE_SILOS";
+    Mechs[255].TypedIndex := 4;
+    Mechs[255].Enable_OK  := TRUE;
+
+    // Silos "SLA2" (id=256)
+    Mechs[256].SlotId     := 256;
+    Mechs[256].DeviceType := "TYPE_SILOS";
+    Mechs[256].TypedIndex := 5;
+    Mechs[256].Enable_OK  := TRUE;
+
+    // Silos "SPA1" (id=257)
+    Mechs[257].SlotId     := 257;
+    Mechs[257].DeviceType := "TYPE_SILOS";
+    Mechs[257].TypedIndex := 6;
+    Mechs[257].Enable_OK  := TRUE;
+
+    // Silos "SPA2" (id=258)
+    Mechs[258].SlotId     := 258;
+    Mechs[258].DeviceType := "TYPE_SILOS";
+    Mechs[258].TypedIndex := 7;
+    Mechs[258].Enable_OK  := TRUE;
+
+    // Silos "SPA3" (id=259)
+    Mechs[259].SlotId     := 259;
+    Mechs[259].DeviceType := "TYPE_SILOS";
+    Mechs[259].TypedIndex := 8;
+    Mechs[259].Enable_OK  := TRUE;
+
+    // Silos "SPA4" (id=260)
+    Mechs[260].SlotId     := 260;
+    Mechs[260].DeviceType := "TYPE_SILOS";
+    Mechs[260].TypedIndex := 9;
+    Mechs[260].Enable_OK  := TRUE;
+
+    // Silos "SPA5" (id=261)
+    Mechs[261].SlotId     := 261;
+    Mechs[261].DeviceType := "TYPE_SILOS";
+    Mechs[261].TypedIndex := 10;
+    Mechs[261].Enable_OK  := TRUE;
+
+    // Silos "SLA4" (id=262)
+    Mechs[262].SlotId     := 262;
+    Mechs[262].DeviceType := "TYPE_SILOS";
+    Mechs[262].TypedIndex := 11;
+    Mechs[262].Enable_OK  := TRUE;
+
+    // Silos "SLA3" (id=263)
+    Mechs[263].SlotId     := 263;
+    Mechs[263].DeviceType := "TYPE_SILOS";
+    Mechs[263].TypedIndex := 12;
+    Mechs[263].Enable_OK  := TRUE;
+
+    // Silos "SPA6" (id=264)
+    Mechs[264].SlotId     := 264;
+    Mechs[264].DeviceType := "TYPE_SILOS";
+    Mechs[264].TypedIndex := 13;
+    Mechs[264].Enable_OK  := TRUE;
+
+    // Silos "SPA7" (id=265)
+    Mechs[265].SlotId     := 265;
+    Mechs[265].DeviceType := "TYPE_SILOS";
+    Mechs[265].TypedIndex := 14;
+    Mechs[265].Enable_OK  := TRUE;
+
+    // Silos "SPA8" (id=266)
+    Mechs[266].SlotId     := 266;
+    Mechs[266].DeviceType := "TYPE_SILOS";
+    Mechs[266].TypedIndex := 15;
+    Mechs[266].Enable_OK  := TRUE;
+
+    // Silos "SPA9" (id=267)
+    Mechs[267].SlotId     := 267;
+    Mechs[267].DeviceType := "TYPE_SILOS";
+    Mechs[267].TypedIndex := 16;
+    Mechs[267].Enable_OK  := TRUE;
+
+    // Silos "SPA10" (id=268)
+    Mechs[268].SlotId     := 268;
+    Mechs[268].DeviceType := "TYPE_SILOS";
+    Mechs[268].TypedIndex := 17;
+    Mechs[268].Enable_OK  := TRUE;
+
+    // Silos "Auto3.1" (id=269)
+    Mechs[269].SlotId     := 269;
+    Mechs[269].DeviceType := "TYPE_SILOS";
+    Mechs[269].TypedIndex := 18;
+    Mechs[269].Enable_OK  := TRUE;
+
+    // Silos "Auto3.2" (id=270)
+    Mechs[270].SlotId     := 270;
+    Mechs[270].DeviceType := "TYPE_SILOS";
+    Mechs[270].TypedIndex := 19;
+    Mechs[270].Enable_OK  := TRUE;
+
+    // Silos "SPA11" (id=271)
+    Mechs[271].SlotId     := 271;
+    Mechs[271].DeviceType := "TYPE_SILOS";
+    Mechs[271].TypedIndex := 20;
+    Mechs[271].Enable_OK  := TRUE;
+
+    // Silos "SPA12" (id=272)
+    Mechs[272].SlotId     := 272;
+    Mechs[272].DeviceType := "TYPE_SILOS";
+    Mechs[272].TypedIndex := 21;
+    Mechs[272].Enable_OK  := TRUE;
+
+    // Silos "SPA13" (id=273)
+    Mechs[273].SlotId     := 273;
+    Mechs[273].DeviceType := "TYPE_SILOS";
+    Mechs[273].TypedIndex := 22;
+    Mechs[273].Enable_OK  := TRUE;
+
+    // Silos "SPA14" (id=274)
+    Mechs[274].SlotId     := 274;
+    Mechs[274].DeviceType := "TYPE_SILOS";
+    Mechs[274].TypedIndex := 23;
+    Mechs[274].Enable_OK  := TRUE;
+
+    // Silos "SPA15" (id=275)
+    Mechs[275].SlotId     := 275;
+    Mechs[275].DeviceType := "TYPE_SILOS";
+    Mechs[275].TypedIndex := 24;
+    Mechs[275].Enable_OK  := TRUE;
+
+    // Silos "ZHD" (id=276)
+    Mechs[276].SlotId     := 276;
+    Mechs[276].DeviceType := "TYPE_SILOS";
+    Mechs[276].TypedIndex := 25;
+    Mechs[276].Enable_OK  := TRUE;
+
+    // Silos "ARB1" (id=277)
+    Mechs[277].SlotId     := 277;
+    Mechs[277].DeviceType := "TYPE_SILOS";
+    Mechs[277].TypedIndex := 26;
+    Mechs[277].Enable_OK  := TRUE;
+
+    // Silos "ARB2" (id=278)
+    Mechs[278].SlotId     := 278;
+    Mechs[278].DeviceType := "TYPE_SILOS";
+    Mechs[278].TypedIndex := 27;
+    Mechs[278].Enable_OK  := TRUE;
+
+
+    // --- Sushka (slots 301..304) ---
+    // Sushka "DR1" (id=301)
+    Mechs[301].SlotId     := 301;
+    Mechs[301].DeviceType := "TYPE_SUSHKA";
+    Mechs[301].TypedIndex := 0;
+    Mechs[301].Enable_OK  := TRUE;
+
+    // Sushka "DR2" (id=302)
+    Mechs[302].SlotId     := 302;
+    Mechs[302].DeviceType := "TYPE_SUSHKA";
+    Mechs[302].TypedIndex := 1;
+    Mechs[302].Enable_OK  := TRUE;
+
+    // Sushka "DR3" (id=303)
+    Mechs[303].SlotId     := 303;
+    Mechs[303].DeviceType := "TYPE_SUSHKA";
+    Mechs[303].TypedIndex := 2;
+    Mechs[303].Enable_OK  := TRUE;
+
+    // Sushka "DR4" (id=304)
+    Mechs[304].SlotId     := 304;
+    Mechs[304].DeviceType := "TYPE_SUSHKA";
+    Mechs[304].TypedIndex := 3;
+    Mechs[304].Enable_OK  := TRUE;
+
+
+    // --- Feeder (slots 314..316) ---
+    // Feeder "FD1" (id=314)
+    Mechs[314].SlotId     := 314;
+    Mechs[314].DeviceType := "TYPE_FEEDER";
+    Mechs[314].TypedIndex := 0;
+    Mechs[314].Enable_OK  := TRUE;
+
+    // Feeder "FD2" (id=315)
+    Mechs[315].SlotId     := 315;
+    Mechs[315].DeviceType := "TYPE_FEEDER";
+    Mechs[315].TypedIndex := 1;
+    Mechs[315].Enable_OK  := TRUE;
+
+    // Feeder "FD3" (id=316)
+    Mechs[316].SlotId     := 316;
+    Mechs[316].DeviceType := "TYPE_FEEDER";
+    Mechs[316].TypedIndex := 2;
+    Mechs[316].Enable_OK  := TRUE;
 
 END_DATA_BLOCK

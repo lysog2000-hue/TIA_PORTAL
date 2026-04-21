@@ -23,6 +23,10 @@ VERSION : 2.0
         SimFault_Breaker     : BOOL := FALSE;  // увімкнути симуляцію FLT_BREAKER
         FaultTime_Breaker_ms : DINT := 10000;  // час до аварії від пуску мотора (мс)
         
+        // === Симуляція аварії фідбеку контактора ===
+        SimFault_Feedback    : BOOL := FALSE;  // увімкнути симуляцію FLT_NO_FEEDBACK
+        FaultTime_Feedback_ms: DINT := 12000;  // час до аварії від пуску (мс)
+        
         // === Ручне управління ===
         ManualReset          : BOOL := FALSE;  // кнопка скидання латчованих аварій
         

@@ -1,49 +1,89 @@
+﻿FUNCTION "FC_InitMechs" : Void
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 1.1
 // ==============================================================================
-// FC_InitMechs - Ініціалізація мапінгу
+// FC_InitMechs - Ініціалізація мапінгу (slot -> DeviceType + TypedIndex)
 // ==============================================================================
 // Project  : Elevator_System
 // Author   : Engineering Team
-// Version  : 2.0.0
-// Generated: 2026-03-20 10:46:50
+// Version  : 2.1.0
+// Generated: 2026-04-10
 // ==============================================================================
+// Зміни v2.1.0:
+//   - Оновлено слоти відповідно до DB_Mechs.scl
+//   - Gate2P: 100-101 → 116-182
+//   - Fan: 150 → 317-319
+//   - Додано Feeder: 314-316
+//   - Додано Valve3P: 201-230
+//   - Додано Separator: 311-313
+//   - Додано ReceivingPit: 305-306
+//   - Додано Silos: 251-278
+// ==============================================================================
+   VAR_TEMP
+      i : Int;
+      slot : Int;
+   END_VAR
 
-FUNCTION "FC_InitMechs" : VOID
-{ S7_Optimized_Access := 'TRUE' }
-VERSION : 1.0
-
-VAR_TEMP
-    i : INT;
-END_VAR
 
 BEGIN
-    FOR i := 0 TO 255 DO
-        "DB_Mechs".Mechs[i].DeviceType := "DB_Const".TYPE_NONE;
-        "DB_Mechs".Mechs[i].TypedIndex := UINT#16#FFFF;
-    END_FOR;
-    
-    // === REDLERS ===
-    "DB_Mechs".Mechs[0].DeviceType := "DB_Const".TYPE_REDLER;
-    "DB_Mechs".Mechs[0].TypedIndex := 0;
+	    FOR #i := 0 TO "MECHS_COUNT" DO
+	        "DB_Mechs".Mechs[#i].DeviceType := "TYPE_NONE";
+	        "DB_Mechs".Mechs[#i].TypedIndex := UINT#16#FFFF;
+	    END_FOR;
 
-    "DB_Mechs".Mechs[1].DeviceType := "DB_Const".TYPE_REDLER;
-    "DB_Mechs".Mechs[1].TypedIndex := 1;
+	    // === REDLERS (slots 1..39) ===
+	    FOR #slot := 1 TO 39 DO
+	        "DB_Mechs".Mechs[#slot].DeviceType := "TYPE_REDLER";
+	        "DB_Mechs".Mechs[#slot].TypedIndex := INT_TO_UINT(#slot - 1);
+	    END_FOR;
 
-    // === NORIAS ===
-    "DB_Mechs".Mechs[50].DeviceType := "DB_Const".TYPE_NORIA;
-    "DB_Mechs".Mechs[50].TypedIndex := 0;
+	    // === NORIAS (slots 51..62) ===
+	    FOR #slot := 51 TO 62 DO
+	        "DB_Mechs".Mechs[#slot].DeviceType := "TYPE_NORIA";
+	        "DB_Mechs".Mechs[#slot].TypedIndex := INT_TO_UINT(#slot - 51);
+	    END_FOR;
 
-    "DB_Mechs".Mechs[51].DeviceType := "DB_Const".TYPE_NORIA;
-    "DB_Mechs".Mechs[51].TypedIndex := 1;
+	    // === GATES2P (slots 116..182) ===
+	    FOR #slot := 116 TO 182 DO
+	        "DB_Mechs".Mechs[#slot].DeviceType := "TYPE_GATE2P";
+	        "DB_Mechs".Mechs[#slot].TypedIndex := INT_TO_UINT(#slot - 116);
+	    END_FOR;
 
-    // === GATES ===
-    "DB_Mechs".Mechs[100].DeviceType := "DB_Const".TYPE_GATE2P;
-    "DB_Mechs".Mechs[100].TypedIndex := 0;
+	    // === VALVE3P (slots 201..230) ===
+	    FOR #slot := 201 TO 230 DO
+	        "DB_Mechs".Mechs[#slot].DeviceType := "TYPE_VALVE3P";
+	        "DB_Mechs".Mechs[#slot].TypedIndex := INT_TO_UINT(#slot - 201);
+	    END_FOR;
 
-    "DB_Mechs".Mechs[101].DeviceType := "DB_Const".TYPE_GATE2P;
-    "DB_Mechs".Mechs[101].TypedIndex := 1;
+	    // === SILOS (slots 251..278) ===
+	    FOR #slot := 251 TO 278 DO
+	        "DB_Mechs".Mechs[#slot].DeviceType := "TYPE_SILOS";
+	        "DB_Mechs".Mechs[#slot].TypedIndex := INT_TO_UINT(#slot - 251);
+	    END_FOR;
 
-    // === FANS ===
-    "DB_Mechs".Mechs[150].DeviceType := "DB_Const".TYPE_FAN;
-    "DB_Mechs".Mechs[150].TypedIndex := 0;
+	    // === RECEIVING_PIT (slots 305..306) ===
+	    FOR #slot := 305 TO 306 DO
+	        "DB_Mechs".Mechs[#slot].DeviceType := "TYPE_RECEIVING_PIT";
+	        "DB_Mechs".Mechs[#slot].TypedIndex := INT_TO_UINT(#slot - 305);
+	    END_FOR;
+
+	    // === SEPARATOR (slots 311..313) ===
+	    FOR #slot := 311 TO 313 DO
+	        "DB_Mechs".Mechs[#slot].DeviceType := "TYPE_SEPARATOR";
+	        "DB_Mechs".Mechs[#slot].TypedIndex := INT_TO_UINT(#slot - 311);
+	    END_FOR;
+
+	    // === FEEDER (slots 314..316) ===
+	    FOR #slot := 314 TO 316 DO
+	        "DB_Mechs".Mechs[#slot].DeviceType := "TYPE_FEEDER";
+	        "DB_Mechs".Mechs[#slot].TypedIndex := INT_TO_UINT(#slot - 314);
+	    END_FOR;
+
+	    // === FANS (slots 317..319) ===
+	    FOR #slot := 317 TO 319 DO
+	        "DB_Mechs".Mechs[#slot].DeviceType := "TYPE_FAN";
+	        "DB_Mechs".Mechs[#slot].TypedIndex := INT_TO_UINT(#slot - 317);
+	    END_FOR;
 
 END_FUNCTION
+

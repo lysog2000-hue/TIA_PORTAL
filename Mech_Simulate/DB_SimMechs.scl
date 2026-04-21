@@ -1,38 +1,26 @@
 ﻿// ==============================================================================
-// DB_SimMechs - Глобальний DB для симуляторів механізмів
+// DB_SimMechs - Стани симуляторів механізмів (runtime)
 // ==============================================================================
-// Версія: 2.0.0
-// Дата: 2026-01-29
-// ==============================================================================
-// Призначення:
-//   Єдиний DB для збереження стану всіх симульованих механізмів
-//   Замінює множину інстанс-DB від FB_Sim*
-//
-// Використання:
-//   FC_Sim* автоматично працює з цим DB через <Type>Idx
-//   Користувач викликає тільки FC_Sim*, DB використовується автоматично
+// Generated: 2026-03-20 09:40:14
+// Source   : graph.json
 // ==============================================================================
 
 DATA_BLOCK "DB_SimMechs"
 { S7_Optimized_Access := 'TRUE' }
-VERSION : 2.0
-NON_RETAIN 
+VERSION : 2.1
+NON_RETAIN
+
 VAR
-        // === Масиви станів симуляторів ===
-        // Індекси відповідають DB_Mechs.<Type>[idx]
-        
-        // Редлери: DB_Mechs.Redler[idx]
-        Redler : ARRAY[0.."REDLERS_COUNT"] OF "UDT_SimRedlerState";
-        
-        // Норії: DB_Mechs.Noria[idx]
-        Noria : ARRAY[0.."NORIAS_COUNT"] OF "UDT_SimNoriaState";
-        
-        // Вентилятори: DB_Mechs.Fan[idx]
-        Fan : ARRAY[0.."FANS_COUNT"] OF "UDT_SimFanState";
-
-        // Засувки двопозиційні: DB_Mechs.Gate2P[idx]
-        Gate2P : ARRAY[0.."GATES2P_COUNT"] OF "UDT_SimGate2PState";
-
+    Redler        : ARRAY[0.."REDLERS_COUNT"] OF "UDT_SimRedlerState";
+    Noria         : ARRAY[0.."NORIAS_COUNT"] OF "UDT_SimNoriaState";
+    Gate2P        : ARRAY[0.."GATES2P_COUNT"] OF "UDT_SimGate2PState";
+    Fan           : ARRAY[0.."FANS_COUNT"] OF "UDT_SimFanState";
+    ReceivingPit  : ARRAY[0.."RECEIVING_PITS_COUNT"] OF "UDT_SimReceivingPitState";
+    Valve3P       : ARRAY[0.."VALVES3P_COUNT"] OF "UDT_SimValve3PState";
+    Silos         : ARRAY[0.."SILOS_COUNT"] OF "UDT_SimSilosState";
+    Sushka        : ARRAY[0.."SUSHKAS_COUNT"] OF "UDT_SimSushkaState";
+    Separator     : ARRAY[0.."SEPARATORS_COUNT"] OF "UDT_SimSeparatorState";
+    Feeder        : ARRAY[0.."FEEDERS_COUNT"] OF "UDT_SimFeederState";
 END_VAR
 
 BEGIN

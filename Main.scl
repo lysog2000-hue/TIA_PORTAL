@@ -1,115 +1,144 @@
 ﻿ORGANIZATION_BLOCK "Main"
-
 TITLE = "Main Program Sweep (Cycle)"
 { S7_Optimized_Access := 'TRUE' }
 VERSION : 0.1
-VAR_INPUT
-  Initial_Call : Bool;(*Initial call of this OB*)
-  Remanence : Bool;(*=True, if remanent data are available*)
-END_VAR
-
-VAR_TEMP
-    i : INT;
-END_VAR
-
-VAR CONSTANT
-
-END_VAR
+   VAR_TEMP 
+      i : Int;
+   END_VAR
 
 
 BEGIN
 	    
-    // ===================================================================
-    // 4. Симулятори механізмів (якщо симуляція увімкнена)
-    // ===================================================================
-    REGION "Симулятори механізмів"
-        
-        // Симуляція редлерів
-        FOR #i := 0 TO "REDLERS_COUNT" DO
-            IF "DB_SimConfig".Redler[#i].Enable THEN
-                "FC_SimRedler"(
-                               RedlerIdx := #i,
-                               StartupTime_ms := "DB_SimConfig".Redler[#i].StartupTime_ms,
-                               StopTime_ms := "DB_SimConfig".Redler[#i].StopTime_ms,
-                               SimFault_Breaker := "DB_SimConfig".Redler[#i].SimFault_Breaker,
-                               FaultTime_Breaker_ms := "DB_SimConfig".Redler[#i].FaultTime_Breaker_ms,
-                               SimFault_Overflow := "DB_SimConfig".Redler[#i].SimFault_Overflow,
-                               FaultTime_Overflow_ms := "DB_SimConfig".Redler[#i].FaultTime_Overflow_ms,
-                               ManualReset := "DB_SimConfig".Redler[#i].ManualReset
-                );
-            END_IF;
-        END_FOR;
-        
-        // Симуляція норій
-        FOR #i := 0 TO "NORIAS_COUNT" DO
-            IF "DB_SimConfig".Noria[#i].Enable THEN
-                "FC_SimNoria"(
-                              NoriaIdx := #i,
-                              StartupTime_ms := "DB_SimConfig".Noria[#i].StartupTime_ms,
-                              StopTime_ms := "DB_SimConfig".Noria[#i].StopTime_ms,
-                              SimFault_Breaker := "DB_SimConfig".Noria[#i].SimFault_Breaker,
-                              FaultTime_Breaker_ms := "DB_SimConfig".Noria[#i].FaultTime_Breaker_ms,
-                              SimFault_Alignment := "DB_SimConfig".Noria[#i].SimFault_Alignment,
-                              FaultTime_Alignment_ms := "DB_SimConfig".Noria[#i].FaultTime_Alignment_ms,
-                              ManualReset := "DB_SimConfig".Noria[#i].ManualReset
-                );
-            END_IF;
-        END_FOR;
-        
-        // Симуляція вентиляторів
-        FOR #i := 0 TO "FANS_COUNT" DO
-            IF "DB_SimConfig".Fan[#i].Enable THEN
-                "FC_SimFan"(
-                            FanIdx := #i,
-                            StartupTime_ms := "DB_SimConfig".Fan[#i].StartupTime_ms,
-                            StopTime_ms := "DB_SimConfig".Fan[#i].StopTime_ms,
-                            SimFault_Breaker := "DB_SimConfig".Fan[#i].SimFault_Breaker,
-                            FaultTime_Breaker_ms := "DB_SimConfig".Fan[#i].FaultTime_Breaker_ms,
-                            ManualReset := "DB_SimConfig".Fan[#i].ManualReset
-                );
-            END_IF;
-        END_FOR;
-
-        // Симуляція засувок двопозиційних
-        FOR #i := 0 TO "GATES2P_COUNT" DO
-            IF "DB_SimConfig".Gate2P[#i].Enable THEN
-                "FC_SimGate2P"(
-                              GateIdx := #i,
-                              TravelTime_ms := "DB_SimConfig".Gate2P[#i].TravelTime_ms,
-                              InitAtPos0 := "DB_SimConfig".Gate2P[#i].InitAtPos0,
-                              SimFault_Breaker := "DB_SimConfig".Gate2P[#i].SimFault_Breaker,
-                              FaultTime_Breaker_ms := "DB_SimConfig".Gate2P[#i].FaultTime_Breaker_ms,
-                              ManualReset := "DB_SimConfig".Gate2P[#i].ManualReset
-                );
-            END_IF;
-        END_FOR;
-
-    END_REGION
-    
-    "FC_ManualMechCmdHandler"(LocalManualGlobal := FALSE);
-    
-    // "FB_Test_ManualMechCmdHandler_DB"(Run:="run_ManualHandler",
-    //                                   CaseId:="caseId_ManualHandler",
-    //                                   Passed=>"passed_ManualHandler",
-    //                                   Failed=>"failed_ManualHandler",
-    //                                   FailMask=>"result_ManualHandler");
-    
-    "FC_Route_Supervisor"();
-    
-    "FC_DeviceRunner"(
-                      Mechs := "DB_Mechs".Mechs,
-                      Redler := "DB_Mechs".Redler,
-                      Noria := "DB_Mechs".Noria,
-                      Gate := "DB_Mechs".Gate2P,
-                      Fan := "DB_Mechs".Fan
-    );
-    
-    "DB_TestRunner_Supervisor"();
-
-    "inst_FB_TestRunner_RouteFSM"(
-                                  Start := "start_test_routeFSM",
-                                  Done => "testsDone_routeFSM",
-                                  AllPassed => "allPassed_routeFSM"
-    );
+	    // ===================================================================
+	    // 4. Симулятори механізмів (якщо симуляція увімкнена)
+	    // ===================================================================
+	    REGION "Симулятори механізмів"
+	        
+	        // Симуляція редлерів
+	        FOR #i := 0 TO "REDLERS_COUNT" DO
+	            IF "DB_SimConfig".Redler[#i].Enable THEN
+	                "FC_SimRedler"(
+	                               RedlerIdx := #i,
+	                               StartupTime_ms := "DB_SimConfig".Redler[#i].StartupTime_ms,
+	                               StopTime_ms := "DB_SimConfig".Redler[#i].StopTime_ms,
+	                               SimFault_Breaker := "DB_SimConfig".Redler[#i].SimFault_Breaker,
+	                               FaultTime_Breaker_ms := "DB_SimConfig".Redler[#i].FaultTime_Breaker_ms,
+	                               SimFault_Overflow := "DB_SimConfig".Redler[#i].SimFault_Overflow,
+	                               FaultTime_Overflow_ms := "DB_SimConfig".Redler[#i].FaultTime_Overflow_ms,
+	                               SimFault_Feedback := "DB_SimConfig".Redler[#i].SimFault_Feedback,
+	                               FaultTime_Feedback_ms := "DB_SimConfig".Redler[#i].FaultTime_Feedback_ms,
+	                               ManualReset := "DB_SimConfig".Redler[#i].ManualReset
+	                );
+	            END_IF;
+	        END_FOR;
+	        
+	        // Симуляція норій
+	        FOR #i := 0 TO "NORIAS_COUNT" DO
+	            IF "DB_SimConfig".Noria[#i].Enable THEN
+	                "FC_SimNoria"(
+	                              NoriaIdx := #i,
+	                              StartupTime_ms := "DB_SimConfig".Noria[#i].StartupTime_ms,
+	                              StopTime_ms := "DB_SimConfig".Noria[#i].StopTime_ms,
+	                              SimFault_Breaker := "DB_SimConfig".Noria[#i].SimFault_Breaker,
+	                              FaultTime_Breaker_ms := "DB_SimConfig".Noria[#i].FaultTime_Breaker_ms,
+	                              SimFault_Alignment := "DB_SimConfig".Noria[#i].SimFault_Alignment,
+	                              FaultTime_Alignment_ms := "DB_SimConfig".Noria[#i].FaultTime_Alignment_ms,
+	                              SimFault_Overflow := "DB_SimConfig".Noria[#i].SimFault_Overflow,
+	                              FaultTime_Overflow_ms:="DB_SimConfig".Noria[#i].FaultTime_Overflow_ms,
+	                              SimFault_Feedback := "DB_SimConfig".Noria[#i].SimFault_Feedback,
+	                              FaultTime_Feedback_ms := "DB_SimConfig".Noria[#i].FaultTime_Feedback_ms,
+	                              ManualReset := "DB_SimConfig".Noria[#i].ManualReset
+	                );
+	            END_IF;
+	        END_FOR;
+	        
+	        // Симуляція вентиляторів
+	        FOR #i := 0 TO "FANS_COUNT" DO
+	            IF "DB_SimConfig".Fan[#i].Enable THEN
+	                "FC_SimFan"(
+	                            FanIdx := #i,
+	                            StartupTime_ms := "DB_SimConfig".Fan[#i].StartupTime_ms,
+	                            StopTime_ms := "DB_SimConfig".Fan[#i].StopTime_ms,
+	                            SimFault_Breaker := "DB_SimConfig".Fan[#i].SimFault_Breaker,
+	                            FaultTime_Breaker_ms := "DB_SimConfig".Fan[#i].FaultTime_Breaker_ms,
+	                            SimFault_Feedback := "DB_SimConfig".Fan[#i].SimFault_Feedback,
+	                            FaultTime_Feedback_ms := "DB_SimConfig".Fan[#i].FaultTime_Feedback_ms,
+	                            ManualReset := "DB_SimConfig".Fan[#i].ManualReset
+	                );
+	            END_IF;
+	        END_FOR;
+	        
+	        // Симуляція засувок двопозиційних
+	        FOR #i := 0 TO "GATES2P_COUNT" DO
+	            IF "DB_SimConfig".Gate2P[#i].Enable THEN
+	                "FC_SimGate2P"(
+	                               GateIdx := #i,
+	                               TravelTime_ms := "DB_SimConfig".Gate2P[#i].TravelTime_ms,
+	                               InitAtPos0 := "DB_SimConfig".Gate2P[#i].InitAtPos0,
+	                               SimFault_Breaker := "DB_SimConfig".Gate2P[#i].SimFault_Breaker,
+	                               FaultTime_Breaker_ms := "DB_SimConfig".Gate2P[#i].FaultTime_Breaker_ms,
+	                               ManualReset := "DB_SimConfig".Gate2P[#i].ManualReset
+	                );
+	            END_IF;
+	        END_FOR;
+	        
+	        // Симуляція фідерів
+	        FOR #i := 0 TO "FEEDERS_COUNT" DO
+	            IF "DB_SimConfig".Feeder[#i].Enable THEN
+	                "FC_SimFeeder"(
+	                               FeederIdx := #i,
+	                               StartupTime_ms := "DB_SimConfig".Feeder[#i].StartupTime_ms,
+	                               StopTime_ms := "DB_SimConfig".Feeder[#i].StopTime_ms,
+	                               SimFault_Breaker := "DB_SimConfig".Feeder[#i].SimFault_Breaker,
+	                               FaultTime_Breaker_ms := "DB_SimConfig".Feeder[#i].FaultTime_Breaker_ms,
+	                               ManualReset := "DB_SimConfig".Feeder[#i].ManualReset
+	                );
+	            END_IF;
+	        END_FOR;
+	        FOR #i := 0 TO "VALVES3P_COUNT" DO
+	            IF "DB_SimConfig".Valve3P[#i].Enable THEN
+	                "FC_SimValve3P"(Valve3PIdx := #i,
+	                                FaultTime_Breaker_ms := "DB_SimConfig".Valve3P[#i].FaultTime_Breaker_ms,
+	                                InitPosition := "DB_SimConfig".Valve3P[#i].InitPosition,
+	                                ManualReset := "DB_SimConfig".Valve3P[#i].ManualReset,
+	                                SimFault_Breaker := "DB_SimConfig".Valve3P[#i].SimFault_Breaker,
+	                                TravelTime_ms := "DB_SimConfig".Valve3P[#i].TravelTime_ms
+	                );
+	            END_IF;
+	        END_FOR;
+	        FOR #i := 0 TO "SEPARATORS_COUNT" DO
+	            IF "DB_SimConfig".Separator[#i].Enable THEN
+	                "FC_SimSeparator"(FaultTime_Breaker_ms := "DB_SimConfig".Separator[#i].FaultTime_Breaker_ms,
+	                                  ManualReset := "DB_SimConfig".Separator[#i].ManualReset,
+	                                  SeparatorIdx := #i,
+	                                  SimFault_Breaker := "DB_SimConfig".Separator[#i].SimFault_Breaker,
+	                                  StartupTime_ms := "DB_SimConfig".Separator[#i].StartupTime_ms,
+	                                  StopTime_ms := "DB_SimConfig".Separator[#i].StopTime_ms)
+	                ;
+	            END_IF;
+	        END_FOR;
+	    END_REGION
+	    
+	    "FC_ManualMechCmdHandler"();
+	    
+	 
+	    
+	    "FC_Route_Supervisor"();
+	    
+	    "FC_DeviceRunner"(
+	                      Mechs := "DB_Mechs".Mechs,
+	                      Redler := "DB_Mechs".Redler,
+	                      Noria := "DB_Mechs".Noria,
+	                      Gate := "DB_Mechs".Gate2P,
+	                      Valve3P:="DB_Mechs".Valve3P,
+	                      Separator:="DB_Mechs".Separator,
+	                      Sushka:="DB_Mechs".Sushka,
+	                      Silos:="DB_Mechs".Silos,
+	                      ReceivingPit:="DB_Mechs".ReceivingPit,
+	                      Fan := "DB_Mechs".Fan,
+	                      Feeder := "DB_Mechs".Feeder
+	    );
+	    
+	   
 END_ORGANIZATION_BLOCK
 

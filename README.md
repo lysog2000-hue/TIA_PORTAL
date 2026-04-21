@@ -1,34 +1,34 @@
-# Elevator Automation System — TIA Portal v19
+﻿# Elevator Automation System вЂ” TIA Portal v19
 
-**Платформа:** Siemens TIA Portal v19  
-**Мова:** SCL (Structured Control Language)
-
----
-
-## 📖 Опис
-
-Система автоматизації елеватора на базі Siemens PLC. Включає бібліотеку механізмів (редлери, норії, засувки, вентилятори), систему маршрутів з FSM, генератор коду з конфігурації та симуляцію для тестування.
+**РџР»Р°С‚С„РѕСЂРјР°:** Siemens TIA Portal v19  
+**РњРѕРІР°:** SCL (Structured Control Language)
 
 ---
 
-## 📁 Документація
+## рџ“– РћРїРёСЃ
 
-### Основна
-- **[docs/README.md](docs/README.md)** — навігатор по всій документації
-- **[docs/design_rules_scada_plc_route_canon.md](docs/design_rules_scada_plc_route_canon.md)** — правила проєктування SCADA ↔ PLC
-- **[docs/force_bits_and_faults.md](docs/force_bits_and_faults.md)** — форсування захистів, FLTCode таблиці
-- **[docs/mechanism_architecture.md](docs/mechanism_architecture.md)** — система керування механізмами
-- **[docs/route_system_architecture.md](docs/route_system_architecture.md)** — система маршрутів (простою мовою)
-- **[docs/manual_control.md](docs/manual_control.md)** — ручний режим керування
-- **[docs/code_generator.md](docs/code_generator.md)** — генерація коду з Excel
+РЎРёСЃС‚РµРјР° Р°РІС‚РѕРјР°С‚РёР·Р°С†С–С— РµР»РµРІР°С‚РѕСЂР° РЅР° Р±Р°Р·С– Siemens PLC. Р’РєР»СЋС‡Р°С” Р±С–Р±Р»С–РѕС‚РµРєСѓ РјРµС…Р°РЅС–Р·РјС–РІ (СЂРµРґР»РµСЂРё, РЅРѕСЂС–С—, Р·Р°СЃСѓРІРєРё, РІРµРЅС‚РёР»СЏС‚РѕСЂРё), СЃРёСЃС‚РµРјСѓ РјР°СЂС€СЂСѓС‚С–РІ Р· FSM, РіРµРЅРµСЂР°С‚РѕСЂ РєРѕРґСѓ Р· РєРѕРЅС„С–РіСѓСЂР°С†С–С— С‚Р° СЃРёРјСѓР»СЏС†С–СЋ РґР»СЏ С‚РµСЃС‚СѓРІР°РЅРЅСЏ.
 
-### Розділи проекту
-- **[Routes/ROUTE_SYSTEM.md](Routes/ROUTE_SYSTEM.md)** — система маршрутів (FSM, протоколи, стани)
-- **[Mechs/](Mechs/)** — бібліотека механізмів
-- **[db_gen/](db_gen/)** — генератор коду
-- **[Mech_Simulate/](Mech_Simulate/)** — симулятори для тестування
-- **[Core/](Core/)** — базові функції (арбітраж, таймери)
+---
+
+## рџ“Ѓ Р”РѕРєСѓРјРµРЅС‚Р°С†С–СЏ
+
+### РћСЃРЅРѕРІРЅР°
+- **[docs/README.md](docs/README.md)** вЂ” РЅР°РІС–РіР°С‚РѕСЂ РїРѕ РІСЃС–Р№ РґРѕРєСѓРјРµРЅС‚Р°С†С–С—
+- **[docs/design_rules_scada_plc_route_canon.md](docs/design_rules_scada_plc_route_canon.md)** вЂ” РїСЂР°РІРёР»Р° РїСЂРѕС”РєС‚СѓРІР°РЅРЅСЏ SCADA в†” PLC
+- **[docs/force_bits_and_faults.md](docs/force_bits_and_faults.md)** вЂ” С„РѕСЂСЃСѓРІР°РЅРЅСЏ Р·Р°С…РёСЃС‚С–РІ, FLTCode С‚Р°Р±Р»РёС†С–
+- **[docs/mechanism_architecture.md](docs/mechanism_architecture.md)** вЂ” СЃРёСЃС‚РµРјР° РєРµСЂСѓРІР°РЅРЅСЏ РјРµС…Р°РЅС–Р·РјР°РјРё
+- **[docs/route_system_architecture.md](docs/route_system_architecture.md)** вЂ” СЃРёСЃС‚РµРјР° РјР°СЂС€СЂСѓС‚С–РІ (РїСЂРѕСЃС‚РѕСЋ РјРѕРІРѕСЋ)
+- **[docs/manual_control.md](docs/manual_control.md)** вЂ” СЂСѓС‡РЅРёР№ СЂРµР¶РёРј РєРµСЂСѓРІР°РЅРЅСЏ
+- **[docs/code_generator.md](docs/code_generator.md)** вЂ” РіРµРЅРµСЂР°С†С–СЏ РєРѕРґСѓ Р· Excel
+
+### Р РѕР·РґС–Р»Рё РїСЂРѕРµРєС‚Сѓ
+- **[Routes/ROUTE_SYSTEM.md](Routes/ROUTE_SYSTEM.md)** вЂ” СЃРёСЃС‚РµРјР° РјР°СЂС€СЂСѓС‚С–РІ (FSM, РїСЂРѕС‚РѕРєРѕР»Рё, СЃС‚Р°РЅРё)
+- **[Mechs/](Mechs/)** вЂ” Р±С–Р±Р»С–РѕС‚РµРєР° РјРµС…Р°РЅС–Р·РјС–РІ
+- **[db_gen/](db_gen/)** вЂ” РіРµРЅРµСЂР°С‚РѕСЂ РєРѕРґСѓ
+- **[Mech_Simulate/](Mech_Simulate/)** вЂ” СЃРёРјСѓР»СЏС‚РѕСЂРё РґР»СЏ С‚РµСЃС‚СѓРІР°РЅРЅСЏ
+- **[Core/](Core/)** вЂ” Р±Р°Р·РѕРІС– С„СѓРЅРєС†С–С— (Р°СЂР±С–С‚СЂР°Р¶, С‚Р°Р№РјРµСЂРё)
 
 
 
-*Документація в розробці*
+*Р”РѕРєСѓРјРµРЅС‚Р°С†С–СЏ РІ СЂРѕР·СЂРѕР±С†С–*
