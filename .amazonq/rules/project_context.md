@@ -137,7 +137,7 @@ Status_Param : INT
 | FLT_GATE_MOVE_TIMEOUT  | 16       | BIT4      | 16    | Gate2P                                |
 | FLT_GATE_POS_UNKNOWN   | 17       | BIT5      | 32    | Gate2P                                |
 | FLT_BOTH_SENSORS       | 18       | не форс.  | —     | Gate2P                                |
-| FLT_STOP_TIMEOUT       | 19       | BIT9      | 512   | Redler, Noria, Fan, Separator, Feeder |
+| FLT_STOP_TIMEOUT       | 19       | BIT6      | 64    | Redler, Noria, Fan, Separator, Feeder |
 
 ---
 
