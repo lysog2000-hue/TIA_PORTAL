@@ -4,6 +4,8 @@
 - Платформа: Siemens TIA Portal v19
 - Язык: SCL (Structured Control Language)
 - Назначение: автоматизация элеватора (зерновой терминал)
+- SCADA: WinCC Unified (JavaScript)
+- SQL Server: DESKTOP-4462UFF\SQLEXPRESS
 - **Всегда отвечать на русском языке**
 
 ---
@@ -18,6 +20,9 @@ tia_repo/
 ├── Mechs.csv / Mechs.xlsx    — конфигурация механизмов
 ├── graph.json                — граф устройств (186 устройств, источник для генераторов)
 ├── generate_all_alarms.py    — генератор HMIAlarms_All.xlsx из graph.json
+├── JsonToSQL.py              — создание БД ElevatorRouting из graph.json
+├── CreateRunTimeDB.py        — создание БД RunTime для моточасов
+├── RuntimeLogger.js          — JS скрипт SCADA: запись статусов механизмов в RunTime
 ├── Core/
 │   ├── FC_ArbiterMech.scl    — арбитраж владельца механизма
 │   ├── FC_DeviceRunner.scl   — диспетчер: цикл по слотам, вызов FC по DeviceType
@@ -50,6 +55,10 @@ tia_repo/
 │   ├── FC_SimSeparator.scl
 │   ├── FC_SimFeeder.scl
 │   └── UDT_Sim*.scl
+├── SCADA_Scripts/
+│   └── DB_Helper/
+│       ├── GlobalDefinitions.js  — глобальные переменные и функции маршрутов
+│       └── Main.js               — обработчики кнопок SCADA
 ├── FB_Test_Redler.scl        — v0.2, 18 кейсов
 ├── FB_Test_Noria.scl         — v0.2, 19 кейсов
 ├── FB_Test_Fan.scl           — v0.2, 14 кейсов
@@ -217,6 +226,81 @@ IDLE(0) → VALIDATING(1) → STARTING(2) → RUNNING(4) → STOPPING(5) → ABO
 
 ---
 
+## SQL Базы данных
+
+### ElevatorRouting (JsonToSQL.py)
+- `Mechanisms` — справочник устройств из graph.json
+- `Ports` — порты устройств
+- `Connections` — связи между устройствами
+- `RouteCache` — кэш маршрутов
+- `FindRoute` — хранимая процедура поиска маршрута
+
+### RunTime (CreateRunTimeDB.py)
+БД для моточасов механизмов (Redler, Noria, Fan, Separator, Feeder — 60 устройств)
+
+| Таблица | Строк | Описание |
+|---------|-------|----------|
+| Mechanisms | 60 | Справочник (фиксированный) |
+| StatusLog | 60 | Текущее состояние (фиксированный, не растёт) |
+| RunTimeSummary | 60 | Итоговая наработка в секундах |
+| EventHistory | растёт | История запусков/остановок |
+
+**Процедуры:**
+- `UpdateMechStatus @MechanismId, @IsRunning` — SCADA вызывает каждые N секунд. Обновляет только при смене состояния. Сама считает наработку.
+- `ResetRunTime @MechanismId` — сброс наработки
+
+**Views:**
+- `vw_RunTimeHours` — наработка в днях/часах/минутах/секундах
+- `vw_EventHistory` — история с именами механизмов
+
+**Логика:**
+- SCADA пишет `IsRunning=1` (запуск) или `IsRunning=0` (остановка)
+- Процедура сама считает `DATEDIFF` и пишет в `RunTimeSummary` и `EventHistory`
+- `StatusLog` всегда 60 строк — не растёт
+
+---
+
+## SCADA Scripts (WinCC Unified JavaScript)
+
+### SCADA_Scripts/DB_Helper/GlobalDefinitions.js
+Глобальные переменные и функции для маршрутов:
+- `routeBuffer`, `variantList` — буферы данных
+- `RunQueryAndCache(startId, endId, midId)` — запрос маршрута из SQL
+- `GetActiveRouteData(vId)` — данные активного маршрута
+- `GetVariantList()` — список вариантов
+- `GetVariantFromBuffer(variantId)` — шаги варианта
+- `resetMechanism(obj)` — сброс цвета SVG механизма
+
+### SCADA_Scripts/DB_Helper/Main.js
+Обработчики кнопок:
+- `Btn_OpenList_OnTapped` — запрос маршрутов из ElevatorRouting, запись в теги таблицы
+- `Btn_OpenList_OnUp` — открытие popup экрана Table
+- `Circle_5_BackColor_OnPropertyChanged` — покраска механизмов на мнемосхеме
+- `Apply_OnTapped` — запись выбранного маршрута в PLC теги
+- `Btn_OpenMotoHours_OnTapped` — загрузка моточасов из RunTime в таблицу
+
+### RuntimeLogger.js
+Скрипт UAJobScheduler (запускается по таймеру):
+- Читает теги `DB_Mechs_Mechs{ID}_Status` для 60 механизмов
+- Вызывает `EXEC UpdateMechStatus` для каждого
+- DSN=RunTime, HMI_User
+
+### Теги SCADA для таблиц
+| Тег | Тип | Назначение |
+|-----|-----|------------|
+| TableDataString | WString | Данные таблицы маршрутов |
+| ColumnStyle | WString | Колонки таблицы маршрутов |
+| Moto_TableDataString | WString[5000] | Данные таблицы моточасов |
+| Moto_ColumnStyle | WString[500] | Колонки таблицы моточасов |
+
+### Кастомный веб-контрол таблицы
+- Tabulator.js в WinCC Unified Custom Web Control
+- Свойства: `TableDataString`, `ColumnStyleString`, `SelectedRowIndex`
+- Событие: `RowClick`
+- `layout: "fitColumns"` — ширины колонок пропорциональные
+
+---
+
 ## Симуляторы
 
 Каждый симулятор читает `DO_Run` и пишет DI-сигналы механизма.
@@ -230,12 +314,6 @@ IDLE(0) → VALIDATING(1) → STARTING(2) → RUNNING(4) → STOPPING(5) → ABO
 | SimFault_Overflow             | ✅     | ✅    | —   | —         | —      |
 | SimFault_Alignment            | —      | ✅    | —   | —         | —      |
 | SimFault_Feedback             | ✅     | ✅    | ✅  | —         | —      |
-
-### Поля State (латчованные аварии)
-- Redler/Noria: `Breaker_Tripped`, `Overflow_Tripped`, `Feedback_Tripped`
-- Noria дополнительно: `Alignment_Tripped`
-- Fan: `Breaker_Tripped`, `Feedback_Tripped`
-- Separator/Feeder: `Breaker_Tripped`
 
 > FLT_STOP_TIMEOUT симуляторами не симулируется — это аварийная ситуация реального железа
 
@@ -279,4 +357,5 @@ IDLE(0) → VALIDATING(1) → STARTING(2) → RUNNING(4) → STOPPING(5) → ABO
 - FC_Silos, FC_Sushka, FC_ReceivingPit — закомментированы в FC_DeviceRunner
 - scl_generator/ — пустая папка
 - Constant.xlsx vs Constant.csv — не синхронизированы (задача в очереди)
+- Реверсивный редлер — план есть, реализация отложена
 - docs/ — документация помечена "в разработке"
