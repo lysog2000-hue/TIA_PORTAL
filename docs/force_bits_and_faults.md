@@ -1,56 +1,64 @@
-﻿# Force_Code вЂ” С‚Р°Р±Р»РёС†СЏ Р±С–С‚С–РІ С„РѕСЂСЃСѓРІР°РЅРЅСЏ С‚Р° Р·Р°С„С–РєСЃРѕРІР°РЅС– РїРѕРјРёР»РєРё
+# Force_Code — таблиця бітів форсування та зафіксовані помилки
 
-> Р”Р°С‚Р°: 2026-02-26
-> `B.Force_Code : INT` вЂ” Р±С–С‚РѕРІР° РјР°СЃРєР° С„РѕСЂСЃСѓРІР°РЅРЅСЏ Р·Р°С…РёСЃС‚С–РІ РјРµС…Р°РЅС–Р·РјСѓ.
-> Р¤РѕСЂСЃСѓРІР°РЅРЅСЏ РґРѕР·РІРѕР»СЏС” СЃРєРёРЅСѓС‚Рё Р°РІР°СЂС–СЋ Р°Р±Рѕ С–РіРЅРѕСЂСѓРІР°С‚Рё Р·Р°С…РёСЃС‚ Сѓ СЂРµР¶РёРјС– РЅР°Р»Р°РіРѕРґР¶РµРЅРЅСЏ.
-
----
-
-## 1. Р„РґРёРЅР° С‚Р°Р±Р»РёС†СЏ Force_Code Р±С–С‚С–РІ (РІСЃС– РјРµС…Р°РЅС–Р·РјРё)
-
-> РљРѕР¶РµРЅ Р±С–С‚ РјР°С” С„С–РєСЃРѕРІР°РЅРµ Р·РЅР°С‡РµРЅРЅСЏ РЅРµР·Р°Р»РµР¶РЅРѕ РІС–Рґ С‚РёРїСѓ РјРµС…Р°РЅС–Р·РјСѓ.
-> РњРµС…Р°РЅС–Р·Рј РІРёРєРѕСЂРёСЃС‚РѕРІСѓС” Р»РёС€Рµ С‚С– Р±С–С‚Рё, СЏРєС– РІС–РґРїРѕРІС–РґР°СЋС‚СЊ Р№РѕРіРѕ Р°РІР°СЂС–СЏРј.
-
-| Р‘С–С‚ | РњР°СЃРєР° | Р†Рј'СЏ | FLT С‰Рѕ СЃРєРёРґР°С” | Noria | Redler | Fan | Gate2P |
-|-----|-------|------|---------------|-------|--------|-----|--------|
-| BIT0 | `AND 1` | `forceBreaker` | `FLT_BREAKER` | вњ… | вњ… | вњ… | вњ… |
-| BIT1 | `AND 2` | `forceOverflow` | `FLT_OVERFLOW` | вњ… | вњ… | вЂ” | вЂ” |
-| BIT2 | `AND 4` | `forceSpeed` | `FLT_NO_RUNFB` | вњ… | вњ… | вњ… | вЂ” |
-| BIT3 | `AND 8` | `forceAlingment` | `FLT_ALINGMENT` | вњ… | вЂ” | вЂ” | вЂ” |
-| BIT4 | `AND 16` | `forceMoveTimeout` | `FLT_GATE_MOVE_TIMEOUT` | вЂ” | вЂ” | вЂ” | вњ… |
-| BIT5 | `AND 32` | `forcePosUnknown` | `FLT_GATE_POS_UNKNOWN` | вЂ” | вЂ” | вЂ” | вњ… |
-| BIT6вЂ“BIT15 | вЂ” | СЂРµР·РµСЂРІ | вЂ” | | | | |
-
-> `FLT_BOTH_SENSORS` вЂ” РЅРµ С„РѕСЂСЃСѓС”С‚СЊСЃСЏ (Р°РїР°СЂР°С‚РЅР° РЅРµСЃРїСЂР°РІРЅС–СЃС‚СЊ, СЃРєРёРґР°С”С‚СЊСЃСЏ CMD_RESET РїС–СЃР»СЏ СѓСЃСѓРЅРµРЅРЅСЏ).
+> `B.Force_Code : INT` — бітова маска форсування захистів механізму.
+> Форсування дозволяє скинути аварію або ігнорувати захист у режимі налагодження.
 
 ---
 
-## 2. Р„РґРёРЅР° С‚Р°Р±Р»РёС†СЏ FLTCode (РІСЃС– РјРµС…Р°РЅС–Р·РјРё)
+## 1. Таблиця Force_Code бітів
 
-> `B.FLTCode : UINT` вЂ” РєРѕРґ Р°РєС‚РёРІРЅРѕС— Р°РІР°СЂС–С— РјРµС…Р°РЅС–Р·РјСѓ.
-> РљРѕР¶РµРЅ FLT РІС–РґРїРѕРІС–РґР°С” СЂС–РІРЅРѕ РѕРґРЅРѕРјСѓ Р±С–С‚Сѓ Force_Code (Р°Р±Рѕ РЅРµ С„РѕСЂСЃСѓС”С‚СЊСЃСЏ).
-
-| FLT РєРѕРЅСЃС‚Р°РЅС‚Р° | Р—РЅР°С‡РµРЅРЅСЏ | Force bit | РњР°СЃРєР° | Noria | Redler | Fan | Gate2P |
-|---------------|----------|-----------|-------|-------|--------|-----|--------|
-| `FLT_NONE` | 0 | вЂ” | вЂ” | вњ… | вњ… | вњ… | вњ… |
-| `FLT_BREAKER` | 11 | BIT0 `forceBreaker` | `AND 1` | вњ… | вњ… | вњ… | вњ… |
-| `FLT_NO_RUNFB` | 12 | BIT2 `forceSpeed` | `AND 4` | вњ… | вњ… | вњ… | вЂ” |
-| `FLT_OVERFLOW` | 10 | BIT1 `forceOverflow` | `AND 2` | вњ… | вњ… | вЂ” | вЂ” |
-| `FLT_ALINGMENT` | 15 | BIT3 `forceAlingment` | `AND 8` | вњ… | вЂ” | вЂ” | вЂ” |
-| `FLT_GATE_MOVE_TIMEOUT` | 16 | BIT4 `forceMoveTimeout` | `AND 16` | вЂ” | вЂ” | вЂ” | вњ… |
-| `FLT_GATE_POS_UNKNOWN` | 17 | BIT5 `forcePosUnknown` | `AND 32` | вЂ” | вЂ” | вЂ” | вњ… |
-| `FLT_BOTH_SENSORS` | 18 | РЅРµ С„РѕСЂСЃСѓС”С‚СЊСЃСЏ | вЂ” | вЂ” | вЂ” | вЂ” | вњ… |
-
-> Р’РёРґР°Р»РµРЅРѕ: `FLT_INTERLOCK` (13) вЂ” РЅРµ РІРёРєРѕСЂРёСЃС‚РѕРІСѓРІР°РІСЃСЏ РІ Р¶РѕРґРЅРѕРјСѓ РјРµС…Р°РЅС–Р·РјС–.
-> Р’РёРґР°Р»РµРЅРѕ: `FLT_NO_FEEDBACK` (14) вЂ” РѕР±'С”РґРЅР°РЅРѕ Р· `FLT_NO_RUNFB` (12); РІРµРЅС‚РёР»СЏС‚РѕСЂ С‚РµРїРµСЂ РІРёРєРѕСЂРёСЃС‚РѕРІСѓС” `FLT_NO_RUNFB`.
+| Біт | Маска | Змінна | FLT що форсує | Redler | Noria | Fan | Separator | Feeder | Gate2P | Valve3P |
+|-----|-------|--------|---------------|:------:|:-----:|:---:|:---------:|:------:|:------:|:-------:|
+| BIT0 | 1 | forceBreaker | FLT_BREAKER | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| BIT1 | 2 | forceOverflow | FLT_OVERFLOW | ✅ | ✅ | — | — | — | — | — |
+| BIT2 | 4 | forceSpeed | FLT_NO_RUNFB | ✅ | ✅ | — | — | — | — | — |
+| BIT3 | 8 | forceAlingment | FLT_ALINGMENT | — | ✅ | — | — | — | — | — |
+| BIT4 | 16 | forceMoveTimeout | FLT_GATE_MOVE_TIMEOUT / FLT_VALVE_MOVE_TIMEOUT | — | — | — | — | — | ✅ | ✅ |
+| BIT5 | 32 | forcePosUnknown | FLT_GATE_POS_UNKNOWN / FLT_VALVE_POS_UNKNOWN | — | — | — | — | — | ✅ | ✅ |
+| BIT6 | 64 | forceStopTimeout | FLT_STOP_TIMEOUT | ✅ | ✅ | ✅ | ✅ | ✅ | — | — |
+| BIT8 | 256 | forceFeedback | FLT_NO_FEEDBACK | ✅ | ✅ | ✅ | ✅ | ✅ | — | — |
 
 ---
 
-### РџРѕР·РёС†С–Р№РЅС– РєРѕРЅСЃС‚Р°РЅС‚Рё Gate2P (v1.3)
+## 2. Таблиця FLTCode (B.FLTCode : WORD — бітова маска)
 
-| РљРѕРЅСЃС‚Р°РЅС‚Р° | Р—РЅР°С‡РµРЅРЅСЏ | РџРѕР»Рµ DI | РџРѕР»Рµ DO |
+| Біт | Маска | FLT константа | Redler | Noria | Fan | Separator | Feeder | Gate2P | Valve3P |
+|-----|-------|---------------|:------:|:-----:|:---:|:---------:|:------:|:------:|:-------:|
+| — | 0 | FLT_NONE | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| BIT0 | 1 | FLT_BREAKER | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| BIT1 | 2 | FLT_OVERFLOW | ✅ | ✅ | — | — | — | — | — |
+| BIT2 | 4 | FLT_NO_RUNFB | ✅ | ✅ | — | — | — | — | — |
+| BIT3 | 8 | FLT_ALINGMENT | — | ✅ | — | — | — | — | — |
+| BIT4 | 16 | FLT_NO_FEEDBACK | ✅ | ✅ | ✅ | ✅ | ✅ | — | — |
+| BIT5 | 32 | FLT_GATE_MOVE_TIMEOUT | — | — | — | — | — | ✅ | — |
+| BIT6 | 64 | FLT_GATE_POS_UNKNOWN | — | — | — | — | — | ✅ | — |
+| BIT7 | 128 | FLT_BOTH_SENSORS | — | — | — | — | — | ✅ | — |
+| BIT8 | 256 | FLT_STOP_TIMEOUT | ✅ | ✅ | ✅ | ✅ | ✅ | — | — |
+| BIT9 | 512 | FLT_VALVE_MOVE_TIMEOUT | — | — | — | — | — | — | ✅ |
+| BIT10 | 1024 | FLT_VALVE_POS_UNKNOWN | — | — | — | — | — | — | ✅ |
+| BIT11 | 2048 | FLT_VALVE_MULTIPLE_POS | — | — | — | — | — | — | ✅ |
+| BIT12 | 4096 | FLT_INTERLOCK | резерв | резерв | резерв | резерв | резерв | резерв | резерв |
+
+> `FLT_BOTH_SENSORS` та `FLT_VALVE_MULTIPLE_POS` — не форсуються, скидаються тільки CMD_RESET.
+
+---
+
+## 3. Позиційні константи Gate2P
+
+| Константа | Значення | DI поле | DO поле |
 |-----------|----------|---------|---------|
-| `CMD_GATE_POS0` | 6 | `DI_Pos0_OK` | `DO_Pos0` |
-| `CMD_GATE_POS1` | 7 | `DI_Pos1_OK` | `DO_Pos1` |
+| CMD_GATE_POS0 | 6 | DI_Pos0_OK | DO_Pos0 |
+| CMD_GATE_POS1 | 7 | DI_Pos1_OK | DO_Pos1 |
+| GATE_AT_POS0 | 6 | Status_Param при Pos0 | — |
+| GATE_AT_POS1 | 7 | Status_Param при Pos1 | — |
 
----
+## 4. Позиційні константи Valve3P
+
+| Константа | Значення | DI поле | DO поле |
+|-----------|----------|---------|---------|
+| CMD_VALVE_POS0 | 3 | DI_Pos0_OK | DO_Pos0 |
+| CMD_VALVE_POS1 | 4 | DI_Pos1_OK | DO_Pos1 |
+| CMD_VALVE_POS2 | 5 | DI_Pos2_OK | DO_Pos2 |
+| VALVE_AT_POS0 | 3 | Status_Param при Pos0 | — |
+| VALVE_AT_POS1 | 4 | Status_Param при Pos1 | — |
+| VALVE_AT_POS2 | 5 | Status_Param при Pos2 | — |
