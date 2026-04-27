@@ -15,11 +15,12 @@
 ```
 tia_repo/
 ├── Main.scl                  — главный OB (цикл: симуляторы → ручное → маршруты → механизмы)
-├── Startup.scl               — OB инициализации v0.2 (сброс всех HAL + таймингов)
+├── Startup.scl               — OB инициализации v0.3 (сброс всех HAL + таймингов + LastStopMs)
 ├── Constant.csv              — все константы проекта (импорт в TIA)
-├── Mechs.csv / Mechs.xlsx    — конфигурация механизмов
+├── Constant_project.csv      — дополнительные константы проекта
+├── Mechs.csv / Mechs.xlsx    — конфигурация механизмов (счётчики: REDLERS_COUNT=38 и т.д.)
 ├── graph.json                — граф устройств (186 устройств, источник для генераторов)
-├── generate_all_alarms.py    — генератор HMIAlarms_All.xlsx из graph.json
+├── generate_all_alarms.py    — генератор HMIAlarms_All.xlsx из graph.json (696 аварий)
 ├── JsonToSQL.py              — создание БД ElevatorRouting из graph.json
 ├── CreateRunTimeDB.py        — создание БД RunTime для моточасов
 ├── RuntimeLogger.js          — JS скрипт SCADA: запись статусов механизмов в RunTime
@@ -29,13 +30,13 @@ tia_repo/
 │   └── FC_TimeElapsedMs.scl  — таймер на TIME_TCK()
 ├── Mechs/
 │   ├── Udts/                 — UDT структуры каждого типа
-│   ├── FC_Redler.scl         — v0.5
-│   ├── FC_Noria.scl          — v0.4
-│   ├── FC_Fan.scl            — v1.3
-│   ├── FC_Gate2P.scl
-│   ├── FC_Feeder.scl         — v0.2
-│   ├── FC_Separator.scl      — v0.2
-│   ├── FC_Valve3P.scl
+│   ├── FC_Redler.scl         — v0.6
+│   ├── FC_Noria.scl          — v0.5
+│   ├── FC_Fan.scl            — v1.4
+│   ├── FC_Gate2P.scl         — v1.5
+│   ├── FC_Feeder.scl         — v0.3
+│   ├── FC_Separator.scl      — v0.3
+│   ├── FC_Valve3P.scl        — v1.1
 │   ├── FC_Silos.scl          — закомментирован в DeviceRunner
 │   ├── FC_Sushka.scl         — закомментирован в DeviceRunner
 │   └── FC_ReceivingPit.scl   — закомментирован в DeviceRunner
@@ -48,42 +49,42 @@ tia_repo/
 ├── Mech_Simulate/
 │   ├── DB_SimMechs.scl
 │   ├── DB_SimConfig.scl
-│   ├── FC_SimRedler.scl      — v2.1 (DI_Feedback_OK + SimFault_Feedback)
-│   ├── FC_SimNoria.scl       — v2.2 (DI_Feedback_OK + SimFault_Feedback)
-│   ├── FC_SimFan.scl         — v2.1 (SimFault_Feedback)
+│   ├── FC_SimRedler.scl      — v2.1
+│   ├── FC_SimNoria.scl       — v2.2
+│   ├── FC_SimFan.scl         — v2.1
 │   ├── FC_SimGate2P.scl
 │   ├── FC_SimSeparator.scl
 │   ├── FC_SimFeeder.scl
 │   └── UDT_Sim*.scl
 ├── SCADA_Scripts/
 │   └── DB_Helper/
-│       ├── GlobalDefinitions.js  — глобальные переменные и функции маршрутов
-│       └── Main.js               — обработчики кнопок SCADA
-├── FB_Test_Redler.scl        — v0.2, 18 кейсов
-├── FB_Test_Noria.scl         — v0.2, 19 кейсов
-├── FB_Test_Fan.scl           — v0.2, 14 кейсов
-├── FB_Test_Gate2P.scl
-├── FB_Test_Separator.scl
-├── FB_Test_Valve3P.scl
-└── docs/
+│       ├── GlobalDefinitions.js
+│       └── Main.js
+├── docs/
+│   ├── force_bits_and_faults.md  — таблица FLTCode битів та Force_Code (актуальна)
+│   ├── fltcode_bitmask.md        — опис переходу на бітову маску
+│   └── min_restart_interval.md   — мінімальний інтервал перезапуску
+└── FB_Test_*.scl
 ```
 
 ---
 
 ## Слоты механизмов (FC_DeviceRunner)
 
-| Тип            | Слоты     | Константа типа         |
-|----------------|-----------|------------------------|
-| Redler         | 1–39      | TYPE_REDLER = 2        |
-| Noria          | 51–62     | TYPE_NORIA = 1         |
-| Gate2P         | 116–182   | TYPE_GATE2P = 3        |
-| Valve3P        | 201–229   | TYPE_VALVE3P = 5       |
-| Silos          | 251–278   | TYPE_SILOS = 8         |
-| Sushka         | 281–284   | TYPE_SUSHKA = 9        |
-| ReceivingPit   | 305–306   | TYPE_RECEIVING_PIT = 6 |
-| Separator      | 311–313   | TYPE_SEPARATOR = 7     |
-| Feeder         | 314–316   | TYPE_FEEDER = 10       |
-| Fan            | 317–319   | TYPE_FAN = 4           |
+| Тип            | Слоты     | Константа типа         | Кол-во |
+|----------------|-----------|------------------------|--------|
+| Redler         | 1–39      | TYPE_REDLER = 2        | 39     |
+| Noria          | 51–62     | TYPE_NORIA = 1         | 12     |
+| Gate2P         | 116–182   | TYPE_GATE2P = 3        | 62     |
+| Valve3P        | 201–229   | TYPE_VALVE3P = 5       | 30     |
+| Silos          | 251–278   | TYPE_SILOS = 8         | 28     |
+| Sushka         | 281–284   | TYPE_SUSHKA = 9        | 4      |
+| ReceivingPit   | 305–306   | TYPE_RECEIVING_PIT = 6 | 2      |
+| Separator      | 311–313   | TYPE_SEPARATOR = 7     | 3      |
+| Feeder         | 314–316   | TYPE_FEEDER = 10       | 3      |
+| Fan            | 317–319   | TYPE_FAN = 4           | 3      |
+
+Счётчики в Mechs.csv: REDLERS_COUNT=38, NORIAS_COUNT=11, FANS_COUNT=2, SEPARATORS_COUNT=2, FEEDERS_COUNT=2, GATES2P_COUNT=80, VALVES3P_COUNT=29, SILOS_COUNT=27, SUSHKAS_COUNT=3, MECHS_COUNT=319
 
 ---
 
@@ -92,7 +93,7 @@ tia_repo/
 ### UDT_BaseMechanism — общие поля
 ```
 SlotId, DeviceType, TypedIndex
-Status, FLTCode, Cmd, CmdParam1, LastCmd
+Status, FLTCode : WORD,  Cmd, CmdParam1, LastCmd
 OwnerCur, OwnerCurId
 Enable_OK, LocalManual
 Force_Code : INT  — битовая маска форсирования защит
@@ -102,11 +103,13 @@ Status_Param : INT
 ### UDT типизированных механизмов — поля таймингов
 | Тип | Поля таймингов |
 |-----|----------------|
-| Redler | StartMs, SpeedLostMs, FeedbackLostMs, StopMs |
-| Noria | StartMs, SpeedLostMs, FeedbackLostMs, StopMs |
-| Fan | StartMs, FeedbackLostMs, StopMs |
-| Separator | StartMs, FeedbackLostMs, StopMs |
-| Feeder | StartMs, FeedbackLostMs, StopMs |
+| Redler | StartMs, SpeedLostMs, FeedbackLostMs, StopMs, **LastStopMs** |
+| Noria | StartMs, SpeedLostMs, FeedbackLostMs, StopMs, **LastStopMs** |
+| Fan | StartMs, FeedbackLostMs, StopMs, **LastStopMs** |
+| Separator | StartMs, FeedbackLostMs, StopMs, **LastStopMs** |
+| Feeder | StartMs, FeedbackLostMs, StopMs, **LastStopMs** |
+
+> `LastStopMs` — метка времени последней остановки, используется для минимального интервала перезапуска
 
 ### Состояния механизма (Status)
 | Константа    | Значение | Описание          |
@@ -133,41 +136,60 @@ Status_Param : INT
 
 ---
 
-## Аварии (FLTCode) и Force_Code биты
+## FLTCode — битовая маска (WORD)
 
-| FLTCode константа      | Значение | Force бит | Маска | Механизмы                             |
-|------------------------|----------|-----------|-------|---------------------------------------|
-| FLT_NONE               | 0        | —         | —     | все                                   |
-| FLT_OVERFLOW           | 10       | BIT1      | 2     | Redler, Noria                         |
-| FLT_BREAKER            | 11       | BIT0      | 1     | все                                   |
-| FLT_NO_RUNFB           | 12       | BIT2      | 4     | Redler, Noria (тахо)                  |
-| FLT_NO_FEEDBACK        | 14       | BIT8      | 256   | Redler, Noria, Fan, Separator, Feeder |
-| FLT_ALINGMENT          | 15       | BIT3      | 8     | Noria                                 |
-| FLT_GATE_MOVE_TIMEOUT  | 16       | BIT4      | 16    | Gate2P                                |
-| FLT_GATE_POS_UNKNOWN   | 17       | BIT5      | 32    | Gate2P                                |
-| FLT_BOTH_SENSORS       | 18       | не форс.  | —     | Gate2P                                |
-| FLT_STOP_TIMEOUT       | 19       | BIT6      | 64    | Redler, Noria, Fan, Separator, Feeder |
+> FLTCode теперь битовая маска — механизм может иметь несколько аварий одновременно.
+> Установка: `#B.FLTCode := #B.FLTCode OR "FLT_XXX"`
+> Сброс: `#B.FLTCode := #B.FLTCode AND NOT "FLT_XXX"`
+> Проверка: `IF (#B.FLTCode AND "FLT_XXX") <> 0 THEN`
+
+| Бит  | Маска | FLT константа         | Redler | Noria | Fan | Sep | Feed | Gate2P | Valve3P |
+|------|-------|-----------------------|:------:|:-----:|:---:|:---:|:----:|:------:|:-------:|
+| BIT0 | 1     | FLT_BREAKER           | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| BIT1 | 2     | FLT_OVERFLOW          | ✅ | ✅ | — | — | — | — | — |
+| BIT2 | 4     | FLT_NO_RUNFB          | ✅ | ✅ | — | — | — | — | — |
+| BIT3 | 8     | FLT_ALINGMENT         | — | ✅ | — | — | — | — | — |
+| BIT4 | 16    | FLT_NO_FEEDBACK       | ✅ | ✅ | ✅ | ✅ | ✅ | — | — |
+| BIT5 | 32    | FLT_GATE_MOVE_TIMEOUT | — | — | — | — | — | ✅ | — |
+| BIT6 | 64    | FLT_GATE_POS_UNKNOWN  | — | — | — | — | — | ✅ | — |
+| BIT7 | 128   | FLT_BOTH_SENSORS      | — | — | — | — | — | ✅ | — |
+| BIT8 | 256   | FLT_STOP_TIMEOUT      | ✅ | ✅ | ✅ | ✅ | ✅ | — | — |
+| BIT9 | 512   | FLT_VALVE_MOVE_TIMEOUT| — | — | — | — | — | — | ✅ |
+| BIT10| 1024  | FLT_VALVE_POS_UNKNOWN | — | — | — | — | — | — | ✅ |
+| BIT11| 2048  | FLT_VALVE_MULTIPLE_POS| — | — | — | — | — | — | ✅ |
+| BIT12| 4096  | FLT_INTERLOCK         | резерв | резерв | резерв | резерв | резерв | резерв | резерв |
 
 ---
 
-## Логика переходов состояний
+## Force_Code — битовая маска (INT)
 
-| Механизм  | STARTING→RUNNING    | STOPPING→IDLE        | Таймаут выбега (FLT_STOP_TIMEOUT) |
-|-----------|---------------------|----------------------|-----------------------------------|
-| Redler    | DI_Speed_OK=TRUE    | DI_Speed_OK=FALSE    | TimeoutMs_Redler_Stop (10000 мс)  |
-| Noria     | DI_Speed_OK=TRUE    | DI_Speed_OK=FALSE    | TimeoutMs_Noria_Stop (10000 мс)   |
-| Fan       | DI_Feedback_OK=TRUE | DI_Feedback_OK=FALSE | TimeoutMs_Fan_Stop (10000 мс)     |
-| Separator | DI_Feedback_OK=TRUE | DI_Feedback_OK=FALSE | TimeoutMs_Separator_Stop (10000 мс)|
-| Feeder    | DI_Feedback_OK=TRUE | DI_Feedback_OK=FALSE | TimeoutMs_Feeder_Stop (10000 мс)  |
+| Бит  | Маска | Переменная       | Форсирует FLT                              |
+|------|-------|------------------|--------------------------------------------|
+| BIT0 | 1     | forceBreaker     | FLT_BREAKER                                |
+| BIT1 | 2     | forceOverflow    | FLT_OVERFLOW                               |
+| BIT2 | 4     | forceSpeed       | FLT_NO_RUNFB                               |
+| BIT3 | 8     | forceAlingment   | FLT_ALINGMENT                              |
+| BIT4 | 16    | forceMoveTimeout | FLT_GATE_MOVE_TIMEOUT / FLT_VALVE_MOVE_TIMEOUT |
+| BIT5 | 32    | forcePosUnknown  | FLT_GATE_POS_UNKNOWN / FLT_VALVE_POS_UNKNOWN |
+| BIT6 | 64    | forceStopTimeout | FLT_STOP_TIMEOUT                           |
+| BIT8 | 256   | forceFeedback    | FLT_NO_FEEDBACK                            |
 
-### RUNNING: дополнительные аварии
-| Механизм  | FLT_NO_RUNFB (тахо)                          | FLT_NO_FEEDBACK (контактор)                      |
-|-----------|----------------------------------------------|--------------------------------------------------|
-| Redler    | DI_Speed_OK потеря + TimeoutMs_Redler_SpeedPause    | DI_Feedback_OK потеря + TimeoutMs_Redler_FeedbackPause |
-| Noria     | DI_Speed_OK потеря + TimeoutMs_Noria_SpeedPause     | DI_Feedback_OK потеря + TimeoutMs_Noria_FeedbackPause  |
-| Fan       | —                                            | DI_Feedback_OK потеря + TimeoutMs_Fan_FeedbackPause    |
-| Separator | —                                            | DI_Feedback_OK потеря + TimeoutMs_Separator_FeedbackPause |
-| Feeder    | —                                            | DI_Feedback_OK потеря + TimeoutMs_Feeder_FeedbackPause |
+> FLT_BOTH_SENSORS и FLT_VALVE_MULTIPLE_POS — не форсируются
+
+---
+
+## Минимальный интервал перезапуска
+
+При переходе STOPPING→IDLE сохраняется `LastStopMs := TIME_TCK()`.
+CMD_START выполняется только если прошло >= минимального интервала.
+
+| Константа                    | Значение |
+|------------------------------|----------|
+| TimeoutMs_Redler_MinRestart  | 3000 мс  |
+| TimeoutMs_Noria_MinRestart   | 3000 мс  |
+| TimeoutMs_Fan_MinRestart     | 5000 мс  |
+| TimeoutMs_Separator_MinRestart | 3000 мс |
+| TimeoutMs_Feeder_MinRestart  | 3000 мс  |
 
 ---
 
@@ -193,6 +215,9 @@ Status_Param : INT
 | TimeoutMs_Feeder_FeedbackPause     | 2000     |
 | TimeoutMs_Feeder_Stop              | 10000    |
 | TimeoutMs_Gate_Move                | 10000    |
+| TimeoutMs_Gate_Position_Unknown    | 15000    |
+| TimeoutMs_Valve_Move               | 15000    |
+| TimeoutMs_Valve_Position_Unknown   | 15000    |
 
 ---
 
@@ -245,94 +270,54 @@ IDLE(0) → VALIDATING(1) → STARTING(2) → RUNNING(4) → STOPPING(5) → ABO
 | RunTimeSummary | 60 | Итоговая наработка в секундах |
 | EventHistory | растёт | История запусков/остановок |
 
-**Процедуры:**
-- `UpdateMechStatus @MechanismId, @IsRunning` — SCADA вызывает каждые N секунд. Обновляет только при смене состояния. Сама считает наработку.
-- `ResetRunTime @MechanismId` — сброс наработки
-
-**Views:**
-- `vw_RunTimeHours` — наработка в днях/часах/минутах/секундах
-- `vw_EventHistory` — история с именами механизмов
-
-**Логика:**
-- SCADA пишет `IsRunning=1` (запуск) или `IsRunning=0` (остановка)
-- Процедура сама считает `DATEDIFF` и пишет в `RunTimeSummary` и `EventHistory`
-- `StatusLog` всегда 60 строк — не растёт
-
 ---
 
 ## SCADA Scripts (WinCC Unified JavaScript)
 
 ### SCADA_Scripts/DB_Helper/GlobalDefinitions.js
-Глобальные переменные и функции для маршрутов:
 - `routeBuffer`, `variantList` — буферы данных
 - `RunQueryAndCache(startId, endId, midId)` — запрос маршрута из SQL
-- `GetActiveRouteData(vId)` — данные активного маршрута
-- `GetVariantList()` — список вариантов
-- `GetVariantFromBuffer(variantId)` — шаги варианта
+- `GetActiveRouteData(vId)`, `GetVariantList()`, `GetVariantFromBuffer(variantId)`
 - `resetMechanism(obj)` — сброс цвета SVG механизма
 
 ### SCADA_Scripts/DB_Helper/Main.js
-Обработчики кнопок:
-- `Btn_OpenList_OnTapped` — запрос маршрутов из ElevatorRouting, запись в теги таблицы
-- `Btn_OpenList_OnUp` — открытие popup экрана Table
-- `Circle_5_BackColor_OnPropertyChanged` — покраска механизмов на мнемосхеме
+- `Btn_OpenList_OnTapped` — запрос маршрутов из ElevatorRouting
 - `Apply_OnTapped` — запись выбранного маршрута в PLC теги
-- `Btn_OpenMotoHours_OnTapped` — загрузка моточасов из RunTime в таблицу
+- `Btn_OpenMotoHours_OnTapped` — загрузка моточасов из RunTime
 
 ### RuntimeLogger.js
-Скрипт UAJobScheduler (запускается по таймеру):
 - Читает теги `DB_Mechs_Mechs{ID}_Status` для 60 механизмов
 - Вызывает `EXEC UpdateMechStatus` для каждого
 - DSN=RunTime, HMI_User
-
-### Теги SCADA для таблиц
-| Тег | Тип | Назначение |
-|-----|-----|------------|
-| TableDataString | WString | Данные таблицы маршрутов |
-| ColumnStyle | WString | Колонки таблицы маршрутов |
-| Moto_TableDataString | WString[5000] | Данные таблицы моточасов |
-| Moto_ColumnStyle | WString[500] | Колонки таблицы моточасов |
-
-### Кастомный веб-контрол таблицы
-- Tabulator.js в WinCC Unified Custom Web Control
-- Свойства: `TableDataString`, `ColumnStyleString`, `SelectedRowIndex`
-- Событие: `RowClick`
-- `layout: "fitColumns"` — ширины колонок пропорциональные
 
 ---
 
 ## Симуляторы
 
-Каждый симулятор читает `DO_Run` и пишет DI-сигналы механизма.
-Конфиг: `DB_SimConfig.<Type>[idx]`, состояние: `DB_SimMechs.<Type>[idx]`.
+| Параметр конфига   | Redler | Noria | Fan | Separator | Feeder |
+|--------------------|--------|-------|-----|-----------|--------|
+| SimFault_Breaker   | ✅ | ✅ | ✅ | ✅ | ✅ |
+| SimFault_Overflow  | ✅ | ✅ | — | — | — |
+| SimFault_Alignment | — | ✅ | — | — | — |
+| SimFault_Feedback  | ✅ | ✅ | ✅ | — | — |
 
-### Параметры симуляции аварий по типам
-
-| Параметр конфига              | Redler | Noria | Fan | Separator | Feeder |
-|-------------------------------|--------|-------|-----|-----------|--------|
-| SimFault_Breaker              | ✅     | ✅    | ✅  | ✅        | ✅     |
-| SimFault_Overflow             | ✅     | ✅    | —   | —         | —      |
-| SimFault_Alignment            | —      | ✅    | —   | —         | —      |
-| SimFault_Feedback             | ✅     | ✅    | ✅  | —         | —      |
-
-> FLT_STOP_TIMEOUT симуляторами не симулируется — это аварийная ситуация реального железа
+> FLT_STOP_TIMEOUT симуляторами не симулируется
 
 ---
 
 ## HMI Аварии (HMIAlarms_All.xlsx)
 
-Генерируется скриптом `generate_all_alarms.py` из `graph.json`.
-186 устройств, 604 аварии. Аварии по типам:
+Генерируется `generate_all_alarms.py` из `graph.json`. 186 устройств, **696 аварий**.
 
-| Тип | Биты аварий |
-|-----|-------------|
-| Redler | BIT0(Breaker), BIT1(Overflow), BIT2(Speed), BIT6(StopTimeout), BIT8(Feedback) |
-| Noria | BIT0, BIT1, BIT2, BIT3(Alingment), BIT6(StopTimeout), BIT8(Feedback) |
-| Fan | BIT0, BIT6(StopTimeout), BIT8(Feedback) |
-| Separator | BIT0, BIT6(StopTimeout), BIT8(Feedback) |
-| Feeder | BIT0, BIT6(StopTimeout), BIT8(Feedback) |
-| Gate2P | BIT0, BIT4(TimeOut), BIT5(PosUnknown) |
-| Valve3P | BIT0, BIT4(TimeOut), BIT5(PosUnknown) |
+| Тип | Биты аварий (номера бит в WORD) |
+|-----|--------------------------------|
+| Redler | BIT0(Breaker), BIT1(Overflow), BIT2(Speed), BIT4(Feedback), BIT8(StopTimeout) |
+| Noria | BIT0, BIT1, BIT2, BIT3(Alingment), BIT4(Feedback), BIT8(StopTimeout) |
+| Fan | BIT0, BIT4(Feedback), BIT8(StopTimeout) |
+| Separator | BIT0, BIT4(Feedback), BIT8(StopTimeout) |
+| Feeder | BIT0, BIT4(Feedback), BIT8(StopTimeout) |
+| Gate2P | BIT0, BIT5(MoveTimeout), BIT6(PosUnknown), BIT7(BothSensors) |
+| Valve3P | BIT0, BIT9(MoveTimeout), BIT10(PosUnknown), BIT11(MultiplePOS) |
 | Silos | BIT0 |
 | Sushka | BIT0 |
 | ReceivingPit | BIT0 |
@@ -341,7 +326,7 @@ IDLE(0) → VALIDATING(1) → STARTING(2) → RUNNING(4) → STOPPING(5) → ABO
 
 ## Порядок загрузки в TIA Portal
 
-1. Constant.csv (теги-константы)
+1. Constant.csv + Mechs.csv (теги-константы)
 2. UDT структуры (Mechs/Udts/, Mech_Simulate/UDT_Sim*.scl, Routes/udt/, Manual/UDTs/)
 3. DB блоки (Mechs/DB_Mechs.scl, Routes/DB_*.scl, Mech_Simulate/DB_Sim*.scl, Manual/DB_*.scl)
 4. FC/FB механизмов (Core/, Mechs/, Manual/)
@@ -356,6 +341,6 @@ IDLE(0) → VALIDATING(1) → STARTING(2) → RUNNING(4) → STOPPING(5) → ABO
 
 - FC_Silos, FC_Sushka, FC_ReceivingPit — закомментированы в FC_DeviceRunner
 - scl_generator/ — пустая папка
-- Constant.xlsx vs Constant.csv — не синхронизированы (задача в очереди)
+- Constant.xlsx vs Constant.csv — не синхронизированы
+- FB_Test_*.scl — тесты используют старую логику сравнения FLTCode (= вместо AND), требуют обновления под битовую маску
 - Реверсивный редлер — план есть, реализация отложена
-- docs/ — документация помечена "в разработке"
