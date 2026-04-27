@@ -1,0 +1,143 @@
+=== Constant_project.xlsx ===
+Columns: ['Name', 'Path', 'Data Type', 'Logical Address', 'Comment', 'Hmi Visible', 'Hmi Accessible', 'Hmi Writeable', 'Typeobject ID', 'Version ID']
+Rows: 7
+Loaded: 6 constants
+First 3:
+  qw: {'Name': 'qw', 'Path': 'Constant', 'Data Type': 'Bool', 'Logical Address': '%I2.0', 'Comment': '', 'Hmi Visible': 'True', 'Hmi Accessible': 'True', 'Hmi Writeable': 'True', 'Typeobject ID': '', 'Version ID': ''}
+  CaseId: {'Name': 'CaseId', 'Path': 'Constant', 'Data Type': 'Int', 'Logical Address': '%MW12', 'Comment': '', 'Hmi Visible': 'True', 'Hmi Accessible': 'True', 'Hmi Writeable': 'True', 'Typeobject ID': '', 'Version ID': ''}
+  start: {'Name': 'start', 'Path': 'Constant', 'Data Type': 'Bool', 'Logical Address': '%M14.0', 'Comment': '', 'Hmi Visible': 'True', 'Hmi Accessible': 'True', 'Hmi Writeable': 'True', 'Typeobject ID': '', 'Version ID': ''}
+
+=== Constant.csv ===
+Loaded: 110 constants
+
+=== DIFFERENCES ===
+Using columns: name='Name', type='Data Type', value='Logical Address'
+
+Found 116 differences:
+  MISSING CSV | qw                                       | project=%I2.0 (Bool)
+  MISSING CSV | CaseId                                   | project=%MW12 (Int)
+  MISSING CSV | start                                    | project=%M14.0 (Bool)
+  MISSING CSV | Opened                                   | project=%M14.1 (Bool)
+  MISSING CSV | Closed                                   | project=%M14.2 (Bool)
+  MISSING CSV | testTag                                  | project=%MD15 (DInt)
+  EXTRA CSV   | ARB_CMD_BLOCKED                          | csv only
+  EXTRA CSV   | ARB_CMD_INVALID                          | csv only
+  EXTRA CSV   | ARB_LOCAL_MANUAL                         | csv only
+  EXTRA CSV   | ARB_OK                                   | csv only
+  EXTRA CSV   | ARB_OWNER_BUSY                           | csv only
+  EXTRA CSV   | ARB_SLOT_INVALID                         | csv only
+  EXTRA CSV   | ARB_WRONG_STATUS                         | csv only
+  EXTRA CSV   | CMD_GATE_POS0                            | csv only
+  EXTRA CSV   | CMD_GATE_POS1                            | csv only
+  EXTRA CSV   | CMD_NONE                                 | csv only
+  EXTRA CSV   | CMD_RELEASE_OWNER                        | csv only
+  EXTRA CSV   | CMD_RESET                                | csv only
+  EXTRA CSV   | CMD_SET_OWNER_SCADA                      | csv only
+  EXTRA CSV   | CMD_START                                | csv only
+  EXTRA CSV   | CMD_STOP                                 | csv only
+  EXTRA CSV   | FLT_ALINGMENT                            | csv only
+  EXTRA CSV   | FLT_BOTH_SENSORS                         | csv only
+  EXTRA CSV   | FLT_BREAKER                              | csv only
+  EXTRA CSV   | FLT_GATE_MOVE_TIMEOUT                    | csv only
+  EXTRA CSV   | FLT_GATE_POS_UNKNOWN                     | csv only
+  EXTRA CSV   | FLT_NO_FEEDBACK                          | csv only
+  EXTRA CSV   | FLT_NO_RUNFB                             | csv only
+  EXTRA CSV   | FLT_STOP_TIMEOUT                         | csv only
+  EXTRA CSV   | FLT_NONE                                 | csv only
+  EXTRA CSV   | FLT_OVERFLOW                             | csv only
+  EXTRA CSV   | GATE_AT_POS0                             | csv only
+  EXTRA CSV   | GATE_AT_POS1                             | csv only
+  EXTRA CSV   | VALVE_AT_POS0                            | csv only
+  EXTRA CSV   | VALVE_AT_POS1                            | csv only
+  EXTRA CSV   | VALVE_AT_POS2                            | csv only
+  EXTRA CSV   | VALVE_FAULT                              | csv only
+  EXTRA CSV   | LIMITS_MAX_ROUTES                        | csv only
+  EXTRA CSV   | LIMITS_MAX_STEPS                         | csv only
+  EXTRA CSV   | OWNER_NONE                               | csv only
+  EXTRA CSV   | OWNER_ROUTE                              | csv only
+  EXTRA CSV   | OWNER_SCADA                              | csv only
+  EXTRA CSV   | ROUTE_ABRT_BY_FAULT                      | csv only
+  EXTRA CSV   | ROUTE_ABRT_BY_LOCAL                      | csv only
+  EXTRA CSV   | ROUTE_ABRT_BY_OPERATOR                   | csv only
+  EXTRA CSV   | ROUTE_ABRT_BY_OWNER                      | csv only
+  EXTRA CSV   | ROUTE_ABRT_BY_SAFETY                     | csv only
+  EXTRA CSV   | ROUTE_ABRT_STARTING_FAILED               | csv only
+  EXTRA CSV   | ROUTE_OK_RUNNING                         | csv only
+  EXTRA CSV   | ROUTE_REJ_BY_CONTRACT                    | csv only
+  EXTRA CSV   | ROUTE_REJ_BY_OWNER                       | csv only
+  EXTRA CSV   | ROUTE_REJ_BY_SAFETY                      | csv only
+  EXTRA CSV   | ROUTE_REJ_DUPLICATE_START                | csv only
+  EXTRA CSV   | ROUTE_REJ_NOT_READY                      | csv only
+  EXTRA CSV   | ROUTE_REJ_GRAIN_NOT_SET                  | csv only
+  EXTRA CSV   | ROUTE_REJ_GRAIN_MISMATCH                 | csv only
+  EXTRA CSV   | ROUTE_STS_ABORTED                        | csv only
+  EXTRA CSV   | ROUTE_STS_IDLE                           | csv only
+  EXTRA CSV   | ROUTE_STS_REJECTED                       | csv only
+  EXTRA CSV   | ROUTE_STS_RUNNING                        | csv only
+  EXTRA CSV   | ROUTE_STS_STARTING                       | csv only
+  EXTRA CSV   | ROUTE_STS_STOPPING                       | csv only
+  EXTRA CSV   | ROUTE_STS_VALIDATING                     | csv only
+  EXTRA CSV   | RS_ACT_START                             | csv only
+  EXTRA CSV   | RS_ACT_STOP                              | csv only
+  EXTRA CSV   | RS_WAIT_RUNNING                          | csv only
+  EXTRA CSV   | RS_WAIT_STOPPED                          | csv only
+  EXTRA CSV   | RS_WARNING_IGNORED_CMD                   | csv only
+  EXTRA CSV   | RS_WARNING_OK                            | csv only
+  EXTRA CSV   | RT_CMD_NONE                              | csv only
+  EXTRA CSV   | RT_CMD_START                             | csv only
+  EXTRA CSV   | RT_CMD_STOP_OP                           | csv only
+  EXTRA CSV   | RT_CMD_STOP_SAFE                         | csv only
+  EXTRA CSV   | STEP_STS_DONE                            | csv only
+  EXTRA CSV   | STEP_STS_IDLE                            | csv only
+  EXTRA CSV   | STEP_STS_TIMEOUT                         | csv only
+  EXTRA CSV   | STEP_STS_WORK                            | csv only
+  EXTRA CSV   | STS_DISABLED                             | csv only
+  EXTRA CSV   | STS_FAULT                                | csv only
+  EXTRA CSV   | STS_IDLE                                 | csv only
+  EXTRA CSV   | STS_LOCAL                                | csv only
+  EXTRA CSV   | STS_RUNNING                              | csv only
+  EXTRA CSV   | STS_STARTING                             | csv only
+  EXTRA CSV   | STS_STOPPING                             | csv only
+  EXTRA CSV   | TimeoutMs_Fan_Feedback                   | csv only
+  EXTRA CSV   | TimeoutMs_Fan_FeedbackPause              | csv only
+  EXTRA CSV   | TimeoutMs_Fan_Stop                       | csv only
+  EXTRA CSV   | TimeoutMs_Gate_Move                      | csv only
+  EXTRA CSV   | TimeoutMs_Gate_Position_Unknown          | csv only
+  EXTRA CSV   | TimeoutMs_Noria_FeedbackPause            | csv only
+  EXTRA CSV   | TimeoutMs_Noria_Stop                     | csv only
+  EXTRA CSV   | TimeoutMs_Noria_SpeedPause               | csv only
+  EXTRA CSV   | TimeoutMs_Noria_Start                    | csv only
+  EXTRA CSV   | TimeoutMs_Redler_FeedbackPause           | csv only
+  EXTRA CSV   | TimeoutMs_Redler_Stop                    | csv only
+  EXTRA CSV   | TimeoutMs_Redler_SpeedPause              | csv only
+  EXTRA CSV   | TimeoutMs_Redler_Start                   | csv only
+  EXTRA CSV   | TimeoutMs_Separator_Feedback             | csv only
+  EXTRA CSV   | TimeoutMs_Separator_FeedbackPause        | csv only
+  EXTRA CSV   | TimeoutMs_Separator_Stop                 | csv only
+  EXTRA CSV   | TimeoutMs_Feeder_Feedback                | csv only
+  EXTRA CSV   | TimeoutMs_Feeder_FeedbackPause           | csv only
+  EXTRA CSV   | TimeoutMs_Feeder_Stop                    | csv only
+  EXTRA CSV   | TYPE_FAN                                 | csv only
+  EXTRA CSV   | TYPE_GATE2P                              | csv only
+  EXTRA CSV   | TYPE_NONE                                | csv only
+  EXTRA CSV   | TYPE_NORIA                               | csv only
+  EXTRA CSV   | TYPE_REDLER                              | csv only
+  EXTRA CSV   | TYPE_VALVE3P                             | csv only
+  EXTRA CSV   | TYPE_RECEIVING_PIT                       | csv only
+  EXTRA CSV   | TYPE_SEPARATOR                           | csv only
+  EXTRA CSV   | TYPE_SILOS                               | csv only
+  EXTRA CSV   | TYPE_SUSHKA                              | csv only
+  EXTRA CSV   | TYPE_FEEDER                              | csv only
+  EXTRA CSV   | ROUTES_COUNT                             | csv only
+  EXTRA CSV   | ROUTE_MAX_STEPS                          | csv only
+
+=== Updating Constant.csv ===
+  Added:   qw = %I2.0 (Bool)
+  Added:   CaseId = %MW12 (Int)
+  Added:   start = %M14.0 (Bool)
+  Added:   Opened = %M14.1 (Bool)
+  Added:   Closed = %M14.2 (Bool)
+  Added:   testTag = %MD15 (DInt)
+
+Done: 0 updated, 6 added
+Constant.csv saved.

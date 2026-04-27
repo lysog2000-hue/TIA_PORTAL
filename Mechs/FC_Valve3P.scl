@@ -1,6 +1,6 @@
 ﻿FUNCTION "FC_Valve3P" : Void
 { S7_Optimized_Access := 'TRUE' }
-VERSION : 1.0
+VERSION : 1.1
 // ==============================================================================
 // FC_Valve3P - Керування трипозиційним клапаном
 // ==============================================================================
@@ -64,16 +64,20 @@ BEGIN
 	
 	REGION "1) RESET (Тільки за умови усунення причини)"
 	    IF #B.Cmd = "CMD_RESET" THEN
-	        CASE #B.FLTCode OF
-	            "FLT_BREAKER":
-	                IF #F.DI_Breaker_OK OR #forceBreaker THEN
-	                    #B.FLTCode := "FLT_NONE";
-	                END_IF;
-	                
-	            "FLT_VALVE_MOVE_TIMEOUT", "FLT_VALVE_POS_UNKNOWN", "FLT_VALVE_MULTIPLE_POS":
-	                // Ці аварії скидаються завжди (немає фізичного датчика для перевірки)
-	                #B.FLTCode := "FLT_NONE";
-	        END_CASE;
+	        IF (#B.FLTCode AND "FLT_BREAKER") <> 0 THEN
+	            IF #F.DI_Breaker_OK OR #forceBreaker THEN
+	                #B.FLTCode := #B.FLTCode AND NOT "FLT_BREAKER";
+	            END_IF;
+	        END_IF;
+	        IF (#B.FLTCode AND "FLT_VALVE_MOVE_TIMEOUT") <> 0 THEN
+	            #B.FLTCode := #B.FLTCode AND NOT "FLT_VALVE_MOVE_TIMEOUT";
+	        END_IF;
+	        IF (#B.FLTCode AND "FLT_VALVE_POS_UNKNOWN") <> 0 THEN
+	            #B.FLTCode := #B.FLTCode AND NOT "FLT_VALVE_POS_UNKNOWN";
+	        END_IF;
+	        IF (#B.FLTCode AND "FLT_VALVE_MULTIPLE_POS") <> 0 THEN
+	            #B.FLTCode := #B.FLTCode AND NOT "FLT_VALVE_MULTIPLE_POS";
+	        END_IF;
 	        
 	        IF #B.FLTCode = "FLT_NONE" AND #B.Status = "STS_FAULT" THEN
 	            #B.Status := "STS_IDLE";
@@ -107,12 +111,12 @@ BEGIN
 	REGION "3) Моніторинг аварій (Diagnostic Latch)"
 	    IF #B.FLTCode = "FLT_NONE" AND NOT #isBlocked THEN
 	        IF NOT #F.DI_Breaker_OK THEN
-	            #B.FLTCode := "FLT_BREAKER";
-	        ELSIF (#F.DI_Pos0_OK AND #F.DI_Pos1_OK) OR
+	            #B.FLTCode := #B.FLTCode OR "FLT_BREAKER";
+	        END_IF;
+	        IF (#F.DI_Pos0_OK AND #F.DI_Pos1_OK) OR
 	            (#F.DI_Pos0_OK AND #F.DI_Pos2_OK) OR
 	            (#F.DI_Pos1_OK AND #F.DI_Pos2_OK) THEN
-	            // Два або більше датчиків активні одночасно = апаратна помилка
-	            #B.FLTCode := "FLT_VALVE_MULTIPLE_POS";
+	            #B.FLTCode := #B.FLTCode OR "FLT_VALVE_MULTIPLE_POS";
 	        END_IF;
 	    END_IF;
 	END_REGION
@@ -120,28 +124,18 @@ BEGIN
 	REGION "4) Визначення виконавчої аварії"
 	    #isFault := FALSE;
 	    IF #B.FLTCode <> "FLT_NONE" THEN
-	        CASE #B.FLTCode OF
-	            "FLT_BREAKER":
-	                #isFault := NOT #forceBreaker;
-	                // Якщо форсовано → скидаємо FLTCode (немає фізичного датчика)
-	                IF #forceBreaker THEN
-	                    #B.FLTCode := "FLT_NONE";
-	                END_IF;
-	            "FLT_VALVE_MOVE_TIMEOUT":
-	                #isFault := NOT #forceMoveTimeout;
-	                // Якщо форсовано → скидаємо FLTCode (немає фізичного датчика)
-	                IF #forceMoveTimeout THEN
-	                    #B.FLTCode := "FLT_NONE";
-	                END_IF;
-	            "FLT_VALVE_POS_UNKNOWN":
-	                #isFault := NOT #forcePosUnknown;
-	                // Якщо форсовано → скидаємо FLTCode (немає фізичного датчика)
-	                IF #forcePosUnknown THEN
-	                    #B.FLTCode := "FLT_NONE";
-	                END_IF;
-	            "FLT_VALVE_MULTIPLE_POS":
-	                #isFault := TRUE;  // Ця аварія не форсується (апаратна помилка)
-	        END_CASE;
+	        IF (#B.FLTCode AND "FLT_BREAKER") <> 0 AND NOT #forceBreaker THEN
+	            #isFault := TRUE;
+	        END_IF;
+	        IF (#B.FLTCode AND "FLT_VALVE_MOVE_TIMEOUT") <> 0 AND NOT #forceMoveTimeout THEN
+	            #isFault := TRUE;
+	        END_IF;
+	        IF (#B.FLTCode AND "FLT_VALVE_POS_UNKNOWN") <> 0 AND NOT #forcePosUnknown THEN
+	            #isFault := TRUE;
+	        END_IF;
+	        IF (#B.FLTCode AND "FLT_VALVE_MULTIPLE_POS") <> 0 THEN
+	            #isFault := TRUE;
+	        END_IF;
 	    END_IF;
 	    
 	    IF #isFault THEN
@@ -173,7 +167,7 @@ BEGIN
 	                                              ElapsedMs => #elapsedMs, NowTck => #nowTck) THEN
 	                        // Фіксуємо аварію тільки якщо НЕ форсовано
 	                        IF NOT #forcePosUnknown THEN
-	                            #B.FLTCode := "FLT_VALVE_POS_UNKNOWN";
+	                            #B.FLTCode := #B.FLTCode OR "FLT_VALVE_POS_UNKNOWN";
 	                            #B.Status := "STS_FAULT";
 	                        END_IF;
 	                    END_IF;
@@ -216,7 +210,7 @@ BEGIN
 	                                          ElapsedMs => #elapsedMs, NowTck => #nowTck) THEN
 	                    // Фіксуємо аварію тільки якщо НЕ форсовано
 	                    IF NOT #forceMoveTimeout THEN
-	                        #B.FLTCode := "FLT_VALVE_MOVE_TIMEOUT";
+	                        #B.FLTCode := #B.FLTCode OR "FLT_VALVE_MOVE_TIMEOUT";
 	                        #B.Status := "STS_FAULT";
 	                    END_IF;
 	                END_IF;

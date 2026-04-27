@@ -1,6 +1,6 @@
 FUNCTION "FC_Noria" : Void
 { S7_Optimized_Access := 'TRUE' }
-VERSION : 0.4
+VERSION : 0.5
    VAR_IN_OUT 
       N : "UDT_Noria";
       B : "UDT_BaseMechanism";
@@ -34,32 +34,37 @@ BEGIN
 	
 	REGION "1) RESET (Тільки за умови усунення причини)"
 	    IF #B.Cmd = "CMD_RESET" THEN
-	        CASE #B.FLTCode OF
-	            "FLT_BREAKER":
-	                IF #N.DI_Breaker_OK OR #forceBreaker THEN
-	                    #B.FLTCode := "FLT_NONE";
-	                END_IF;
-	            "FLT_OVERFLOW":
-	                IF #N.DI_Overflow_OK OR #forceOverflow THEN
-	                    #B.FLTCode := "FLT_NONE";
-	                END_IF;
-	            "FLT_ALINGMENT":
-	                IF #N.DI_Alingment_OK OR #forceAlingment THEN
-	                    #B.FLTCode := "FLT_NONE";
-	                END_IF;
-	            "FLT_NO_RUNFB":
-	                IF #N.DI_Speed_OK OR #forceSpeed THEN
-	                    #B.FLTCode := "FLT_NONE";
-	                END_IF;
-	            "FLT_NO_FEEDBACK":
-	                IF #N.DI_Feedback_OK OR #forceFeedback THEN
-	                    #B.FLTCode := "FLT_NONE";
-	                END_IF;
-	            "FLT_STOP_TIMEOUT":
-	                IF NOT #N.DI_Speed_OK OR #forceStopTimeout THEN
-	                    #B.FLTCode := "FLT_NONE";
-	                END_IF;
-	        END_CASE;
+	        // Скидання бітів аварій, якщо причина усунена
+	        IF (#B.FLTCode AND "FLT_BREAKER") <> 0 THEN
+	            IF #N.DI_Breaker_OK OR #forceBreaker THEN
+	                #B.FLTCode := #B.FLTCode AND NOT "FLT_BREAKER";
+	            END_IF;
+	        END_IF;
+	        IF (#B.FLTCode AND "FLT_OVERFLOW") <> 0 THEN
+	            IF #N.DI_Overflow_OK OR #forceOverflow THEN
+	                #B.FLTCode := #B.FLTCode AND NOT "FLT_OVERFLOW";
+	            END_IF;
+	        END_IF;
+	        IF (#B.FLTCode AND "FLT_ALINGMENT") <> 0 THEN
+	            IF #N.DI_Alingment_OK OR #forceAlingment THEN
+	                #B.FLTCode := #B.FLTCode AND NOT "FLT_ALINGMENT";
+	            END_IF;
+	        END_IF;
+	        IF (#B.FLTCode AND "FLT_NO_RUNFB") <> 0 THEN
+	            IF #N.DI_Speed_OK OR #forceSpeed THEN
+	                #B.FLTCode := #B.FLTCode AND NOT "FLT_NO_RUNFB";
+	            END_IF;
+	        END_IF;
+	        IF (#B.FLTCode AND "FLT_NO_FEEDBACK") <> 0 THEN
+	            IF #N.DI_Feedback_OK OR #forceFeedback THEN
+	                #B.FLTCode := #B.FLTCode AND NOT "FLT_NO_FEEDBACK";
+	            END_IF;
+	        END_IF;
+	        IF (#B.FLTCode AND "FLT_STOP_TIMEOUT") <> 0 THEN
+	            IF NOT #N.DI_Speed_OK OR #forceStopTimeout THEN
+	                #B.FLTCode := #B.FLTCode AND NOT "FLT_STOP_TIMEOUT";
+	            END_IF;
+	        END_IF;
 	        
 	        IF #B.FLTCode = "FLT_NONE" AND #B.Status = "STS_FAULT" THEN
 	            #B.Status := "STS_IDLE";
@@ -87,13 +92,15 @@ BEGIN
 	END_REGION
 	
 	REGION "3) Моніторинг аварій (Diagnostic Latch)"
-	    IF #B.FLTCode = "FLT_NONE" AND NOT #isBlocked THEN
+	    IF NOT #isBlocked THEN
 	        IF NOT #N.DI_Breaker_OK THEN
-	            #B.FLTCode := "FLT_BREAKER";
-	        ELSIF NOT #N.DI_Overflow_OK THEN
-	            #B.FLTCode := "FLT_OVERFLOW";
-	        ELSIF NOT #N.DI_Alingment_OK THEN
-	            #B.FLTCode := "FLT_ALINGMENT";
+	            #B.FLTCode := #B.FLTCode OR "FLT_BREAKER";
+	        END_IF;
+	        IF NOT #N.DI_Overflow_OK THEN
+	            #B.FLTCode := #B.FLTCode OR "FLT_OVERFLOW";
+	        END_IF;
+	        IF NOT #N.DI_Alingment_OK THEN
+	            #B.FLTCode := #B.FLTCode OR "FLT_ALINGMENT";
 	        END_IF;
 	    END_IF;
 	END_REGION
@@ -101,20 +108,25 @@ BEGIN
 	REGION "4) Визначення виконавчої аварії"
 	    #isFault := FALSE;
 	    IF #B.FLTCode <> "FLT_NONE" THEN
-	        CASE #B.FLTCode OF
-	            "FLT_BREAKER":
-	                #isFault := NOT #forceBreaker;
-	            "FLT_OVERFLOW":
-	                #isFault := NOT #forceOverflow;
-	            "FLT_ALINGMENT":
-	                #isFault := NOT #forceAlingment;
-	            "FLT_NO_RUNFB":
-	                #isFault := NOT #forceSpeed;
-	            "FLT_NO_FEEDBACK":
-	                #isFault := NOT #forceFeedback;
-	            "FLT_STOP_TIMEOUT":
-	                #isFault := NOT #forceStopTimeout;
-	        END_CASE;
+	        // Перевірка кожного біта аварії з урахуванням форсування
+	        IF (#B.FLTCode AND "FLT_BREAKER") <> 0 AND NOT #forceBreaker THEN
+	            #isFault := TRUE;
+	        END_IF;
+	        IF (#B.FLTCode AND "FLT_OVERFLOW") <> 0 AND NOT #forceOverflow THEN
+	            #isFault := TRUE;
+	        END_IF;
+	        IF (#B.FLTCode AND "FLT_ALINGMENT") <> 0 AND NOT #forceAlingment THEN
+	            #isFault := TRUE;
+	        END_IF;
+	        IF (#B.FLTCode AND "FLT_NO_RUNFB") <> 0 AND NOT #forceSpeed THEN
+	            #isFault := TRUE;
+	        END_IF;
+	        IF (#B.FLTCode AND "FLT_NO_FEEDBACK") <> 0 AND NOT #forceFeedback THEN
+	            #isFault := TRUE;
+	        END_IF;
+	        IF (#B.FLTCode AND "FLT_STOP_TIMEOUT") <> 0 AND NOT #forceStopTimeout THEN
+	            #isFault := TRUE;
+	        END_IF;
 	    END_IF;
 	    
 	    IF #isFault THEN
@@ -132,8 +144,12 @@ BEGIN
 	        CASE #B.Status OF
 	            "STS_IDLE":
 	                IF #B.Cmd = "CMD_START" THEN
-	                    #B.Status := "STS_STARTING";
-	                    #N.StartMs := TIME_TCK();
+	                    // Перевірка мінімального інтервалу перезапуску
+	                    IF #N.LastStopMs = 0 OR "FC_TimeElapsedMs"(StartTck := #N.LastStopMs, TimeoutMs := "TimeoutMs_Noria_MinRestart",
+	                                                                ElapsedMs => #elapsedMs, NowTck => #nowTck) THEN
+	                        #B.Status := "STS_STARTING";
+	                        #N.StartMs := TIME_TCK();
+	                    END_IF;
 	                END_IF;
 	                
 	            "STS_STARTING":
@@ -142,7 +158,7 @@ BEGIN
 	                ELSE
 	                    IF "FC_TimeElapsedMs"(StartTck := #N.StartMs, TimeoutMs := "TimeoutMs_Noria_Start",
 	                                              ElapsedMs => #elapsedMs, NowTck => #nowTck) THEN
-	                        #B.FLTCode := "FLT_NO_RUNFB";
+	                        #B.FLTCode := #B.FLTCode OR "FLT_NO_RUNFB";
 	                        #B.Status := "STS_FAULT";
 	                    END_IF;
 	                END_IF;
@@ -154,7 +170,7 @@ BEGIN
 	                    END_IF;
 	                    IF "FC_TimeElapsedMs"(StartTck := #N.FeedbackLostMs, TimeoutMs := "TimeoutMs_Noria_FeedbackPause",
 	                                              ElapsedMs => #elapsedMs, NowTck => #nowTck) THEN
-	                        #B.FLTCode := "FLT_NO_FEEDBACK";
+	                        #B.FLTCode := #B.FLTCode OR "FLT_NO_FEEDBACK";
 	                        #B.Status := "STS_FAULT";
 	                    END_IF;
 	                ELSE
@@ -166,7 +182,7 @@ BEGIN
 	                    END_IF;
 	                    IF "FC_TimeElapsedMs"(StartTck := #N.SpeedLostMs, TimeoutMs := "TimeoutMs_Noria_SpeedPause",
 	                                              ElapsedMs => #elapsedMs, NowTck => #nowTck) THEN
-	                        #B.FLTCode := "FLT_NO_RUNFB";
+	                        #B.FLTCode := #B.FLTCode OR "FLT_NO_RUNFB";
 	                        #B.Status := "STS_FAULT";
 	                    END_IF;
 	                ELSE
@@ -177,13 +193,14 @@ BEGIN
 	                IF (NOT #N.DI_Speed_OK) OR #forceSpeed THEN
 	                    #B.Status := "STS_IDLE";
 	                    #N.StopMs := 0;
+	                    #N.LastStopMs := TIME_TCK();  // Зберігаємо час останньої зупинки
 	                ELSE
 	                    IF #N.StopMs = 0 THEN
 	                        #N.StopMs := TIME_TCK();
 	                    END_IF;
 	                    IF "FC_TimeElapsedMs"(StartTck := #N.StopMs, TimeoutMs := "TimeoutMs_Noria_Stop",
 	                                              ElapsedMs => #elapsedMs, NowTck => #nowTck) THEN
-	                        #B.FLTCode := "FLT_STOP_TIMEOUT";
+	                        #B.FLTCode := #B.FLTCode OR "FLT_STOP_TIMEOUT";
 	                        #B.Status := "STS_FAULT";
 	                    END_IF;
 	                END_IF;
@@ -191,6 +208,7 @@ BEGIN
 	        
 	        IF #B.Cmd = "CMD_STOP" AND #B.Status <> "STS_IDLE" THEN
 	            #B.Status := "STS_STOPPING";
+	            #N.StopMs := 0;
 	        END_IF;
 	    END_IF;
 	END_REGION

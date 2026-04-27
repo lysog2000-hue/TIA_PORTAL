@@ -9,6 +9,7 @@ STRUCT
     StartMs         : DINT;    // час старту (мітка)
     FeedbackLostMs  : DINT;    // мітка втрати Feedback_OK
     StopMs          : DINT;    // мітка початку зупинки (для таймауту вибігу)
+    LastStopMs      : DINT;    // час останньої зупинки (для мін. інтервалу перезапуску)
 
     // ===== Індивідуальні задержки (мс) =====
     StartDelayMs    : DINT;

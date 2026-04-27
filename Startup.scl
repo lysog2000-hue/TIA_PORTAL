@@ -1,7 +1,7 @@
 ORGANIZATION_BLOCK "Startup"
 TITLE = "Complete Restart"
 { S7_Optimized_Access := 'TRUE' }
-VERSION : 0.2
+VERSION : 0.3
    VAR_TEMP 
       i : Int;
    END_VAR
@@ -19,6 +19,7 @@ BEGIN
 	    "DB_Mechs".Redler[#i].SpeedLostMs     := 0;
 	    "DB_Mechs".Redler[#i].FeedbackLostMs  := 0;
 	    "DB_Mechs".Redler[#i].StopMs          := 0;
+	    "DB_Mechs".Redler[#i].LastStopMs      := 0;
 	END_FOR;
 	
 	// === Noria ===
@@ -33,6 +34,7 @@ BEGIN
 	    "DB_Mechs".Noria[#i].SpeedLostMs     := 0;
 	    "DB_Mechs".Noria[#i].FeedbackLostMs  := 0;
 	    "DB_Mechs".Noria[#i].StopMs          := 0;
+	    "DB_Mechs".Noria[#i].LastStopMs      := 0;
 	END_FOR;
 	
 	// === Fan ===
@@ -43,6 +45,7 @@ BEGIN
 	    "DB_Mechs".Fan[#i].StartMs        := 0;
 	    "DB_Mechs".Fan[#i].FeedbackLostMs := 0;
 	    "DB_Mechs".Fan[#i].StopMs         := 0;
+	    "DB_Mechs".Fan[#i].LastStopMs     := 0;
 	END_FOR;
 	
 	// === Separator ===
@@ -53,6 +56,7 @@ BEGIN
 	    "DB_Mechs".Separator[#i].StartMs        := 0;
 	    "DB_Mechs".Separator[#i].FeedbackLostMs := 0;
 	    "DB_Mechs".Separator[#i].StopMs         := 0;
+	    "DB_Mechs".Separator[#i].LastStopMs     := 0;
 	END_FOR;
 	
 	// === Feeder ===
@@ -63,6 +67,7 @@ BEGIN
 	    "DB_Mechs".Feeder[#i].StartMs        := 0;
 	    "DB_Mechs".Feeder[#i].FeedbackLostMs := 0;
 	    "DB_Mechs".Feeder[#i].StopMs         := 0;
+	    "DB_Mechs".Feeder[#i].LastStopMs     := 0;
 	END_FOR;
 	
 	// === Silos ===

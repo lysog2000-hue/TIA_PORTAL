@@ -1,0 +1,62 @@
+
+=== 1. graph.json ===
+  Devices: 186
+  Runtime devices: 60
+
+=== 2. Constant.csv ===
+  Constants loaded: 110
+  OK: FLT_NONE = 0 (WORD)
+  OK: FLT_BREAKER = 11 (WORD)
+  OK: FLT_OVERFLOW = 10 (WORD)
+  OK: FLT_NO_RUNFB = 12 (WORD)
+  OK: FLT_NO_FEEDBACK = 14 (WORD)
+  OK: FLT_ALINGMENT = 15 (WORD)
+  OK: FLT_STOP_TIMEOUT = 22 (WORD)
+  OK: FLT_GATE_MOVE_TIMEOUT = 16 (WORD)
+  OK: FLT_GATE_POS_UNKNOWN = 17 (WORD)
+  OK: STS_IDLE = 0 (UInt)
+  OK: STS_STARTING = 1 (UInt)
+  OK: STS_RUNNING = 2 (UInt)
+  OK: STS_STOPPING = 3 (UInt)
+  OK: STS_FAULT = 4 (UInt)
+  OK: CMD_NONE = 0 (USInt)
+  OK: CMD_START = 1 (USInt)
+  OK: CMD_STOP = 2 (USInt)
+  OK: CMD_RESET = 3 (USInt)
+  OK: TYPE_REDLER = 2 (USInt)
+  OK: TYPE_NORIA = 1 (USInt)
+  OK: TYPE_FAN = 4 (USInt)
+  OK: TYPE_GATE2P = 3 (USInt)
+  OK: TYPE_SEPARATOR = 7 (USInt)
+  OK: TYPE_FEEDER = 10 (USInt)
+  OK: TYPE_VALVE3P = 5 (USInt)
+
+=== 3. Mechs.xlsx ===
+  Columns: ['Name', 'Path', 'Data Type', 'Value', 'Comment']
+  Mechs rows: 10
+  First row keys: ['Name', 'Path', 'Data Type', 'Value', 'Comment']
+  First row: {'Name': 'GATES2P_COUNT', 'Path': 'Mechs_', 'Data Type': 'UInt', 'Value': 80, 'Comment': 'Верхня межа масиву Gate2P[] (кількість засувок - 1)'}
+
+=== 4. HMITags_AlARMS.xlsx ===
+  Alarm tags: 186
+  Columns: ['Name', 'Path', 'Connection', 'PLC tag', 'DataType', 'HMI DataType']
+
+  Checking FLTCode tags for all devices...
+  OK: All 186 devices have FLTCode tags
+  OK: All alarm tags have correct DataType=Word
+
+=== 5. HMIAlarms_All.xlsx ===
+  Alarms: 604
+
+  Checking alarm bits per device type...
+  OK: All alarm bits match expected for all 186 devices
+
+  Checking trigger tags exist in alarm tags...
+  OK: All trigger tags exist in HMITags_AlARMS
+
+=== 6. PLC tag format check ===
+  OK: All PLC tags have correct format DB_Mechs.Mechs[SlotId].FLTCode
+
+============================================================
+TOTAL ISSUES: 0
+No issues found!

@@ -1,0 +1,123 @@
+Name,Path,Data Type,Value,Comment
+ROUTE_ABRT_BY_LOCAL,Constant,UInt,303,Маршрут скасовано через перехід у Local/Manual
+ROUTE_STS_STARTING,Constant,UInt,2,Стан маршруту — атомарне захоплення механізмів
+RS_ACT_START,Constant,USInt,1,Дія кроку — запустити механізм
+ROUTE_REJ_NOT_READY,Constant,UInt,204,Відхилено — механізм не готовий (аварія / Local / Enable_OK=0)
+RS_WAIT_STOPPED,Constant,USInt,2,Умова завершення кроку — чекати STS_IDLE
+STEP_STS_WORK,Constant,USInt,1,Крок виконується
+FLT_OVERFLOW,Constant,Word,10,Аварія переповнення
+STS_STOPPING,Constant,UInt,3,Механізм зупиняється
+ROUTE_REJ_DUPLICATE_START,Constant,UInt,205,Відхилено — дублікат START (маршрут вже активний)
+ROUTE_STS_RUNNING,Constant,UInt,4,Стан маршруту — виконується
+ROUTE_STS_ABORTED,Constant,UInt,8,Стан маршруту — скасовано
+TYPE_NORIA,Constant,USInt,1,Тип механізму — норія
+TimeoutMs_Redler_Start,Constant,DInt,5000,Таймаут запуску редлера (мс)
+TimeoutMs_Gate_Position_Unknown,Constant,DInt,15000,Таймаут невизначеної позиції засувки (мс)
+OWNER_NONE,Constant,USInt,0,Власник відсутній
+RT_CMD_STOP_SAFE,Constant,USInt,3,Аварійна зупинка маршруту
+ROUTE_ABRT_BY_OWNER,Constant,UInt,305,Маршрут скасовано через конфлікт власника
+TimeoutMs_Gate_Move,Constant,DInt,10000,Таймаут переміщення засувки (мс)
+TimeoutMs_Noria_Start,Constant,DInt,5000,Таймаут запуску норії (мс)
+RT_CMD_START,Constant,USInt,1,Запустити маршрут
+FLT_GATE_MOVE_TIMEOUT,Constant,Word,16,Таймаут переміщення засувки
+STS_STARTING,Constant,UInt,1,Механізм запускається
+LIMITS_MAX_STEPS,Constant,USInt,64,Максимальна кількість кроків у маршруті
+FLT_INTERLOCK,Constant,Word,13,
+TYPE_NONE,Constant,USInt,0,Тип механізму — не визначено
+ROUTE_STS_LOCKING,Constant,UInt,2,
+TimeoutMs_Redler_SpeedPause,Constant,DInt,2000,Пауза при втраті швидкості редлера (мс)
+CMD_START,Constant,USInt,1,Запустити механізм
+ROUTE_STS_REJECTED,Constant,UInt,7,Стан маршруту — відхилено
+TYPE_GATE2P,Constant,USInt,3,Тип механізму — засувка двопозиційна
+ROUTE_ABRT_BY_FAULT,Constant,UInt,304,Маршрут скасовано через аварію механізму
+ROUTE_REJ_BY_CONTRACT,Constant,UInt,203,Відхилено — порушення контракту (невалідні кроки)
+FLT_BOTH_SENSORS,Constant,Word,18,Обидва кінцеві датчики активні одночасно (засувка)
+CMD_STOP,Constant,USInt,2,Зупинити механізм
+RS_WAIT_RUNNING,Constant,USInt,1,Умова завершення кроку — чекати STS_RUNNING
+CMD_RESET,Constant,USInt,3,Скинути аварію
+STEP_STS_TIMEOUT,Constant,USInt,3,Таймаут виконання кроку
+OWNER_SCADA,Constant,USInt,1,Власник — SCADA (ручний режим)
+FLT_NO_RUNFB,Constant,Word,12,Немає зворотного зв'язку роботи (норія/редлер/вентилятор)
+ROUTE_REJ_BY_SAFETY,Constant,UInt,201,Відхилено — активний GlobalSafetyStop
+ROUTE_ABRT_STARTING_FAILED,Constant,UInt,306,Маршрут скасовано — помилка захоплення механізмів при старті
+FLT_GATE_POS_UNKNOWN,Constant,Word,17,Невідома позиція засувки після переміщення
+FLT_ALINGMENT,Constant,Word,15,Аварія вирівнювання (норія)
+STS_LOCAL,Constant,UInt,11,Механізм у режимі Local/Manual
+TYPE_REDLER,Constant,USInt,2,Тип механізму — редлер
+STEP_STS_IDLE,Constant,USInt,0,Крок очікує
+STS_FAULT,Constant,UInt,4,Аварія механізму
+CMD_NONE,Constant,USInt,0,Немає команди
+RS_WARNING_IGNORED_CMD,Constant,USInt,1,Попередження — команда проігнорована
+RT_CMD_NONE,Constant,USInt,0,Немає команди маршруту
+STS_IDLE,Constant,UInt,0,Механізм у стані очікування
+STS_RUNNING,Constant,UInt,2,Механізм працює
+FLT_NO_FEEDBACK,Constant,Word,14,
+ROUTE_ABRT_BY_SAFETY,Constant,UInt,302,Маршрут скасовано через GlobalSafetyStop
+RT_CMD_STOP_OP,Constant,USInt,2,Зупинити маршрут (оператором)
+ROUTE_STS_VALIDATING,Constant,UInt,1,Стан маршруту — перевірка готовності
+ROUTE_STS_IDLE,Constant,UInt,0,Стан маршруту — очікування
+ROUTE_OK_RUNNING,Constant,UInt,200,Маршрут виконується успішно
+ROUTE_STS_STOPPING,Constant,UInt,5,Стан маршруту — зупинка механізмів
+RS_WARNING_OK,Constant,USInt,0,Попереджень немає
+TimeoutMs_Noria_SpeedPause,Constant,DInt,2000,Пауза при втраті швидкості норії (мс)
+TimeoutMs_Fan_Feedback,Constant,DInt,5000,Таймаут зворотного зв'язку вентилятора (мс)
+OWNER_ROUTE,Constant,USInt,2,Власник — маршрут
+ROUTE_REJ_BY_OWNER,Constant,UInt,202,Відхилено — механізм зайнятий іншим маршрутом
+TYPE_VALVE3P,Constant,USInt,5,Тип механізму — клапан трипозиційний
+RS_ACT_STOP,Constant,USInt,2,Дія кроку — зупинити механізм
+LIMITS_MAX_ROUTES,Constant,USInt,12,Максимальна кількість паралельних маршрутів
+ROUTE_ABRT_BY_OPERATOR,Constant,UInt,301,Маршрут зупинено оператором (STOP_OP)
+TYPE_FAN,Constant,USInt,4,Тип механізму — вентилятор
+STEP_STS_DONE,Constant,USInt,2,Крок виконано
+CMD_RELEASE_OWNER,Constant,USInt,5,Звільнити власника
+FLT_BREAKER,Constant,Word,11,Аварія автомата захисту
+FLT_NONE,Constant,Word,0,Немає аварії
+STS_DISABLED,Constant,UInt,10,Механізм вимкнено (Enable_OK=0)
+ARB_CMD_BLOCKED,Constant,USInt,5,Команда заблокована — застосований CMD_SET_FORCE
+ARB_OWNER_BUSY,Constant,USInt,2,Механізм зайнятий іншим власником
+ARB_CMD_INVALID,Constant,USInt,6,Недійсна команда (CMD_NONE заборонено)
+CMD_SET_OWNER_SCADA,Constant,USInt,8,Захопити власника без виконання команди (мета-команда)
+ARB_OK,Constant,USInt,0,Успіх
+ARB_LOCAL_MANUAL,Constant,USInt,1,Механізм у режимі Local/Manual
+ARB_SLOT_INVALID,Constant,USInt,4,Недійсний слот
+ARB_WRONG_STATUS,Constant,USInt,3,Неправильний статус для команди — не IDLE і не FAULT
+ROUTES_COUNT,Constant,USInt,12,Кількість паралельних маршрутів
+ROUTE_MAX_STEPS,Constant,USInt,64,Максимальна кількість кроків у маршруті
+CMD_VALVE_LEFT,Constant,USInt,9,Команда клапану — перти в положення LEFT (ліво)
+CMD_VALVE_RIGHT,Constant,USInt,10,Команда клапану — перейти в положення RIGHT (право)
+TimeoutMs_Valve_Move,Constant,DInt,15000,Таймаут переміщення клапана (мс)
+TimeoutMs_Valve_Position_Unknown,Constant,DInt,15000,Таймаут невизначеної позиції клапана (мс)
+FLT_VALVE_MOVE_TIMEOUT,Constant,Word,19,Таймаут переміщення клапана
+FLT_VALVE_POS_UNKNOWN,Constant,Word,20,Невідома позиція клапана після переміщення
+CMD_GATE_POS0,Constant,USInt,6,Команда засувці — перейти в положення 0 (закрито)
+CMD_GATE_POS1,Constant,USInt,7,Команда засувці — перейти в положення 1 (відкрито)
+GATE_AT_POS0,Constant,Int,6,Status_Param засувки — знаходиться в положенні 0
+GATE_AT_POS1,Constant,Int,7,Status_Param засувки — знаходиться в положенні 1
+TYPE_Receiving_PIT,Constant,USInt,6,
+TYPE_SEPARATOR,Constant,USInt,7,
+TYPE_SILOS,Constant,USInt,8,
+TYPE_SUSHKA,Constant,USInt,9,
+CMD_VALVE_POS0,Constant,USInt,3,ліво
+CMD_VALVE_POS1,Constant,USInt,4,право
+CMD_VALVE_POS2,Constant,USInt,5,центр
+FLT_VALVE_MULTIPLE_POS,Constant,Word,21,
+VALVE_AT_POS0,Constant,Int,3,
+VALVE_AT_POS1,Constant,Int,4,
+VALVE_AT_POS2,Constant,Int,5,
+VALVE_FAULT,Constant,Int,9,Status_Param клапану/засувки — аварія (FLTCode активний)
+ROUTE_REJ_GRAIN_NOT_SET,Constant,UInt,206,
+ROUTE_REJ_GRAIN_MISMATCH,Constant,UInt,207,
+TimeoutMs_Separator_Feedback,Constant,DInt,5000,Таймаут зворотного зв'язку сепаратора (мс)
+TimeoutMs_Separator_FeedbackPause,Constant,DInt,2000,Пауза при втраті зворотнього зв'язку сепаратор (мс)
+TYPE_FEEDER,Constant,USInt,10,
+TimeoutMs_Feeder_FeedbackPause,Constant,DInt,2000,Пауза при втраті зворотнього зв'язку фідер (мс)
+TimeoutMs_Feeder_Feedback,Constant,DInt,5000,Таймаут зворотного зв'язку фідера (мс)
+TimeoutMs_Fan_FeedbackPause,Constant,DInt,2000,Пауза при втраті зворотнього зв'язку вентилятора (мс)
+TimeoutMs_Redler_FeedbackPause,Constant,DInt,2000,Пауза при втраті зворотнього зв'язку редлера (мс)
+TimeoutMs_Noria_FeedbackPause,Constant,DInt,2000,Пауза при втраті зворотнього зв'язку норії (мс)
+FLT_STOP_TIMEOUT,Constant,Word,22,Таймаут вибігу при зупинці (редлер/норія/вентилятор/сепаратор/фідер)
+TimeoutMs_Fan_Stop,Constant,DInt,10000,Таймаут вибігу вентилятора (мс)
+TimeoutMs_Noria_Stop,Constant,DInt,10000,Таймаут вибігу норії (мс)
+TimeoutMs_Redler_Stop,Constant,DInt,10000,
+TimeoutMs_Separator_Stop,Constant,DInt,10000,
+TimeoutMs_Feeder_Stop,Constant,DInt,10000,Таймаут вибігу фідера (мс)

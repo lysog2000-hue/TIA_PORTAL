@@ -1,6 +1,6 @@
 ﻿FUNCTION "FC_Gate2P" : Void
 { S7_Optimized_Access := 'TRUE' }
-VERSION : 1.4
+VERSION : 1.5
    VAR_IN_OUT 
       G : "UDT_Gate2P";
       B : "UDT_BaseMechanism";
@@ -33,15 +33,20 @@ BEGIN
 	
 	REGION "1) RESET (Ð¢Ñ–Ð»ÑŒÐºÐ¸ Ð·Ð° ÑƒÐ¼Ð¾Ð²Ð¸ ÑƒÑÑƒÐ½ÐµÐ½Ð½Ñ Ð¿Ñ€Ð¸Ñ‡Ð¸Ð½Ð¸)"
 	    IF #B.Cmd = "CMD_RESET" THEN
-	        CASE #B.FLTCode OF
-	            "FLT_BREAKER":
-	                IF #G.DI_Breaker_OK OR #forceBreaker THEN
-	                    #B.FLTCode := "FLT_NONE";
-	                END_IF;
-	                
-	            "FLT_GATE_MOVE_TIMEOUT", "FLT_GATE_POS_UNKNOWN", "FLT_BOTH_SENSORS":
-	                #B.FLTCode := "FLT_NONE";
-	        END_CASE;
+	        IF (#B.FLTCode AND "FLT_BREAKER") <> 0 THEN
+	            IF #G.DI_Breaker_OK OR #forceBreaker THEN
+	                #B.FLTCode := #B.FLTCode AND NOT "FLT_BREAKER";
+	            END_IF;
+	        END_IF;
+	        IF (#B.FLTCode AND "FLT_GATE_MOVE_TIMEOUT") <> 0 THEN
+	            #B.FLTCode := #B.FLTCode AND NOT "FLT_GATE_MOVE_TIMEOUT";
+	        END_IF;
+	        IF (#B.FLTCode AND "FLT_GATE_POS_UNKNOWN") <> 0 THEN
+	            #B.FLTCode := #B.FLTCode AND NOT "FLT_GATE_POS_UNKNOWN";
+	        END_IF;
+	        IF (#B.FLTCode AND "FLT_BOTH_SENSORS") <> 0 THEN
+	            #B.FLTCode := #B.FLTCode AND NOT "FLT_BOTH_SENSORS";
+	        END_IF;
 	        
 	        IF #B.FLTCode = "FLT_NONE" AND #B.Status = "STS_FAULT" THEN
 	            #B.Status := "STS_IDLE";
@@ -75,9 +80,10 @@ BEGIN
 	REGION "3) ÐœÐ¾Ð½Ñ–Ñ‚Ð¾Ñ€Ð¸Ð½Ð³ Ð°Ð²Ð°Ñ€Ñ–Ð¹ (Diagnostic Latch)"
 	    IF #B.FLTCode = "FLT_NONE" AND NOT #isBlocked THEN
 	        IF NOT #G.DI_Breaker_OK THEN
-	            #B.FLTCode := "FLT_BREAKER";
-	        ELSIF #G.DI_Pos0_OK AND #G.DI_Pos1_OK THEN
-	            #B.FLTCode := "FLT_BOTH_SENSORS";
+	            #B.FLTCode := #B.FLTCode OR "FLT_BREAKER";
+	        END_IF;
+	        IF #G.DI_Pos0_OK AND #G.DI_Pos1_OK THEN
+	            #B.FLTCode := #B.FLTCode OR "FLT_BOTH_SENSORS";
 	        END_IF;
 	    END_IF;
 	END_REGION
@@ -85,16 +91,18 @@ BEGIN
 	REGION "4) Ð’Ð¸Ð·Ð½Ð°Ñ‡ÐµÐ½Ð½Ñ Ð²Ð¸ÐºÐ¾Ð½Ð°Ð²Ñ‡Ð¾Ñ— Ð°Ð²Ð°Ñ€Ñ–Ñ—"
 	    #isFault := FALSE;
 	    IF #B.FLTCode <> "FLT_NONE" THEN
-	        CASE #B.FLTCode OF
-	            "FLT_BREAKER":
-	                #isFault := NOT #forceBreaker;
-	            "FLT_GATE_MOVE_TIMEOUT":
-	                #isFault := NOT #forceMoveTimeout;
-	            "FLT_GATE_POS_UNKNOWN":
-	                #isFault := NOT #forcePosUnknown;
-	            "FLT_BOTH_SENSORS":
-	                #isFault := TRUE;
-	        END_CASE;
+	        IF (#B.FLTCode AND "FLT_BREAKER") <> 0 AND NOT #forceBreaker THEN
+	            #isFault := TRUE;
+	        END_IF;
+	        IF (#B.FLTCode AND "FLT_GATE_MOVE_TIMEOUT") <> 0 AND NOT #forceMoveTimeout THEN
+	            #isFault := TRUE;
+	        END_IF;
+	        IF (#B.FLTCode AND "FLT_GATE_POS_UNKNOWN") <> 0 AND NOT #forcePosUnknown THEN
+	            #isFault := TRUE;
+	        END_IF;
+	        IF (#B.FLTCode AND "FLT_BOTH_SENSORS") <> 0 THEN
+	            #isFault := TRUE;
+	        END_IF;
 	    END_IF;
 	    
 	    IF #isFault THEN
@@ -121,7 +129,7 @@ BEGIN
 	                    
 	                    IF "FC_TimeElapsedMs"(StartTck := #G.UnknownPositionMs, TimeoutMs := "TimeoutMs_Gate_Position_Unknown",
 	                                              ElapsedMs => #elapsedMs, NowTck => #nowTck) THEN
-	                        #B.FLTCode := "FLT_GATE_POS_UNKNOWN";
+	                        #B.FLTCode := #B.FLTCode OR "FLT_GATE_POS_UNKNOWN";
 	                        #B.Status := "STS_FAULT";
 	                    END_IF;
 	                ELSE
@@ -153,7 +161,7 @@ BEGIN
 	                // Ð¢Ð°Ð¹Ð¼ÐµÑ€ ÐºÐ¾Ð½Ñ‚Ñ€Ð¾Ð»ÑŽ Ñ€ÑƒÑ…Ñƒ
 	                IF "FC_TimeElapsedMs"(StartTck := #G.MoveStartMs, TimeoutMs := "TimeoutMs_Gate_Move",
 	                                          ElapsedMs => #elapsedMs, NowTck => #nowTck) THEN
-	                    #B.FLTCode := "FLT_GATE_MOVE_TIMEOUT";
+	                    #B.FLTCode := #B.FLTCode OR "FLT_GATE_MOVE_TIMEOUT";
 	                    #B.Status := "STS_FAULT";
 	                END_IF;
 	                

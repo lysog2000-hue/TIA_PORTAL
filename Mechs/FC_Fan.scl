@@ -1,6 +1,6 @@
 FUNCTION "FC_Fan" : Void
 { S7_Optimized_Access := 'TRUE' }
-VERSION : 1.3
+VERSION : 1.4
    VAR_IN_OUT 
       F : "UDT_Fan";
       B : "UDT_BaseMechanism";
@@ -28,20 +28,21 @@ BEGIN
 	
 	REGION "1) RESET (Тільки за умови усунення причини)"
 	    IF #B.Cmd = "CMD_RESET" THEN
-	        CASE #B.FLTCode OF
-	            "FLT_BREAKER":
-	                IF #F.DI_Breaker_OK OR #forceBreaker THEN
-	                    #B.FLTCode := "FLT_NONE";
-	                END_IF;
-	            "FLT_NO_FEEDBACK":
-	                IF #F.DI_Feedback_OK OR #forceFeedback THEN
-	                    #B.FLTCode := "FLT_NONE";
-	                END_IF;
-	            "FLT_STOP_TIMEOUT":
-	                IF NOT #F.DI_Feedback_OK OR #forceStopTimeout THEN
-	                    #B.FLTCode := "FLT_NONE";
-	                END_IF;
-	        END_CASE;
+	        IF (#B.FLTCode AND "FLT_BREAKER") <> 0 THEN
+	            IF #F.DI_Breaker_OK OR #forceBreaker THEN
+	                #B.FLTCode := #B.FLTCode AND NOT "FLT_BREAKER";
+	            END_IF;
+	        END_IF;
+	        IF (#B.FLTCode AND "FLT_NO_FEEDBACK") <> 0 THEN
+	            IF #F.DI_Feedback_OK OR #forceFeedback THEN
+	                #B.FLTCode := #B.FLTCode AND NOT "FLT_NO_FEEDBACK";
+	            END_IF;
+	        END_IF;
+	        IF (#B.FLTCode AND "FLT_STOP_TIMEOUT") <> 0 THEN
+	            IF #F.DI_Feedback_OK OR #forceStopTimeout THEN
+	                #B.FLTCode := #B.FLTCode AND NOT "FLT_STOP_TIMEOUT";
+	            END_IF;
+	        END_IF;
 	        
 	        IF #B.FLTCode = "FLT_NONE" AND #B.Status = "STS_FAULT" THEN
 	            #B.Status := "STS_IDLE";
@@ -68,9 +69,9 @@ BEGIN
 	END_REGION
 	
 	REGION "3) Моніторинг аварій (Diagnostic Latch)"
-	    IF #B.FLTCode = "FLT_NONE" AND NOT #isBlocked THEN
+	    IF NOT #isBlocked THEN
 	        IF NOT #F.DI_Breaker_OK THEN
-	            #B.FLTCode := "FLT_BREAKER";
+	            #B.FLTCode := #B.FLTCode OR "FLT_BREAKER";
 	        END_IF;
 	    END_IF;
 	END_REGION
@@ -78,14 +79,15 @@ BEGIN
 	REGION "4) Визначення виконавчої аварії"
 	    #isFault := FALSE;
 	    IF #B.FLTCode <> "FLT_NONE" THEN
-	        CASE #B.FLTCode OF
-	            "FLT_BREAKER":
-	                #isFault := NOT #forceBreaker;
-	            "FLT_NO_FEEDBACK":
-	                #isFault := NOT #forceFeedback;
-	            "FLT_STOP_TIMEOUT":
-	                #isFault := NOT #forceStopTimeout;
-	        END_CASE;
+	        IF (#B.FLTCode AND "FLT_BREAKER") <> 0 AND NOT #forceBreaker THEN
+	            #isFault := TRUE;
+	        END_IF;
+	        IF (#B.FLTCode AND "FLT_NO_FEEDBACK") <> 0 AND NOT #forceFeedback THEN
+	            #isFault := TRUE;
+	        END_IF;
+	        IF (#B.FLTCode AND "FLT_STOP_TIMEOUT") <> 0 AND NOT #forceStopTimeout THEN
+	            #isFault := TRUE;
+	        END_IF;
 	    END_IF;
 	    
 	    IF #isFault THEN
@@ -103,8 +105,12 @@ BEGIN
 	        CASE #B.Status OF
 	            "STS_IDLE":
 	                IF #B.Cmd = "CMD_START" THEN
-	                    #B.Status := "STS_STARTING";
-	                    #F.StartMs := TIME_TCK();
+	                    // Перевірка мінімального інтервалу перезапуску
+	                    IF #F.LastStopMs = 0 OR "FC_TimeElapsedMs"(StartTck := #F.LastStopMs, TimeoutMs := "TimeoutMs_Fan_MinRestart",
+	                                                                ElapsedMs => #elapsedMs, NowTck => #nowTck) THEN
+	                        #B.Status := "STS_STARTING";
+	                        #F.StartMs := TIME_TCK();
+	                    END_IF;
 	                END_IF;
 	                
 	            "STS_STARTING":
@@ -113,7 +119,7 @@ BEGIN
 	                ELSE
 	                    IF "FC_TimeElapsedMs"(StartTck := #F.StartMs, TimeoutMs := "TimeoutMs_Fan_Feedback",
 	                                              ElapsedMs => #elapsedMs, NowTck => #nowTck) THEN
-	                        #B.FLTCode := "FLT_NO_FEEDBACK";
+	                        #B.FLTCode := #B.FLTCode OR "FLT_NO_FEEDBACK";
 	                        #B.Status := "STS_FAULT";
 	                    END_IF;
 	                END_IF;
@@ -125,7 +131,7 @@ BEGIN
 	                    END_IF;
 	                    IF "FC_TimeElapsedMs"(StartTck := #F.FeedbackLostMs, TimeoutMs := "TimeoutMs_Fan_FeedbackPause",
 	                                              ElapsedMs => #elapsedMs, NowTck => #nowTck) THEN
-	                        #B.FLTCode := "FLT_NO_FEEDBACK";
+	                        #B.FLTCode := #B.FLTCode OR "FLT_NO_FEEDBACK";
 	                        #B.Status := "STS_FAULT";
 	                    END_IF;
 	                ELSE
@@ -136,13 +142,14 @@ BEGIN
 	                IF (NOT #F.DI_Feedback_OK) OR #forceFeedback THEN
 	                    #B.Status := "STS_IDLE";
 	                    #F.StopMs := 0;
+	                    #F.LastStopMs := TIME_TCK();  // Зберігаємо час останньої зупинки
 	                ELSE
 	                    IF #F.StopMs = 0 THEN
 	                        #F.StopMs := TIME_TCK();
 	                    END_IF;
 	                    IF "FC_TimeElapsedMs"(StartTck := #F.StopMs, TimeoutMs := "TimeoutMs_Fan_Stop",
 	                                              ElapsedMs => #elapsedMs, NowTck => #nowTck) THEN
-	                        #B.FLTCode := "FLT_STOP_TIMEOUT";
+	                        #B.FLTCode := #B.FLTCode OR "FLT_STOP_TIMEOUT";
 	                        #B.Status := "STS_FAULT";
 	                    END_IF;
 	                END_IF;
@@ -150,6 +157,7 @@ BEGIN
 	        
 	        IF #B.Cmd = "CMD_STOP" AND #B.Status <> "STS_IDLE" THEN
 	            #B.Status := "STS_STOPPING";
+	            #F.StopMs := 0;
 	        END_IF;
 	    END_IF;
 	END_REGION
