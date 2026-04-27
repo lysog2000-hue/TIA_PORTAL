@@ -1,17 +1,20 @@
 """
 Generate HMI discrete alarms for all devices from graph.json.
-Based on template from HMIAlarms23.xlsx (ARB1 example).
 Output: HMIAlarms_All.xlsx
 
-Аварії по типах механізмів:
-  BIT0 - Breaker       - всі типи
-  BIT1 - Overflow      - Redler, Noria
-  BIT2 - Speed         - Redler, Noria (тахо)
-  BIT3 - Alingment     - Noria
-  BIT4 - TimeOut       - Gate2P, Valve3P (таймаут переміщення)
-  BIT5 - PosUnknown    - Gate2P, Valve3P (невизначена позиція)
-  BIT6 - StopTimeout   - Redler, Noria, Fan, Separator, Feeder (таймаут вибігу)
-  BIT8 - Feedback      - Redler, Noria, Fan, Separator, Feeder (зворотній зв'язок контактора)
+Аварії по типах механізмів (бітова маска FLTCode : WORD):
+  BIT0  (1)    - FLT_BREAKER             - всі типи
+  BIT1  (2)    - FLT_OVERFLOW            - Redler, Noria
+  BIT2  (4)    - FLT_NO_RUNFB            - Redler, Noria (тахо)
+  BIT3  (8)    - FLT_ALINGMENT           - Noria
+  BIT4  (16)   - FLT_NO_FEEDBACK         - Redler, Noria, Fan, Separator, Feeder
+  BIT5  (32)   - FLT_GATE_MOVE_TIMEOUT   - Gate2P
+  BIT6  (64)   - FLT_GATE_POS_UNKNOWN    - Gate2P
+  BIT7  (128)  - FLT_BOTH_SENSORS        - Gate2P
+  BIT8  (256)  - FLT_STOP_TIMEOUT        - Redler, Noria, Fan, Separator, Feeder
+  BIT9  (512)  - FLT_VALVE_MOVE_TIMEOUT  - Valve3P
+  BIT10 (1024) - FLT_VALVE_POS_UNKNOWN   - Valve3P
+  BIT11 (2048) - FLT_VALVE_MULTIPLE_POS  - Valve3P
 """
 
 import json
@@ -28,58 +31,60 @@ print(f"Found {len(devices)} devices")
 # Format: (bit, suffix, alarm_text)
 ALARMS_BY_TYPE = {
     'Redler': [
-        (0, 'Breaker',     "Спрацював АВ"),
-        (1, 'Overflow',    "Датчик підпору"),
-        (2, 'Speed',       "Датчик швидкості"),
-        (6, 'StopTimeout', "Тайм-аут вибігу"),
-        (8, 'Feedback',    "Відсутній зворотній зв'язок контактора"),
+        (0,  'Breaker',      "Спрацьовав АВ"),
+        (1,  'Overflow',     "Датчик підпору"),
+        (2,  'Speed',        "Датчик швидкості"),
+        (4,  'Feedback',     "Відсутній зворотній зв'язок контактора"),
+        (8,  'StopTimeout',  "Тайм-аут вибігу"),
     ],
     'Noria': [
-        (0, 'Breaker',     "Спрацював АВ"),
-        (1, 'Overflow',    "Датчик підпору"),
-        (2, 'Speed',       "Датчик швидкості"),
-        (3, 'Alingment',   "Датчик сходу стрічки"),
-        (6, 'StopTimeout', "Тайм-аут вибігу"),
-        (8, 'Feedback',    "Відсутній зворотній зв'язок контактора"),
+        (0,  'Breaker',      "Спрацьовав АВ"),
+        (1,  'Overflow',     "Датчик підпору"),
+        (2,  'Speed',        "Датчик швидкості"),
+        (3,  'Alingment',    "Датчик сходу стрічки"),
+        (4,  'Feedback',     "Відсутній зворотній зв'язок контактора"),
+        (8,  'StopTimeout',  "Тайм-аут вибігу"),
     ],
     'Fan': [
-        (0, 'Breaker',     "Спрацював АВ"),
-        (6, 'StopTimeout', "Тайм-аут вибігу"),
-        (8, 'Feedback',    "Відсутній зворотній зв'язок контактора"),
+        (0,  'Breaker',      "Спрацьовав АВ"),
+        (4,  'Feedback',     "Відсутній зворотній зв'язок контактора"),
+        (8,  'StopTimeout',  "Тайм-аут вибігу"),
     ],
     'Separator': [
-        (0, 'Breaker',     "Спрацював АВ"),
-        (6, 'StopTimeout', "Тайм-аут вибігу"),
-        (8, 'Feedback',    "Відсутній зворотній зв'язок контактора"),
+        (0,  'Breaker',      "Спрацьовав АВ"),
+        (4,  'Feedback',     "Відсутній зворотній зв'язок контактора"),
+        (8,  'StopTimeout',  "Тайм-аут вибігу"),
     ],
     'Feeder': [
-        (0, 'Breaker',     "Спрацював АВ"),
-        (6, 'StopTimeout', "Тайм-аут вибігу"),
-        (8, 'Feedback',    "Відсутній зворотній зв'язок контактора"),
+        (0,  'Breaker',      "Спрацьовав АВ"),
+        (4,  'Feedback',     "Відсутній зворотній зв'язок контактора"),
+        (8,  'StopTimeout',  "Тайм-аут вибігу"),
     ],
     'Gate2P': [
-        (0, 'Breaker',    "Спрацював АВ"),
-        (4, 'TimeOut',    "Тайм-аут переміщення"),
-        (5, 'PosUnknown', "Невизначена позиція"),
+        (0,  'Breaker',      "Спрацьовав АВ"),
+        (5,  'MoveTimeout',  "Тайм-аут переміщення"),
+        (6,  'PosUnknown',   "Невизначена позиція"),
+        (7,  'BothSensors',  "Обидва кінцевики активні"),
     ],
     'Valve3P': [
-        (0, 'Breaker',    "Спрацював АВ"),
-        (4, 'TimeOut',    "Тайм-аут переміщення"),
-        (5, 'PosUnknown', "Невизначена позиція"),
+        (0,  'Breaker',      "Спрацьовав АВ"),
+        (9,  'MoveTimeout',  "Тайм-аут переміщення"),
+        (10, 'PosUnknown',   "Невизначена позиція"),
+        (11, 'MultiplePOS',  "Кілька датчиків позиції активні"),
     ],
     'Silos': [
-        (0, 'Breaker', "Спрацював АВ"),
+        (0, 'Breaker', "Спрацьовав АВ"),
     ],
     'Sushka': [
-        (0, 'Breaker', "Спрацював АВ"),
+        (0, 'Breaker', "Спрацьовав АВ"),
     ],
     'ReceivingPit': [
-        (0, 'Breaker', "Спрацював АВ"),
+        (0, 'Breaker', "Спрацьовав АВ"),
     ],
 }
 
-# ── Read template row from HMIAlarms23.xlsx ──
-tpl_wb = openpyxl.load_workbook('HMIAlarms23.xlsx')
+# ── Read template row from HMIAlarms.xlsx ──
+tpl_wb = openpyxl.load_workbook('HMIAlarms.xlsx')
 tpl_ws = tpl_wb.active
 template_row = {}
 for c in range(1, tpl_ws.max_column + 1):
@@ -142,13 +147,8 @@ print(f"Saved to {output_file}")
 
 # ── Summary by type ──
 print("\nAlarms per type:")
-type_counts = {}
-for dev in devices:
-    t = dev.get('type', 'unknown')
-    defs = ALARMS_BY_TYPE.get(t, [])
-    type_counts[t] = type_counts.get(t, 0) + len(defs)
-for t, cnt in sorted(type_counts.items()):
+for t, defs in ALARMS_BY_TYPE.items():
     dev_cnt = sum(1 for d in devices if d.get('type') == t)
-    alarms_per = len(ALARMS_BY_TYPE.get(t, []))
-    print(f"  {t:15s}: {dev_cnt:3d} devices x {alarms_per} alarms = {cnt:4d} rows")
+    if dev_cnt:
+        print(f"  {t:15s}: {dev_cnt:3d} devices x {len(defs)} alarms = {dev_cnt * len(defs):4d} rows")
 print(f"\nTotal: {len(alarm_rows)} alarms for {len(devices)} devices")
