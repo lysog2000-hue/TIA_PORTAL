@@ -1,4 +1,4 @@
-FUNCTION "FC_Redler" : Void
+﻿FUNCTION "FC_Redler" : Void
 { S7_Optimized_Access := 'TRUE' }
 VERSION : 0.6
    VAR_IN_OUT 

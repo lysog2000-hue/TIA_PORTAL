@@ -1,4 +1,4 @@
-FUNCTION "FC_SimFan" : Void
+﻿FUNCTION "FC_SimFan" : Void
 { S7_Optimized_Access := 'TRUE' }
 VERSION : 2.1
 // ==============================================================================

@@ -1,4 +1,4 @@
-FUNCTION "FC_Separator" : Void
+﻿FUNCTION "FC_Separator" : Void
 { S7_Optimized_Access := 'TRUE' }
 VERSION : 0.3
    VAR_IN_OUT 

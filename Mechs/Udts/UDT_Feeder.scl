@@ -1,4 +1,4 @@
-TYPE "UDT_Feeder"
+﻿TYPE "UDT_Feeder"
 VERSION : 0.1
 STRUCT
     // ===== Дискретні входи/виходи (HAL / залізо) =====

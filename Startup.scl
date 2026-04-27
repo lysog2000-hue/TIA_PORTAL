@@ -1,4 +1,4 @@
-ORGANIZATION_BLOCK "Startup"
+﻿ORGANIZATION_BLOCK "Startup"
 TITLE = "Complete Restart"
 { S7_Optimized_Access := 'TRUE' }
 VERSION : 0.3

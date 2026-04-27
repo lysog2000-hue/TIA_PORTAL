@@ -118,12 +118,6 @@ TYPE_SUSHKA;Constant;USInt;9;Тип механізму — сушарка
 TYPE_FEEDER;Constant;USInt;10;Тип механізму — фідер
 ROUTES_COUNT;Constant;USInt;12;Кількість паралельних маршрутів
 ROUTE_MAX_STEPS;Constant;USInt;64;Максимальна кількість кроків у маршруті
-qw;Constant;Bool;%I2.0;
-CaseId;Constant;Int;%MW12;
-start;Constant;Bool;%M14.0;
-Opened;Constant;Bool;%M14.1;
-Closed;Constant;Bool;%M14.2;
-testTag;Constant;DInt;%MD15;
 FLT_INTERLOCK;Constant;Word;4096;Блокування (BIT12)
 ROUTE_STS_LOCKING;Constant;UInt;2;
 CMD_VALVE_LEFT;Constant;USInt;9;Команда клапану — перти в положення LEFT (ліво)
