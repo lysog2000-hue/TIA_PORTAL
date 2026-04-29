@@ -1,6 +1,6 @@
 ﻿FUNCTION "FC_RouteFSM" : Void
 { S7_Optimized_Access := 'TRUE' }
-VERSION : 4.1
+VERSION : 4.2
 // ==============================================================================
 // FC_RouteFSM - Керування маршрутом (Mailbox Pattern v4.0)
 // ==============================================================================
@@ -489,7 +489,7 @@ BEGIN
 	                // Всі кроки виконано — залишаємось у RUNNING.
 	                // Механізми залишаються під Owner=ROUTE.
 	                // SCADA бачить ResultCode=200 → маршрут активний.
-	                #Fsm.RF_ResultCode := "ROUTE_OK_RUNNING";  // 200
+	                #Fsm.RF_ResultCode := "ROUTE_OK_RUNNING";  // BIT15 = 32768
 	                
 	            ELSE
 	                #Fsm.slot := #Cmd.RC_Steps[#Fsm.stepIdx].RS_Slot;
