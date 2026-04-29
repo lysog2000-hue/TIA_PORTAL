@@ -158,6 +158,8 @@ for route_num in range(1, 6):
                 row[col_name] = tag
             elif col_name == 'Trigger bit':
                 row[col_name] = bit
+            elif col_name == 'Class':
+                row[col_name] = 'Warning'
             else:
                 row[col_name] = col_value
         alarm_rows.append(row)
