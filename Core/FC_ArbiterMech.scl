@@ -151,6 +151,12 @@ BEGIN
 	#M.Cmd := #ReqCmd;
 	#M.CmdParam1 := #ReqParam1;
 	
+	// Після CMD_RESET автоматично звільняємо власника
+	IF #ReqCmd = "CMD_RESET" THEN
+	    #M.OwnerCur := "OWNER_NONE";
+	    #M.OwnerCurId := 0;
+	END_IF;
+	
 	#FC_ArbiterMech := "ARB_OK";
 	
 END_FUNCTION
