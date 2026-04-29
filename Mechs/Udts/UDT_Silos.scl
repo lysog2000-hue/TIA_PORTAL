@@ -1,8 +1,8 @@
 ﻿TYPE "UDT_Silos" :
 STRUCT
     // ===== Дискретні входи (HAL / залізо) =====
-    DI_LevelHigh    : BOOL;    // рівень — верхній
-    DI_LevelLow     : BOOL;    // рівень — нижній
+    DI_LevelHigh_OK   : BOOL;    // рівень — верхній
+    DI_LevelLow_OK     : BOOL;    // рівень — нижній
 
     // ===== Аналогові входи =====
     AI_Level        : INT;     // аналоговий рівень (raw)

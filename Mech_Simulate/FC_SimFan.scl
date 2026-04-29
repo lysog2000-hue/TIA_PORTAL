@@ -18,7 +18,7 @@ VERSION : 2.1
 //             DB_Mechs.Fan[FanIdx].DI_Feedback_OK
 // ==============================================================================
    VAR_INPUT 
-      FanIdx : UInt;
+      FanIdx : Int;
       StartupTime_ms : DInt;
       StopTime_ms : DInt;
       SimFault_Breaker : Bool;
@@ -29,7 +29,7 @@ VERSION : 2.1
    END_VAR
 
    VAR_TEMP 
-      idx : UInt;
+      idx : Int;
       elapsedMs : DInt;
       nowTck : DInt;
       startupTimeout : Bool;

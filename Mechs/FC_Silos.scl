@@ -2,7 +2,7 @@
 { S7_Optimized_Access := 'TRUE' }
 VERSION : 0.2
    VAR_IN_OUT 
-      F : "UDT_Silos";
+      S : "UDT_Silos";
       B : "UDT_BaseMechanism";
    END_VAR
 
@@ -23,7 +23,7 @@ BEGIN
 	REGION "1) RESET"
 	    IF #B.Cmd = "CMD_RESET" THEN
 	        IF (#B.FLTCode AND "FLT_HIGH_LEVEL") <> 0 THEN
-	            IF #F.DI_LevelHigh_OK OR #forceHighLevel THEN
+	            IF #S.DI_LevelHigh_OK OR #forceHighLevel THEN
 	                #B.FLTCode := #B.FLTCode AND NOT "FLT_HIGH_LEVEL";
 	            END_IF;
 	        END_IF;
@@ -51,7 +51,7 @@ BEGIN
 	
 	REGION "3) Моніторинг аварій (Diagnostic Latch)"
 	    IF NOT #isBlocked THEN
-	        IF NOT #F.DI_LevelHigh_OK THEN
+	        IF NOT #S.DI_LevelHigh_OK THEN
 	            #B.FLTCode := #B.FLTCode OR "FLT_HIGH_LEVEL";
 	        END_IF;
 	    END_IF;
@@ -80,7 +80,6 @@ BEGIN
 	END_REGION
 	
 	REGION "7) Фіналізація"
-	    #B.Status_Param := #F.AI_Level;
 	    #B.Cmd := "CMD_NONE";
 	END_REGION
 	

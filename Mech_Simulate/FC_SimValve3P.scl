@@ -38,7 +38,7 @@ VERSION : 1.0
 //   - Ініціалізація позиції при першому скані
 // ==============================================================================
    VAR_INPUT 
-      Valve3PIdx : UInt;   // індекс у DB_Mechs.Valve3P[] (0..N) === Фізика клапана ===
+      Valve3PIdx : Int;   // індекс у DB_Mechs.Valve3P[] (0..N) === Фізика клапана ===
       TravelTime_ms : DInt;   // час переміщення між позиціями (мс)
       InitPosition : USInt;   // початкова позиція (0, 1, або 2) === Симуляція аварії автомата ===
       SimFault_Breaker : Bool;   // увімкнути симуляцію FLT_BREAKER
@@ -47,7 +47,7 @@ VERSION : 1.0
    END_VAR
 
    VAR_TEMP 
-      idx : UInt;
+      idx : Int;
       elapsedMs : DInt;
       nowTck : DInt;
       travelDone : Bool;
