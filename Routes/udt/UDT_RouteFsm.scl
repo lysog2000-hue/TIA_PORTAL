@@ -16,10 +16,10 @@ TYPE "UDT_RouteFsm"
 STRUCT
   // === Persistent State ===
   RF_State        : UINT;   // ROUTE_STS_*
-  RF_ResultCode   : UINT;   // REJ_* / ABRT_* / DONE_*
+  RF_ResultCode   : WORD;   // бітова маска: REJ_*(BIT0-6), ABRT_*(BIT8-13), OK_RUNNING(BIT15)
   RF_ActiveStep   : USINT;  // індекс поточного кроку
   RF_StepSts      : USINT;  // STEP_STS_* (IDLE/WORK/DONE/TIMEOUT)
-  RF_AbortLatched : UINT;   // latched abort code для STOPPING
+  RF_AbortLatched : WORD;   // latched abort code для STOPPING (бітова маска)
 
   // === Working Variables ===
   lastCmd    : USINT;       // для edge detection

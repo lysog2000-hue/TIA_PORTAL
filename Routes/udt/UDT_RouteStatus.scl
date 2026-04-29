@@ -16,7 +16,7 @@ TYPE "UDT_RouteStatus"
 { S7_Optimized_Access := 'TRUE' }
 STRUCT
   RS_State      : UINT;   // ROUTE_STS_*: IDLE=0, VALIDATING=1, STARTING=2, RUNNING=4, STOPPING=5, REJECTED=7, ABORTED=8
-  RS_ResultCode : UINT;   // REJ_* / ABRT_* / ROUTE_OK_RUNNING (200)
+  RS_ResultCode : WORD;   // бітова маска: REJ_*(BIT0-6), ABRT_*(BIT8-13), OK_RUNNING(BIT15)
   RS_ActiveStep : USINT;  // поточний крок (1.."ROUTE_MAX_STEPS")
   RS_StepSts    : USINT;  // STEP_STS_*
   RS_Warning    : USINT;  // 0=OK, 1=IGNORED_CMD, 2..255=reserved
