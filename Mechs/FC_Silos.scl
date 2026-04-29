@@ -1,6 +1,6 @@
 ﻿FUNCTION "FC_Silos" : Void
 { S7_Optimized_Access := 'TRUE' }
-VERSION : 0.1
+VERSION : 0.2
    VAR_IN_OUT 
       F : "UDT_Silos";
       B : "UDT_BaseMechanism";
@@ -9,18 +9,25 @@ VERSION : 0.1
    VAR_TEMP 
       isFault : Bool;
       isBlocked : Bool;
+      forceHighLevel : Bool;
    END_VAR
 
 
 BEGIN
 	
 	REGION "0) Декодування форсування"
-	    // Силос пасивний — форсування не застосовується
-	    ;
+	    // BIT9(512) = forceHighLevel
+	    #forceHighLevel := (#B.Force_Code AND 512) <> 0;
 	END_REGION
 	
 	REGION "1) RESET"
 	    IF #B.Cmd = "CMD_RESET" THEN
+	        IF (#B.FLTCode AND "FLT_HIGH_LEVEL") <> 0 THEN
+	            IF #F.DI_LevelHigh_OK OR #forceHighLevel THEN
+	                #B.FLTCode := #B.FLTCode AND NOT "FLT_HIGH_LEVEL";
+	            END_IF;
+	        END_IF;
+	        
 	        IF #B.FLTCode = "FLT_NONE" AND #B.Status = "STS_FAULT" THEN
 	            #B.Status := "STS_IDLE";
 	        END_IF;
@@ -43,11 +50,24 @@ BEGIN
 	END_REGION
 	
 	REGION "3) Моніторинг аварій (Diagnostic Latch)"
-	    // TODO: контроль рівнів
-	    ;
+	    IF NOT #isBlocked THEN
+	        IF NOT #F.DI_LevelHigh_OK THEN
+	            #B.FLTCode := #B.FLTCode OR "FLT_HIGH_LEVEL";
+	        END_IF;
+	    END_IF;
 	END_REGION
 	
 	REGION "4) Визначення виконавчої аварії"
+	    #isFault := FALSE;
+	    IF #B.FLTCode <> "FLT_NONE" THEN
+	        IF (#B.FLTCode AND "FLT_HIGH_LEVEL") <> 0 AND NOT #forceHighLevel THEN
+	            #isFault := TRUE;
+	        END_IF;
+	    END_IF;
+	    
+	    IF #isFault THEN
+	        #B.Status := "STS_FAULT";
+	    END_IF;
 	    #isFault := (#B.Status = "STS_FAULT");
 	END_REGION
 	
@@ -56,22 +76,11 @@ BEGIN
 	        IF #B.Cmd <> "CMD_NONE" THEN
 	            #B.LastCmd := #B.Cmd;
 	        END_IF;
-	        
-	        // Силос пасивний — команди START/STOP не потрібні
-	        // Але CMD_SET_OWNER_SCADA треба скинути щоб арбітр не блокувався
-	        IF #B.Cmd = "CMD_SET_OWNER_SCADA" THEN
-	            // Силос захоплено маршрутом — команда виконана
-	            #B.Cmd := "CMD_NONE";
-	        END_IF;
-	        
-	        IF #B.Status = "STS_IDLE" THEN
-	            ; // нічого не робити
-	        END_IF;
 	    END_IF;
 	END_REGION
 	
 	REGION "7) Фіналізація"
-	    // TODO: Status_Param ← рівень заповнення
+	    #B.Status_Param := #F.AI_Level;
 	    #B.Cmd := "CMD_NONE";
 	END_REGION
 	

@@ -100,8 +100,8 @@ BEGIN
 	    FOR #slot := 251 TO 278 DO
 	        IF #Mechs[#slot].DeviceType = "TYPE_SILOS" THEN
 	            #idx := #Mechs[#slot].TypedIndex;
-	            //"FC_Silos"(S := #Silos[#idx],
-	            //B := #Mechs[#slot]);
+	            "FC_Silos"(F := #Silos[#idx],
+	                       B := #Mechs[#slot]);
 	        END_IF;
 	    END_FOR;
 	    

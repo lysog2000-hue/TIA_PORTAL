@@ -118,7 +118,6 @@ TYPE_SUSHKA;Constant;USInt;9;Тип механізму — сушарка
 TYPE_FEEDER;Constant;USInt;10;Тип механізму — фідер
 ROUTES_COUNT;Constant;USInt;12;Кількість паралельних маршрутів
 ROUTE_MAX_STEPS;Constant;USInt;64;Максимальна кількість кроків у маршруті
-FLT_INTERLOCK;Constant;Word;4096;Блокування (BIT12)
 ROUTE_STS_LOCKING;Constant;UInt;2;
 CMD_VALVE_LEFT;Constant;USInt;9;Команда клапану — перти в положення LEFT (ліво)
 CMD_VALVE_RIGHT;Constant;USInt;10;Команда клапану — перейти в положення RIGHT (право)
@@ -131,3 +130,5 @@ CMD_VALVE_POS0;Constant;USInt;3;ліво
 CMD_VALVE_POS1;Constant;USInt;4;право
 CMD_VALVE_POS2;Constant;USInt;5;центр
 FLT_VALVE_MULTIPLE_POS;Constant;Word;2048;Кілька датчиків позиції клапана активні (BIT11)
+FLT_HIGH_LEVEL;Constant;Word;8192;Верхній рівень силосу (BIT13)
+forceHighLevel_Mask;Constant;Int;512;Force_Code маска для форсування FLT_HIGH_LEVEL (BIT9)
