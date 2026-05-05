@@ -126,45 +126,6 @@ for dev in devices:
         alarm_rows.append(row)
         alarm_id += 1
 
-# === Аварії маршрутів (5 маршрутів, бітова маска RS_ResultCode) ===
-ROUTE_ALARMS = [
-    (0,  'REJ_Safety',         'Маршрут відхилено — GlobalSafetyStop'),
-    (1,  'REJ_Owner',          'Маршрут відхилено — механізм зайнятий'),
-    (2,  'REJ_Contract',       'Маршрут відхилено — порушення контракту'),
-    (3,  'REJ_NotReady',       'Маршрут відхилено — механізм не готовий'),
-    (4,  'REJ_DuplicateStart', 'Маршрут відхилено — дублікат START'),
-    (5,  'REJ_GrainNotSet',    'Маршрут відхилено — тип зерна не задано'),
-    (6,  'REJ_GrainMismatch',  'Маршрут відхилено — неспівпадіння типу зерна'),
-    (8,  'ABRT_Operator',      'Маршрут зупинено оператором'),
-    (9,  'ABRT_Safety',        'Маршрут скасовано — GlobalSafetyStop'),
-    (10, 'ABRT_Local',         'Маршрут скасовано — Local/Manual'),
-    (11, 'ABRT_Fault',         'Маршрут скасовано — аварія механізму'),
-    (12, 'ABRT_Owner',         'Маршрут скасовано — конфлікт власника'),
-    (13, 'ABRT_StartFailed',   'Маршрут скасовано — помилка захоплення'),
-]
-
-for route_num in range(1, 6):
-    tag = f"ResultCode_Route{route_num}"
-    for bit, suffix, alarm_text in ROUTE_ALARMS:
-        row = {}
-        for col_name, col_value in template_row.items():
-            if col_name == 'ID':
-                row[col_name] = alarm_id
-            elif col_name == 'Name':
-                row[col_name] = f"Route{route_num}_{suffix}"
-            elif col_name == 'Alarm text [en-US], Alarm text 1':
-                row[col_name] = f"{alarm_text} (Маршрут {route_num})"
-            elif col_name == 'Trigger tag':
-                row[col_name] = tag
-            elif col_name == 'Trigger bit':
-                row[col_name] = bit
-            elif col_name == 'Class':
-                row[col_name] = 'Warning'
-            else:
-                row[col_name] = col_value
-        alarm_rows.append(row)
-        alarm_id += 1
-
 print(f"Generated {len(alarm_rows)} alarm rows")
 
 # ── Write to new workbook ──
