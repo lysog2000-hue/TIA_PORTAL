@@ -198,8 +198,8 @@ BEGIN
 	    // ÐŸÐ¾Ñ‚Ð¾Ñ‡Ð½Ð° Ñ„Ñ–Ð·Ð¸Ñ‡Ð½Ð° Ð¿Ð¾Ð·Ð¸Ñ†Ñ–Ñ (Ð¾Ð½Ð¾Ð²Ð»ÑŽÑ”Ñ‚ÑŒÑÑ Ñ‰Ð¾ÑÐºÐ°Ð½Ð¾Ð²Ð¾ Ð·Ð° ÐºÑ–Ð½Ñ†ÐµÐ²Ð¸ÐºÐ°Ð¼Ð¸)
 	    // ÐžÐ±Ð¸Ð´Ð²Ð° Ð´Ð°Ñ‚Ñ‡Ð¸ÐºÐ¸ Ð°ÐºÑ‚Ð¸Ð²Ð½Ñ– = Ð°Ð²Ð°Ñ€Ñ–Ñ FLT_BOTH_SENSORS â†’ Ð¿Ð¾Ð·Ð¸Ñ†Ñ–Ñ Ð½ÐµÐ²Ñ–Ð´Ð¾Ð¼Ð°
 	    
-		IF #B.Status="STS_FAULT" OR B.FLTCode<>0 THEN
-			B.Status_Param:="VALVE_FAULT";  
+		IF #B.Status="STS_FAULT" OR #B.FLTCode<>0 THEN
+			#B.Status_Param:="VALVE_FAULT";  
 	    ELSIF #G.DI_Pos1_OK AND NOT #G.DI_Pos0_OK THEN
 	        #B.Status_Param := "GATE_AT_POS1";    // = 7
 	    ELSIF #G.DI_Pos0_OK AND NOT #G.DI_Pos1_OK THEN

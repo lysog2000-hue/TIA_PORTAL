@@ -251,7 +251,7 @@ BEGIN
 	    
 	    // Поточна фізична позиція (оновлюється щосканово за кінцевиками)
 	    // Два або більше датчиків активні = аварія FLT_VALVE_MULTIPLE_POS → позиція невідома
-	   	IF #B.Status="STS_FAULT" OR B.FLTCode<>0 THEN
+	   	IF #B.Status="STS_FAULT" OR #B.FLTCode<>0 THEN
 	    	#B.Status_Param:="VALVE_FAULT";
 	    ELSIF #F.DI_Pos1_OK AND NOT #F.DI_Pos0_OK AND NOT #F.DI_Pos2_OK THEN
 	        #B.Status_Param := "VALVE_AT_POS1";    // = 4

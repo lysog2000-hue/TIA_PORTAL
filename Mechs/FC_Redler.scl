@@ -193,6 +193,9 @@ BEGIN
 	        END_CASE;
 	        
 	        IF #B.Cmd = "CMD_STOP" AND #B.Status <> "STS_IDLE" THEN
+	            IF #B.Status = "STS_STARTING" THEN
+	                #R.StartMs := 0;
+	            END_IF;
 	            #B.Status := "STS_STOPPING";
 	            #R.StopMs := 0;
 	        END_IF;

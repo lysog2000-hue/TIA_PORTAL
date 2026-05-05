@@ -298,14 +298,11 @@ Tags("ApplyTag").Write(apply);
         return;
     }
  
-    await Tags("Script_Lock").Write(1);
-    HMIRuntime.Trace("--- Запись маршрута в CMD_Route ---");
- 
+    
     // □ ИСПРАВЛЕНИЕ: try/finally охватывает ВСЁ после Write(1),
     //   чтобы блокировка гарантированно снималась при любом выходе.
     let rawId = 0;
-    try {
-        // 1. Чтение ID варианта
+    // 1. Чтение ID варианта
         rawId = await Tags("SelectedVariantId").Read();
         if (!rawId || rawId === 0) {
             HMIRuntime.Trace("□ Ошибка: Вариант не выбран (ID=0)");
@@ -318,6 +315,11 @@ Tags("ApplyTag").Write(apply);
             HMIRuntime.Trace("□ Ошибка: Шаги для варианта " + rawId + " не найдены");
             return;
         }
+        await Tags("Script_Lock").Write(1);
+         HMIRuntime.Trace("--- Запись маршрута в CMD_Route ---");
+ 
+    try {
+        
  
         let newCount = Math.min(MAX_ROUTE_STEPS, steps.length);
         HMIRuntime.Trace(`□□ Запись ${newCount} шагов. VariantId=${rawId}`);

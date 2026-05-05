@@ -39,7 +39,7 @@ BEGIN
 	            END_IF;
 	        END_IF;
 	        IF (#B.FLTCode AND "FLT_STOP_TIMEOUT") <> 0 THEN
-	            IF #F.DI_Feedback_OK OR #forceStopTimeout THEN
+	            IF NOT #F.DI_Feedback_OK OR #forceStopTimeout THEN
 	                #B.FLTCode := #B.FLTCode AND NOT "FLT_STOP_TIMEOUT";
 	            END_IF;
 	        END_IF;
@@ -156,6 +156,9 @@ BEGIN
 	        END_CASE;
 	        
 	        IF #B.Cmd = "CMD_STOP" AND #B.Status <> "STS_IDLE" THEN
+	            IF #B.Status = "STS_STARTING" THEN
+	                #F.StartMs := 0;
+	            END_IF;
 	            #B.Status := "STS_STOPPING";
 	            #F.StopMs := 0;
 	        END_IF;
