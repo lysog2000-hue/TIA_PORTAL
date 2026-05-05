@@ -131,3 +131,5 @@ CMD_VALVE_POS1;Constant;USInt;4;право
 CMD_VALVE_POS2;Constant;USInt;5;центр
 FLT_VALVE_MULTIPLE_POS;Constant;Word;2048;Кілька датчиків позиції клапана активні (BIT11)
 FLT_HIGH_LEVEL;Constant;Word;8192;Верхній рівень силосу (BIT13)
+
+forceGrainType_Mask;Constant;Int;1024;Force_Code маска для форсування перевірки GrainType у силосі (BIT10)

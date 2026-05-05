@@ -1,6 +1,6 @@
 ﻿FUNCTION "FC_RouteFSM" : Void
 { S7_Optimized_Access := 'TRUE' }
-VERSION : 4.2
+VERSION : 4.3
 // ==============================================================================
 // FC_RouteFSM - Керування маршрутом (Mailbox Pattern v4.0)
 // ==============================================================================
@@ -180,6 +180,7 @@ VERSION : 4.2
       stepDelayMs : DInt;   // індивідуальна затримка з механізму (StartDelayMs/StopDelayMs)
       grainTypePit : Int;   // тип зерна ями (для перевірки сумісності)
       grainTypeSilo : Int;  // тип зерна силосу (для перевірки сумісності)
+      forceGrainType : Bool; // TRUE = силос має Force_Code BIT10 — ігнорувати перевірку GrainType
    END_VAR
 
 
@@ -371,28 +372,35 @@ BEGIN
 	                // Перевірка GrainType: яма і силос повинні мати однаковий ненульовий тип
 	                #grainTypePit := 0;
 	                #grainTypeSilo := 0;
+	                #forceGrainType := FALSE;
 	                
 	                FOR #Fsm.i := 1 TO #Fsm.stepCnt DO
 	                    #Fsm.slot := #Cmd.RC_Steps[#Fsm.i].RS_Slot;
 	                    IF #Fsm.slot <= "MECHS_COUNT" THEN
-	                        IF #Mechs[#Fsm.slot].DeviceType = "TYPE_Receiving_PIT" THEN
+	                        IF #Mechs[#Fsm.slot].DeviceType = "TYPE_RECEIVING_PIT" THEN
 	                            #grainTypePit := "DB_Mechs".ReceivingPit[#Mechs[#Fsm.slot].TypedIndex].GrainType;
 	                        ELSIF #Mechs[#Fsm.slot].DeviceType = "TYPE_SILOS" THEN
 	                            #grainTypeSilo := "DB_Mechs".Silos[#Mechs[#Fsm.slot].TypedIndex].GrainType;
+	                            // BIT10 (1024) = forceGrainType — ігнорувати перевірку зерна
+	                            IF (#Mechs[#Fsm.slot].Force_Code AND 1024) <> 0 THEN
+	                                #forceGrainType := TRUE;
+	                            END_IF;
 	                        END_IF;
 	                    END_IF;
 	                END_FOR;
 	                
 	                // Яма в маршруті: GrainType повинен бути не 0
-	                IF #grainTypePit <> 0 AND #grainTypePit <> #grainTypeSilo AND #grainTypeSilo <> 0 THEN
-	                    #Fsm.RF_State := "ROUTE_STS_REJECTED";
-	                    #Fsm.RF_ResultCode := "ROUTE_REJ_GRAIN_MISMATCH";
-	                ELSIF #grainTypePit = 0 AND #grainTypeSilo <> 0 THEN
-	                    #Fsm.RF_State := "ROUTE_STS_REJECTED";
-	                    #Fsm.RF_ResultCode := "ROUTE_REJ_GRAIN_NOT_SET";
-	                ELSIF #grainTypeSilo = 0 AND #grainTypePit <> 0 THEN
-	                    #Fsm.RF_State := "ROUTE_STS_REJECTED";
-	                    #Fsm.RF_ResultCode := "ROUTE_REJ_GRAIN_NOT_SET";
+	                IF NOT #forceGrainType THEN
+	                    IF #grainTypePit <> 0 AND #grainTypePit <> #grainTypeSilo AND #grainTypeSilo <> 0 THEN
+	                        #Fsm.RF_State := "ROUTE_STS_REJECTED";
+	                        #Fsm.RF_ResultCode := "ROUTE_REJ_GRAIN_MISMATCH";
+	                    ELSIF #grainTypePit = 0 AND #grainTypeSilo <> 0 THEN
+	                        #Fsm.RF_State := "ROUTE_STS_REJECTED";
+	                        #Fsm.RF_ResultCode := "ROUTE_REJ_GRAIN_NOT_SET";
+	                    ELSIF #grainTypeSilo = 0 AND #grainTypePit <> 0 THEN
+	                        #Fsm.RF_State := "ROUTE_STS_REJECTED";
+	                        #Fsm.RF_ResultCode := "ROUTE_REJ_GRAIN_NOT_SET";
+	                    END_IF;
 	                END_IF;
 	            END_IF;
 	            
