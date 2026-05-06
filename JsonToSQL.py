@@ -298,13 +298,19 @@ BEGIN
                    ROW_NUMBER() OVER (PARTITION BY r.VariantId ORDER BY (SELECT NULL)) AS PortOrder
             FROM #Routes r CROSS APPLY STRING_SPLIT(r.PortIdPath,'>') s
         ),
-        MechsClean AS (
-            SELECT sp.VariantId, m.MechanismId, m.Name AS MechanismName, m.Type, p.PortName AS UsedPort, sp.PortOrder,
-                   ROW_NUMBER() OVER (PARTITION BY sp.VariantId, m.MechanismId ORDER BY sp.PortOrder) as Occurrence
+        MechsAll AS (
+            SELECT sp.VariantId, m.MechanismId, m.Name AS MechanismName, m.Type, p.PortName AS UsedPort, sp.PortOrder
             FROM SplitPorts sp JOIN Ports p ON p.PortId = sp.PortId JOIN Mechanisms m ON m.Name = p.MechanismName
+        ),
+        -- Убираем только подряд идущие повторы (LAG)
+        MechsDedup AS (
+            SELECT VariantId, MechanismId, MechanismName, Type, UsedPort, PortOrder,
+                   LAG(MechanismId) OVER (PARTITION BY VariantId ORDER BY PortOrder) AS PrevMechId
+            FROM MechsAll
         )
         SELECT VariantId, MechanismId, MechanismName, Type, UsedPort, PortOrder
-        INTO #UsedMechanisms FROM MechsClean WHERE Occurrence = 1;
+        INTO #UsedMechanisms FROM MechsDedup 
+        WHERE PrevMechId IS NULL OR MechanismId <> PrevMechId;
 
         -- 6. КЛАПАНЫ И ПУТЬ СТРОКОЙ
         IF OBJECT_ID('tempdb..#ValvePorts') IS NOT NULL DROP TABLE #ValvePorts;
