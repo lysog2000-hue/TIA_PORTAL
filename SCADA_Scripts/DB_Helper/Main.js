@@ -316,11 +316,26 @@ Tags("ApplyTag").Write(apply);
             return;
         }
         await Tags("Script_Lock").Write(1);
-         HMIRuntime.Trace("--- Запись маршрута в CMD_Route ---");
+        HMIRuntime.Trace("--- Запись маршрута в CMD_Route ---");
  
     try {
         
- 
+        // Находим свободный слот маршрута (ResultCode слота не равен 32768 = ROUTE_OK_RUNNING)
+        const ROUTE_OK_RUNNING = 32768;
+        let routeIdx = 0;
+        for (let r = 1; r <= 4; r++) {
+            let rc = await Tags(`ResultCode_Route${r}`).Read();
+            if (rc !== ROUTE_OK_RUNNING) {
+                routeIdx = r;
+                break;
+            }
+        }
+        if (routeIdx === 0) {
+            HMIRuntime.Trace("Все 4 маршрути зайняті");
+            return;
+        }
+        HMIRuntime.Trace(`Вибрано слот маршруту: ${routeIdx}`);
+
         let newCount = Math.min(MAX_ROUTE_STEPS, steps.length);
         HMIRuntime.Trace(`□□ Запись ${newCount} шагов. VariantId=${rawId}`);
  
@@ -331,7 +346,7 @@ Tags("ApplyTag").Write(apply);
                 let newCommit = commitScada + 1;
  
                 // 3. Запись заголовка
-                await Tags("HDR_RouteId").Write(rawId);           // VariantId → HDR_RouteId         
+                await Tags("HDR_RouteId").Write(routeIdx);        // Индекс свободного слота маршрута
                 await Tags("CMD_Route.RC_StepCount").Write(newCount); // Количество → RC_StepCount
                 
                 // 4. Запись массива шагов
@@ -407,7 +422,7 @@ Tags("ApplyTag").Write(apply);
                 await Tags("CMD_Route.RC_Cmd").Write(1); // Команда "готово" (если нужно)
                 await Tags("HDR_Commit").Write(newCommit);   
                 HMIRuntime.Trace("□ Запись завершена успешно!");
-                HMIRuntime.Trace(`   HDR_RouteId=${rawId}, HDR_Commit=${newCount}`);
+                HMIRuntime.Trace(`   HDR_RouteId=${routeIdx}, VariantId=${rawId}, HDR_Commit=${newCommit}`);
  
             } else {
                 HMIRuntime.Trace(` PLC не подтвердил предыдущую команду (PLC=${commitPLC}, SCADA=${commitScada})`);
