@@ -13,15 +13,18 @@ VERSION : 1.0
 
 VAR
     Mechs  : ARRAY [0.."MECHS_COUNT"]   OF "UDT_BaseMechanism";
+    Gate2P : ARRAY [0.."GATES2P_COUNT"] OF "UDT_Gate2P";
+    Valve3P : ARRAY [0.."VALVES3P_COUNT"] OF "UDT_Valve3P";
+    Sushka : ARRAY [0.."SUSHKAS_COUNT"] OF "UDT_Sushka";
+END_VAR
+
+VAR RETAIN
     Redler : ARRAY [0.."REDLERS_COUNT"] OF "UDT_Redler";
     Noria  : ARRAY [0.."NORIAS_COUNT"] OF "UDT_Noria";
-    Gate2P : ARRAY [0.."GATES2P_COUNT"] OF "UDT_Gate2P";
     Fan    : ARRAY [0.."FANS_COUNT"] OF "UDT_Fan";
     ReceivingPit : ARRAY [0.."RECEIVING_PITS_COUNT"] OF "UDT_ReceivingPit";
     Separator : ARRAY [0.."SEPARATORS_COUNT"] OF "UDT_Separator";
-    Valve3P : ARRAY [0.."VALVES3P_COUNT"] OF "UDT_Valve3P";
     Silos  : ARRAY [0.."SILOS_COUNT"] OF "UDT_Silos";
-    Sushka : ARRAY [0.."SUSHKAS_COUNT"] OF "UDT_Sushka";
     Feeder : ARRAY [0.."FEEDERS_COUNT"] OF "UDT_Feeder";
 END_VAR
 
