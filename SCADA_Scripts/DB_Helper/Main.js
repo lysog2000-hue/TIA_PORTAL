@@ -4,79 +4,100 @@
 //КНОПКА ВЫЗОВА СПИСКА МАРШРУТОВ
 import { GetActiveRouteData, GetStepsByVariant, GetVariantFromBuffer, GetVariantList, RunQueryAndCache, SetRouteData, resetMechanism } from "DB_Helper";
 
-export async function Btn_OpenList_OnTapped(item, x, y, modifiers, trigger) {
-    let startId = Tags("StartPortId").Read();
-    let endId   = Tags("EndPortId").Read();
-    let midId   = Tags("MidPortId").Read();
+export async function Open_Route_OnTapped(item, x, y, modifiers, trigger) {
+let startId = Tags("StartPortId").Read();
+    let endId = Tags("EndPortId").Read();
+let midId = Tags("MidPortId").Read();
 
     // Сброс интерфейса
     Tags("TableDataString").Write("");
     Tags("SelectedVariantId").Write(0);
-    Tags("TestTag").Write(1);
-
-    let items = Screen.Items;
-    for (let i = 0; i < items.Count; i++) {
-        let obj = items.Item(i);
-
-        if (obj.Name && obj.Name.startsWith("L_")) {
-            obj.LineColor = 0xFF000000;
-            obj.LineWidth = 1;
-        }
-
-        if (obj.Name.startsWith("M_")) {
-            try { obj.Properties.Contur      = 0xFF000000; } catch(e) {}
-            try { obj.Properties.CenterContur = 0xFF000000; } catch(e) {}
-            try { obj.Properties.LeftContur   = 0xFF000000; } catch(e) {}
-            try { obj.Properties.RightContur  = 0xFF000000; } catch(e) {}
-        }
-    }
-
     let count = await RunQueryAndCache(startId, endId, midId);
-
+   
     if (count > 0) {
         let variants = GetVariantList();
 
+        // Формируем минималистичную структуру (один столбец)
         let columns = [
-            { "title": "Route", "field": "R", "width": 900 }
+            { "title": "Route", "field": "R", "width": 1200 }
         ];
         Tags("ColumnStyle").Write(JSON.stringify(columns));
 
+        // Максимально короткие ключи в JSON (вместо "Route" пишем "R")
         let rows = variants.map((v) => ({
             "R": v.RoutePath
         }));
 
         let finalJson = JSON.stringify(rows);
-        HMIRuntime.Trace("JSON Length: " + finalJson.length);
+        HMIRuntime.Trace("JSON Length: " + finalJson.length); 
 
         Tags("TableDataString").Write(finalJson);
-        Tags("Visibility_Trigger").Write(1);
-
+        
         HMIRuntime.Trace("SQL Success: " + count + " variants loaded");
-    }
-}
 
-export async function Btn_OpenList_OnUp(item, x, y, modifiers, trigger) {
-    Tags("TestTag").Write(0);
-    HMIRuntime.UI.SysFct.OpenScreenInPopup("tab", "Table", true, "", 0, 0, false, undefined);
+    }
+
 }
 
 
 
 //ФУНКЦИЯ ПОКРАСКИ МЕХАНИЗМОВ 
 export function Circle_5_BackColor_OnPropertyChanged(item, value) {
-let vId = Tags("SelectedVariantId").Read();
-let activeColor = 0xFFFFA500; // Оранжевый для команд 3, 4, 5
+    let previousColor = Tags("CurrentRouteColor").Read(); // Запоминаем предыдущий цвет
+
+    const ROUTE_OK_RUNNING = 32768;
+    const RS_State_OK =4;
+    let routeIdx = 0;
+    for (let r = 1; r <= 4; r++) {
+        let rc = Tags(`ResultCode_Route${r}`).Read();
+        let rs = Tags(`RS_State${r}`).Read()
+        if (rc !== ROUTE_OK_RUNNING&& rs !==RS_State_OK) {
+            routeIdx = r;
+            break;
+        }
+    }
+    if (routeIdx === 0) {
+        HMIRuntime.Trace("Все 4 маршрути зайняті");
+        return;
+    }
+    let routeColor = Tags("RouteColor" + routeIdx).Read();
+    Tags("CurrentRouteColor").Write(routeColor); // Обновляем на новый цвет
+
+    let vId = Tags("SelectedVariantId").Read();
+    let activeColor = routeColor; // Используем новый цвет для покраски
+
     if (vId > 0) {
         let activeRouteData = GetActiveRouteData(vId); 
         let screenItems = Screen.Items;
-         // □□ НОВое: Сброс всех линий в серый перед началом
+
+        // Сброс линий предыдущего маршрута (окрашенных в previousColor)
         for (let i = 0; i < screenItems.Count; i++) {
             let obj = screenItems.Item(i);
             if (obj.Name && obj.Name.startsWith("L_")) {
-                obj.LineColor = 0xFF000000; // Черный
-                obj.LineWidth = 1;
+                if (obj.LineColor === previousColor) {
+                    obj.LineColor = 0xFF000000; // Черный
+                    obj.LineWidth = 1;
+                }
             }
         }
+
+        // Сброс механизмов предыдущего маршрута
+        for (let i = 0; i < screenItems.Count; i++) {
+            let obj = screenItems.Item(i);
+            if (obj.Name && obj.Name.startsWith("M_")) {
+                let mechId = parseInt(obj.Name.replace("M_", ""));
+                let found = activeRouteData.find(m => m.id === mechId);
+                if (found) {
+                    // Сброс только если окрашен в previousColor
+                    try { if (obj.Properties.Contur === previousColor) obj.Properties.Contur = 0xFF000000; } catch (e) {}
+                    try { if (obj.Properties.CenterContur === previousColor) obj.Properties.CenterContur = 0xFF000000; } catch (e) {}
+                    try { if (obj.Properties.LeftContur === previousColor) obj.Properties.LeftContur = 0xFF000000; } catch (e) {}
+                    try { if (obj.Properties.RightContur === previousColor) obj.Properties.RightContur = 0xFF000000; } catch (e) {}
+                }
+            }
+        }
+
+        // Теперь красим механизмы в новый цвет
         for (let i = 0; i < screenItems.Count; i++) {
             let obj = screenItems.Item(i);
             
@@ -123,60 +144,39 @@ let activeColor = 0xFFFFA500; // Оранжевый для команд 3, 4, 5
                 }
             }
         }
-        // ========================================================================
-        // □□ КОНЕЦ ТВОЕЙ ЛОГИКИ □□
-        // ========================================================================
 
-         // □□ 2. ОТЛАДКА: Выводим все линии на экране в лог
-       
-        for (let i = 0; i < screenItems.Count; i++) {
-            let obj = screenItems.Item(i);
-            if (obj.Name && obj.Name.startsWith("L_")) {
-               
-            }
-        }
-        // Проходим по маршруту парами: [0]->[1], [1]->[2] и т.д.
+        // Красим линии в новый цвет
         for (let i = 0; i < activeRouteData.length - 1; i++) {
             let from = activeRouteData[i+1].id;
             let to = activeRouteData[i].id;
-            // Формируем имя линии: L_<От>_<Куда>  
             let lineName = `L_${from}_${to}`;
 
-           // □□ Ищем ТОЧНО ТАК ЖЕ, как в сбросе — перебором всех объектов
-            let lineObj = null;
             for (let j = 0; j < screenItems.Count; j++) {
                 let candidate = screenItems.Item(j);
-                // Сравниваем имена ТОЧНО (учитываем пробелы!)
-                if (candidate.Name){
-                  let name = candidate.Name.trim();
-                  let idx = name.indexOf(lineName);
-                    if (idx!==-1) {
-
-                          // □□ Проверка границы: после шаблона должна быть 
-                        // либо КОНЕЦ строки, либо НЕ-цифра (буква/подчёркивание), либо новая "L_"
+                if (candidate.Name) {
+                    let name = candidate.Name.trim();
+                    let idx = name.indexOf(lineName);
+                    if (idx !== -1) {
                         let afterIdx = idx + lineName.length;
                         let nextChar = name.charAt(afterIdx);
                         let isBoundary = (
-                            afterIdx >= name.length ||           // Конец строки
-                            !/^\d/.test(nextChar) ||             // Следующий символ не цифра
-                            name.substring(afterIdx).startsWith('L_') // Начинается новый шаблон
+                            afterIdx >= name.length ||
+                            !/^\d/.test(nextChar) ||
+                            name.substring(afterIdx).startsWith('L_')
                         );
 
-                       if (isBoundary) {
+                        if (isBoundary) {
                             try {
                                 candidate.LineColor = activeColor;
-                                candidate.LineWidth = 2;
+                                candidate.LineWidth = 3;
                             } catch (e) {
                                 // Игнорируем ошибки свойств
                             }
-                        
                         }
                     }
-                  }
+                }
             }
-            
         }
-    
     }
     return value;
 }
@@ -251,76 +251,9 @@ export async function Btn_OpenMotoHours_OnTapped(item, x, y, modifiers, trigger)
 
 
 //ЗАПИСЬ ВЫБРАННОГО МАРШРУТА ИЗ ТАБЛИЦЫ
-export async function Apply_OnTapped(item, x, y, modifiers, trigger) {
-let apply = Tags ("ApplyTag").Read();
-if (apply === 1){apply=0;}else{apply=1};
-let vId = Tags ("SelectedVariantId").Read();
+export async function Run_Route_OnTapped(item, x, y, modifiers, trigger) {
 
-Tags("ApplyTag").Write(apply);
-    const MAX_ROUTE_STEPS = 64;
-    let items = Screen.Items;
-    const conturColor = 0xFF000000;
-    for (let i = 0; i < items.Count; i++) {
-        let obj = items.Item(i);
-            if (obj.Name && obj.Name.startsWith("L_")) {
-                if (obj.LineColor === 0xFFFFA500){
-                    obj.LineColor = 0xFF00FF00; // зеленій
-                     obj.LineWidth = 2;
-                }else{
-                obj.LineColor = 0xFF000000; // Черный
-                obj.LineWidth = 1;}
-            }
-        // Проверяем префикс имени
-        if (obj.Name && obj.Name.startsWith("M_")) {
-            
-            // 1. Пытаемся сбросить стандартный цвет изображения
-            try {
-                obj.Properties.Contur =conturColor;
-            } catch (e) { /* Свойства нет — игнорируем */ }
- 
-            // 2. Пытаемся сбросить Центральный контур
-            try {
-                obj.Properties.CenterContur = conturColor; 
-            } catch (e) { }
-            try {
-                obj.Properties.LeftContur = conturColor; 
-            } catch (e) { }
- 
-            // 4. Пытаемся сбросить Правый контур
-            try {
-                obj.Properties.RightContur = conturColor;
-            } catch (e) { }
-        }
-    }
- 
-    if (await Tags("Script_Lock").Read()===1){
-        HMIRuntime.Trace("Script уже выполняется");
-        return;
-    }
- 
-    
-    // □ ИСПРАВЛЕНИЕ: try/finally охватывает ВСЁ после Write(1),
-    //   чтобы блокировка гарантированно снималась при любом выходе.
-    let rawId = 0;
-    // 1. Чтение ID варианта
-        rawId = await Tags("SelectedVariantId").Read();
-        if (!rawId || rawId === 0) {
-            HMIRuntime.Trace("□ Ошибка: Вариант не выбран (ID=0)");
-            return;
-        }
- 
-        // 2. Получение шагов из буфера
-        let steps = GetVariantFromBuffer(rawId);
-        if (!steps || steps.length === 0) {
-            HMIRuntime.Trace("□ Ошибка: Шаги для варианта " + rawId + " не найдены");
-            return;
-        }
-        await Tags("Script_Lock").Write(1);
-        HMIRuntime.Trace("--- Запись маршрута в CMD_Route ---");
- 
-    try {
-        
-        // Находим свободный слот маршрута (ResultCode слота не равен 32768 = ROUTE_OK_RUNNING)
+// Находим свободный слот маршрута (ResultCode слота не равен 32768 = ROUTE_OK_RUNNING)
         const ROUTE_OK_RUNNING = 32768;
         let routeIdx = 0;
         for (let r = 1; r <= 4; r++) {
@@ -334,8 +267,52 @@ Tags("ApplyTag").Write(apply);
             HMIRuntime.Trace("Все 4 маршрути зайняті");
             return;
         }
-        HMIRuntime.Trace(`Вибрано слот маршруту: ${routeIdx}`);
 
+// Записываем цвет текущего маршрута в глобальную переменную
+let routeColor = Tags("RouteColor" + routeIdx).Read();
+Tags("CurrentRouteColor").Write(routeColor);
+HMIRuntime.Trace("Цвет маршрута " + routeIdx + " записан: " + routeColor);
+
+        HMIRuntime.Trace(`Вибрано слот маршруту: ${routeIdx}`);
+    const MAX_ROUTE_STEPS = 64;
+    let items = Screen.Items;
+    const conturColor = 0xFF000000;
+    for (let i = 0; i < items.Count; i++) {
+        let obj = items.Item(i);
+        if (obj.Name && obj.Name.startsWith("M_")) {
+            try { obj.Properties.Contur = conturColor; } catch (e) {}
+            try { obj.Properties.CenterContur = conturColor; } catch (e) {}
+            try { obj.Properties.LeftContur = conturColor; } catch (e) {}
+            try { obj.Properties.RightContur = conturColor; } catch (e) {}
+        }
+    }
+ 
+    if (await Tags("Script_Lock").Read()===1){
+        HMIRuntime.Trace("Script уже выполняется");
+        return;
+    }
+      let rawId = 0;
+      // 1. Чтение ID варианта
+        rawId = await Tags("SelectedVariantId").Read();
+        if (!rawId || rawId === 0) {
+            HMIRuntime.Trace("□ Ошибка: Вариант не выбран (ID=0)");
+            return;
+        }
+ 
+        // 2. Получение шагов из буфера
+        let steps = GetVariantFromBuffer(rawId);
+        if (!steps || steps.length === 0) {
+            HMIRuntime.Trace("□ Ошибка: Шаги для варианта " + rawId + " не найдены");
+            return;
+        }
+ 
+ 
+    await Tags("Script_Lock").Write(1);
+    HMIRuntime.Trace("--- Запись маршрута в CMD_Route ---");
+ 
+
+    try {
+      
         let newCount = Math.min(MAX_ROUTE_STEPS, steps.length);
         HMIRuntime.Trace(`□□ Запись ${newCount} шагов. VariantId=${rawId}`);
  
@@ -346,7 +323,7 @@ Tags("ApplyTag").Write(apply);
                 let newCommit = commitScada + 1;
  
                 // 3. Запись заголовка
-                await Tags("HDR_RouteId").Write(routeIdx);        // Индекс свободного слота маршрута
+                await Tags("HDR_RouteId").Write(routeIdx);                
                 await Tags("CMD_Route.RC_StepCount").Write(newCount); // Количество → RC_StepCount
                 
                 // 4. Запись массива шагов
@@ -422,7 +399,7 @@ Tags("ApplyTag").Write(apply);
                 await Tags("CMD_Route.RC_Cmd").Write(1); // Команда "готово" (если нужно)
                 await Tags("HDR_Commit").Write(newCommit);   
                 HMIRuntime.Trace("□ Запись завершена успешно!");
-                HMIRuntime.Trace(`   HDR_RouteId=${routeIdx}, VariantId=${rawId}, HDR_Commit=${newCommit}`);
+                HMIRuntime.Trace(`   HDR_RouteId=${routeIdx}, HDR_Commit=${newCommit}`);
  
             } else {
                 HMIRuntime.Trace(` PLC не подтвердил предыдущую команду (PLC=${commitPLC}, SCADA=${commitScada})`);
@@ -441,4 +418,136 @@ Tags("ApplyTag").Write(apply);
     }
 
 
+}
+
+
+
+
+//Кнопка остановка маршрута 
+export async function Stop_Route_OnTapped(item, x, y, modifiers, trigger) {
+ let commitPLC = Tags("Ack_CommitApplied").Read();
+    let commitScada = Tags("HDR_Commit").Read();
+
+    // 1. Чтение ID варианта
+    let rawId = Tags("RouteID").Read();
+    
+    // Проверка на null и валидность ID
+    if (commitPLC == null || commitScada == null || rawId == null) {
+        return;
+    }
+
+    // КРИТИЧНАЯ ПРОВЕРКА: Mailbox должен быть свободен для надежности
+    if (commitPLC === commitScada && rawId > 0 && rawId <= 12) {  
+        let newCommit = commitScada + 1;
+        
+        try {
+            await Promise.all([
+                Tags("HDR_RouteId").Write(rawId),
+                Tags("CMD_Route.RC_Cmd").Write(2),           // RT_CMD_STOP_OP
+                Tags("CMD_Route.RC_StepCount").Write(0),     // □□ НЕ передавать шаги при STOP!
+                Tags("HDR_Commit").Write(newCommit)          // Отправить команду
+            ]);
+            HMIRuntime.Trace(`□ STOP отправлена для маршрута ${rawId}`);
+        } catch (err) {
+            HMIRuntime.Trace(`□ Ошибка STOP: ${err.message}`);
+        }
+    } else if (commitPLC !== commitScada) {
+        HMIRuntime.Trace(`□ Mailbox занят: PLC=${commitPLC}, SCADA=${commitScada} (retry)`);
+    } else {
+        HMIRuntime.Trace(`□ Невалидный RouteID: ${rawId}`);
+    }
+    
+    // □□ Сброс визуальных элементов (механизмы и линии маршрута)
+    let items = Screen.Items;
+    let conturColor = 0xFF000000;  // Черный цвет
+    let routeColor = Tags("RouteColor" + rawId).Read(); 
+    
+    for (let i = 0; i < items.Count; i++) {
+        let obj = items.Item(i);
+        
+        // Сброс линий маршрута
+        if (obj.Name && obj.Name.startsWith("L_")) {
+            if (obj.LineColor === routeColor) {
+                try {
+                    obj.LineColor = 0xFF000000; // Черный
+                    obj.LineWidth = 1;
+                } catch (e) { }
+            }
+        }
+        
+        // Сброс механизмов только для текущего цветового маршрута
+        if (obj.Name && obj.Name.startsWith("M_")) {
+            try { if (obj.Properties.Contur === routeColor) obj.Properties.Contur = conturColor; } catch (e) { }
+            try { if (obj.Properties.MainContur === routeColor) obj.Properties.MainContur = conturColor; } catch (e) { }
+            try { if (obj.Properties.CenterContur === routeColor) obj.Properties.CenterContur = conturColor; } catch (e) { }
+            try { if (obj.Properties.LeftContur === routeColor) obj.Properties.LeftContur = conturColor; } catch (e) { }
+            try { if (obj.Properties.RightContur === routeColor) obj.Properties.RightContur = conturColor; } catch (e) { }
+        }
+    }
+
+Tags("CurrentRouteColor").Write(0);
+}
+
+
+//покраска линий 
+export function L_5_116_LineColor_Trigger(item) {
+    let value;
+    let status1 = Tags("DB_Mechs_Mechs{5}_Status").Read();
+    let status2 = Tags("DB_Mechs_Mechs{116}_Status_Param").Read();
+
+    HMIRuntime.Trace("Status Redler: " + status1 + ", Status Gate: " + status2);
+
+    if (status1 === 2 && status2 === 7) {
+        HMIRuntime.Trace("Result: Color Green");
+        value = 0xFF00FF00;  // Зеленый
+    } else {
+        HMIRuntime.Trace("Result: Color White");
+        value = 0xFFFFFFFF;  // Белый
+    }
+
+    HMIRuntime.Trace("Final Color: " + value);
+    
+    // Присваиваем цвет напрямую объекту линии
+    item.LineColor = value;
+}
+
+
+//Скидання кольору 
+export function Reset_Color_OnTapped(item, x, y, modifiers, trigger) {
+    Tags("SelectedVariantId").Write(0);
+    let routeId = Tags("RouteID").Read();
+    let routeColor = 0;
+    if (routeId > 0 && routeId <= 4) {
+        routeColor = Tags("RouteColor" + routeId).Read();
+    }
+    if (!routeColor) {
+        routeColor = Tags("CurrentRouteColor").Read();
+    }
+    let items = Screen.Items;
+    let conturColor = 0xFF000000;
+    HMIRuntime.Trace(`Reset_Color: RouteID=${routeId}, color=${routeColor}`);
+    for (let i = 0; i < items.Count; i++) {
+        let obj = items.Item(i);
+        if (obj.Name && obj.Name.startsWith("L_")) {
+            if (obj.LineColor === routeColor) {
+                obj.LineColor = 0xFF000000;
+                obj.LineWidth = 1;
+            }
+        }
+        if (obj.Name && obj.Name.startsWith("M_")) {
+            try {
+                if (obj.Properties.Contur === routeColor) obj.Properties.Contur = conturColor;
+            } catch (e) {}
+            try {
+                if (obj.Properties.CenterContur === routeColor) obj.Properties.CenterContur = conturColor;
+            } catch (e) {}
+            try {
+                if (obj.Properties.LeftContur === routeColor) obj.Properties.LeftContur = conturColor;
+            } catch (e) {}
+            try {
+                if (obj.Properties.RightContur === routeColor) obj.Properties.RightContur = conturColor;
+            } catch (e) {}
+        }
+    }
+    Tags("CurrentRouteColor").Write(0);
 }

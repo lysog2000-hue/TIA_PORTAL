@@ -47,6 +47,7 @@ ROUTE_REJ_NOT_READY;Constant;Word;8;Відхилено — механізм не
 ROUTE_REJ_DUPLICATE_START;Constant;Word;16;Відхилено — дублікат START (BIT4)
 ROUTE_REJ_GRAIN_NOT_SET;Constant;Word;32;Відхилено — тип зерна не задано (BIT5)
 ROUTE_REJ_GRAIN_MISMATCH;Constant;Word;64;Відхилено — неспівпадіння типу зерна (BIT6)
+ROUTE_REJ_SILOS_GRAIN_MISMATCH;Constant;Word;128;Відхилено — неспівпадіння типу зерна між силосами (BIT7)
 ROUTE_ABRT_BY_OPERATOR;Constant;Word;256;Маршрут зупинено оператором (BIT8)
 ROUTE_ABRT_BY_SAFETY;Constant;Word;512;Маршрут скасовано через GlobalSafetyStop (BIT9)
 ROUTE_ABRT_BY_LOCAL;Constant;Word;1024;Маршрут скасовано через Local/Manual (BIT10)

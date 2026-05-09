@@ -167,7 +167,15 @@ BEGIN
 	        // 5. MAILBOX: Копіювання команди у RouteExecutor
 	        // =========================================================
 	        IF #cmdAllowed THEN
-	            "DB_Plc_RouteExecutor".Routes[#routeId] := "DB_ScadaToPlc_RouteCmd".CMD_Route;
+	            // [FIX-STOP] При STOP_OP НЕ затираємо RC_StepCount і RC_Steps!
+	            // Вони містять активні кроки маршруту, які FSM використовує при STOPPING
+	            IF "DB_ScadaToPlc_RouteCmd".CMD_Route.RC_Cmd = "RT_CMD_STOP_OP" THEN
+	                // Тільки оновлюємо команду, шаги залишаються з START
+	                "DB_Plc_RouteExecutor".Routes[#routeId].RC_Cmd := "RT_CMD_STOP_OP";
+	            ELSE
+	                // START або інші команди — повна копія
+	                "DB_Plc_RouteExecutor".Routes[#routeId] := "DB_ScadaToPlc_RouteCmd".CMD_Route;
+	            END_IF;
 	        END_IF;
 	        
 	        // =========================================================

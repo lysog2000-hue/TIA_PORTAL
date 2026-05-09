@@ -107,6 +107,7 @@ VALVE_AT_POS2,Constant,Int,5,
 VALVE_FAULT,Constant,Int,9,Status_Param клапану/засувки — аварія (FLTCode активний)
 ROUTE_REJ_GRAIN_NOT_SET,Constant,UInt,206,
 ROUTE_REJ_GRAIN_MISMATCH,Constant,UInt,207,
+ROUTE_REJ_SILOS_GRAIN_MISMATCH,Constant,UInt,208,Відхилено — неспівпадіння типу зерна між силосами
 TimeoutMs_Separator_Feedback,Constant,DInt,5000,Таймаут зворотного зв'язку сепаратора (мс)
 TimeoutMs_Separator_FeedbackPause,Constant,DInt,2000,Пауза при втраті зворотнього зв'язку сепаратор (мс)
 TYPE_FEEDER,Constant,USInt,10,

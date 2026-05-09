@@ -1,6 +1,7 @@
 ﻿FUNCTION "FC_RouteFSM" : Void
+﻿FUNCTION "FC_RouteFSM" : Void
 { S7_Optimized_Access := 'TRUE' }
-VERSION : 4.5
+VERSION : 4.4
 // ==============================================================================
 // FC_RouteFSM - Керування маршрутом (Mailbox Pattern v4.0)
 // ==============================================================================
@@ -180,13 +181,7 @@ VERSION : 4.5
       stepDelayMs : DInt;   // індивідуальна затримка з механізму (StartDelayMs/StopDelayMs)
       grainTypePit : Int;   // тип зерна ями (для перевірки сумісності)
       grainTypeSilo : Int;  // тип зерна силосу (для перевірки сумісності)
-      firstSiloGrainType : Int; // тип першого силосу в маршруті
-      siloCnt : Int;            // кількість силосів у маршрутi
-      siloMissingType : Bool;   // TRUE = один із силосів має незаданий тип
-      siloGrainMismatch : Bool; // TRUE = в маршруті два силоси з різними типами зерна
       forceGrainType : Bool; // TRUE = силос має Force_Code BIT10 — ігнорувати перевірку GrainType
-      hasPit  : Bool;        // TRUE = у маршруті є яма
-      hasSilo : Bool;        // TRUE = у маршруті є силос
    END_VAR
 
 
@@ -206,6 +201,14 @@ BEGIN
 	IF #Fsm.stepCnt < 1 THEN
 	    #Fsm.stepCnt := 1;
 	END_IF;
+    // Обновляем количество шагов только при обнаружении фронта запуска
+    IF #Fsm.startEdge THEN
+        #Fsm.stepCnt := USINT_TO_INT(#Cmd.RC_StepCount);
+        IF #Fsm.stepCnt < 1 THEN
+            #Fsm.stepCnt := 1;
+        END_IF;
+    END_IF;
+
 	IF #Fsm.stepCnt > "ROUTE_MAX_STEPS" THEN
 	    #Fsm.stepCnt := "ROUTE_MAX_STEPS";
 	END_IF;
@@ -375,36 +378,19 @@ BEGIN
 	            END_FOR;
 	            
 	            IF #Fsm.RF_State = "ROUTE_STS_VALIDATING" THEN
-// Перевірка GrainType: яма і силос повинні мати однаковий ненульовий тип,
-                // а якщо в маршруті два силоси — їхні типи також повинні співпадати.
-                #grainTypePit := 0;
-                #grainTypeSilo := 0;
-                #firstSiloGrainType := 0;
-                #siloCnt := 0;
-                #siloMissingType := FALSE;
-                #siloGrainMismatch := FALSE;
-                #forceGrainType := FALSE;
-                #hasPit := FALSE;
-                #hasSilo := FALSE;
-                
-                FOR #Fsm.i := 1 TO #Fsm.stepCnt DO
-                    #Fsm.slot := #Cmd.RC_Steps[#Fsm.i].RS_Slot;
-                    IF #Fsm.slot <= "MECHS_COUNT" THEN
-                        IF #Mechs[#Fsm.slot].DeviceType = "TYPE_Receiving_PIT" THEN
-                            #hasPit := TRUE;
-                            #grainTypePit := "DB_Mechs".ReceivingPit[#Mechs[#Fsm.slot].TypedIndex].GrainType;
-                        ELSIF #Mechs[#Fsm.slot].DeviceType = "TYPE_SILOS" THEN
-                            #hasSilo := TRUE;
-                            #siloCnt := #siloCnt + 1;
-                            #grainTypeSilo := "DB_Mechs".Silos[#Mechs[#Fsm.slot].TypedIndex].GrainType;
-                            IF #grainTypeSilo = 0 THEN
-                                #siloMissingType := TRUE;
-                            END_IF;
-                            IF #siloCnt = 1 THEN
-                                #firstSiloGrainType := #grainTypeSilo;
-                            ELSIF #firstSiloGrainType <> #grainTypeSilo THEN
-                                #siloGrainMismatch := TRUE;
-                            END_IF;
+	                // Перевірка GrainType: яма і силос повинні мати однаковий ненульовий тип
+	                #grainTypePit := 0;
+	                #grainTypeSilo := 0;
+	                #forceGrainType := FALSE;
+	                
+	                FOR #Fsm.i := 1 TO #Fsm.stepCnt DO
+	                    #Fsm.slot := #Cmd.RC_Steps[#Fsm.i].RS_Slot;
+	                    IF #Fsm.slot <= "MECHS_COUNT" THEN
+	                        IF #Mechs[#Fsm.slot].DeviceType = "TYPE_RECEIVING_PIT" THEN
+	                            #grainTypePit := "DB_Mechs".ReceivingPit[#Mechs[#Fsm.slot].TypedIndex].GrainType;
+	                        ELSIF #Mechs[#Fsm.slot].DeviceType = "TYPE_SILOS" THEN
+	                            #grainTypeSilo := "DB_Mechs".Silos[#Mechs[#Fsm.slot].TypedIndex].GrainType;
+	                            // BIT10 (1024) = forceGrainType — ігнорувати перевірку зерна
 	                            IF (#Mechs[#Fsm.slot].Force_Code AND 1024) <> 0 THEN
 	                                #forceGrainType := TRUE;
 	                            END_IF;
@@ -412,23 +398,39 @@ BEGIN
 	                    END_IF;
 	                END_FOR;
 	                
+	                // Яма в маршруті: GrainType повинен бути не 0
 	                IF NOT #forceGrainType THEN
-                    // Силос в маршруті і один із силосів не має заданого типу
-                    IF #hasSilo AND #siloMissingType THEN
-                        #Fsm.RF_State := "ROUTE_STS_REJECTED";
-                        #Fsm.RF_ResultCode := "ROUTE_REJ_GRAIN_NOT_SET";
-                    // Яма в маршруті і її тип = 0
-                    ELSIF #hasPit AND #grainTypePit = 0 THEN
-                        #Fsm.RF_State := "ROUTE_STS_REJECTED";
-                        #Fsm.RF_ResultCode := "ROUTE_REJ_GRAIN_NOT_SET";
-                    // Два силоси в маршруті і їхні типи не співпадають
-                    ELSIF #siloGrainMismatch THEN
-                        #Fsm.RF_State := "ROUTE_STS_REJECTED";
-                        #Fsm.RF_ResultCode := "ROUTE_REJ_SILOS_GRAIN_MISMATCH";
-                    // Обидва (яма + силос) в маршруті і типи не співпадають
-                    ELSIF #hasSilo AND #hasPit AND #firstSiloGrainType <> #grainTypePit THEN
+	                    // Яма або силос в маршруті з GrainType=0 — не дозволено
+	                    IF #grainTypePit = 0 AND #grainTypeSilo = 0
+	                        AND (#grainTypePit <> #grainTypeSilo OR #grainTypeSilo = 0) THEN
+	                        // Обидва = 0: перевіряємо чи є яма або силос в маршруті
+	                        IF #grainTypePit = 0 AND #grainTypeSilo = 0 THEN
+	                            // Обидва нуль
+	                            // Якщо є силос або яма в маршруті — відхиляємо
+	                            FOR #Fsm.i := 1 TO #Fsm.stepCnt DO
+	                                #Fsm.slot := #Cmd.RC_Steps[#Fsm.i].RS_Slot;
+	                                IF #Fsm.slot <= "MECHS_COUNT" THEN
+	                                    IF (#Mechs[#Fsm.slot].DeviceType = "TYPE_Receiving_PIT")
+	                                        OR (#Mechs[#Fsm.slot].DeviceType = "TYPE_SILOS") THEN
+	                                        #Fsm.RF_State := "ROUTE_STS_REJECTED";
+	                                        #Fsm.RF_ResultCode := "ROUTE_REJ_GRAIN_NOT_SET";
+	                                        EXIT;
+	                                    END_IF;
+	                                END_IF;
+	                            END_FOR;
+	                        END_IF;
+	                    ELSIF #grainTypeSilo = 0 AND #grainTypePit = 0 THEN
+	                        ; // ні ями ні силосу в маршруті — пропускаємо
+	                    ELSIF #grainTypePit <> 0 AND #grainTypeSilo <> 0
+	                        AND #grainTypePit <> #grainTypeSilo THEN
 	                        #Fsm.RF_State := "ROUTE_STS_REJECTED";
 	                        #Fsm.RF_ResultCode := "ROUTE_REJ_GRAIN_MISMATCH";
+	                    ELSIF #grainTypePit = 0 AND #grainTypeSilo <> 0 THEN
+	                        #Fsm.RF_State := "ROUTE_STS_REJECTED";
+	                        #Fsm.RF_ResultCode := "ROUTE_REJ_GRAIN_NOT_SET";
+	                    ELSIF #grainTypeSilo = 0 AND #grainTypePit <> 0 THEN
+	                        #Fsm.RF_State := "ROUTE_STS_REJECTED";
+	                        #Fsm.RF_ResultCode := "ROUTE_REJ_GRAIN_NOT_SET";
 	                    END_IF;
 	                END_IF;
 	            END_IF;
