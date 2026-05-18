@@ -2479,7 +2479,12 @@
           "port_order": 1
         }
       ],
-      "internal_connections": []
+      "internal_connections": [
+        {
+          "in_port": "GT21.3_IN",
+          "out_port": "GT21.3_OUT"
+        }
+      ]
     },
     {
       "name": "GT21.2",
@@ -2573,8 +2578,8 @@
       "id": "21",
       "type": "Redler",
       "description": null,
-      "pos_x": 2704,
-      "pos_y": -1040,
+      "pos_x": 2688,
+      "pos_y": -1056,
       "ports": [
         {
           "direction": "in",
