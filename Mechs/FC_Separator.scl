@@ -20,19 +20,13 @@ VERSION : 0.3
 BEGIN
 	
 	REGION "0) Декодування форсування"
-	    // BIT0(1)=forceBreaker, BIT8(256)=forceFeedback, BIT6(64)=forceStopTimeout
-	    #forceBreaker := (#B.Force_Code AND 1) <> 0;
+	    // BIT8(256)=forceFeedback, BIT6(64)=forceStopTimeout
 	    #forceFeedback := (#B.Force_Code AND 256) <> 0;
 	    #forceStopTimeout := (#B.Force_Code AND 64) <> 0;
 	END_REGION
 	
 	REGION "1) RESET (Тільки за умови усунення причини)"
 	    IF #B.Cmd = "CMD_RESET" THEN
-	        IF (#B.FLTCode AND "FLT_BREAKER") <> 0 THEN
-	            IF #S.DI_Breaker_OK OR #forceBreaker THEN
-	                #B.FLTCode := #B.FLTCode AND NOT "FLT_BREAKER";
-	            END_IF;
-	        END_IF;
 	        IF (#B.FLTCode AND "FLT_NO_FEEDBACK") <> 0 THEN
 	            IF #S.DI_Feedback_OK OR #forceFeedback THEN
 	                #B.FLTCode := #B.FLTCode AND NOT "FLT_NO_FEEDBACK";
@@ -69,19 +63,12 @@ BEGIN
 	END_REGION
 	
 	REGION "3) Моніторинг аварій (Diagnostic Latch)"
-	    IF NOT #isBlocked THEN
-	        IF NOT #S.DI_Breaker_OK THEN
-	            #B.FLTCode := #B.FLTCode OR "FLT_BREAKER";
-	        END_IF;
-	    END_IF;
+	    // DI_Breaker_OK не використовується для Separator
 	END_REGION
 	
 	REGION "4) Визначення виконавчої аварії"
 	    #isFault := FALSE;
 	    IF #B.FLTCode <> "FLT_NONE" THEN
-	        IF (#B.FLTCode AND "FLT_BREAKER") <> 0 AND NOT #forceBreaker THEN
-	            #isFault := TRUE;
-	        END_IF;
 	        IF (#B.FLTCode AND "FLT_NO_FEEDBACK") <> 0 AND NOT #forceFeedback THEN
 	            #isFault := TRUE;
 	        END_IF;

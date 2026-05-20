@@ -30,6 +30,17 @@ BEGIN
 	            END_IF;
 	        END_FOR;
 	        
+			//Симуляція Сілосів
+			FOR #i := 0 TO "SILOS_COUNT" DO
+	            IF "DB_SimConfig".Silos[#i].Enable THEN
+	                "FC_SimSilos"(
+							                               SilosIdx := #i,
+	                               Enable := "DB_SimConfig".Silos[#i].Enable
+	                );
+	            END_IF;
+	        END_FOR;
+					
+
 	        // Симуляція норій
 	        FOR #i := 0 TO "NORIAS_COUNT" DO
 	            IF "DB_SimConfig".Noria[#i].Enable THEN
@@ -82,10 +93,7 @@ BEGIN
 	                "FC_SimFeeder"(
 	                               FeederIdx := #i,
 	                               StartupTime_ms := "DB_SimConfig".Feeder[#i].StartupTime_ms,
-	                               StopTime_ms := "DB_SimConfig".Feeder[#i].StopTime_ms,
-	                               SimFault_Breaker := "DB_SimConfig".Feeder[#i].SimFault_Breaker,
-	                               FaultTime_Breaker_ms := "DB_SimConfig".Feeder[#i].FaultTime_Breaker_ms,
-	                               ManualReset := "DB_SimConfig".Feeder[#i].ManualReset
+	                               StopTime_ms := "DB_SimConfig".Feeder[#i].StopTime_ms
 	                );
 	            END_IF;
 	        END_FOR;
@@ -102,15 +110,14 @@ BEGIN
 	        END_FOR;
 	        FOR #i := 0 TO "SEPARATORS_COUNT" DO
 	            IF "DB_SimConfig".Separator[#i].Enable THEN
-	                "FC_SimSeparator"(FaultTime_Breaker_ms := "DB_SimConfig".Separator[#i].FaultTime_Breaker_ms,
-	                                  ManualReset := "DB_SimConfig".Separator[#i].ManualReset,
-	                                  SeparatorIdx := #i,
-	                                  SimFault_Breaker := "DB_SimConfig".Separator[#i].SimFault_Breaker,
-	                                  StartupTime_ms := "DB_SimConfig".Separator[#i].StartupTime_ms,
-	                                  StopTime_ms := "DB_SimConfig".Separator[#i].StopTime_ms)
-	                ;
+                "FC_SimSeparator"(
+                                  SeparatorIdx := #i,
+                                  StartupTime_ms := "DB_SimConfig".Separator[#i].StartupTime_ms,
+                                  StopTime_ms := "DB_SimConfig".Separator[#i].StopTime_ms
+                );
 	            END_IF;
 	        END_FOR;
+	        
 	    END_REGION
 	    
 	    "FC_ManualMechCmdHandler"();

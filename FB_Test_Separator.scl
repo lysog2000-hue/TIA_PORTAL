@@ -56,7 +56,7 @@ BEGIN
 	#S.FeedbackLostMs := 0;
 
 	// HAL
-	#S.DI_Breaker_OK := TRUE;
+	// DI_Breaker_OK removed for Separator
 	#S.DI_Feedback_OK := FALSE;
 
 	// дефолт очікувань
@@ -83,7 +83,7 @@ BEGIN
 	    3:
 	        #B.Status := "STS_FAULT";
 	        #B.FLTCode := "FLT_BREAKER";
-	        #S.DI_Breaker_OK := TRUE;
+			// DI_Breaker_OK removed for Separator
 	        #B.Cmd := "CMD_RESET";
 
 	        #Exp_Status := "STS_IDLE";
@@ -103,7 +103,7 @@ BEGIN
 	    5:
 	        #B.Status := "STS_FAULT";
 	        #B.FLTCode := "FLT_BREAKER";
-	        #S.DI_Breaker_OK := FALSE;
+			// DI_Breaker_OK removed for Separator
 	        #B.Cmd := "CMD_RESET";
 
 	        #Exp_Status := "STS_FAULT";
@@ -121,7 +121,7 @@ BEGIN
 
 	    // C1: Breaker аварія
 	    7:
-	        #S.DI_Breaker_OK := FALSE;
+			// DI_Breaker_OK removed for Separator
 	        #Exp_Status := "STS_FAULT";
 	        #Exp_FLTCode := "FLT_BREAKER";
 
@@ -136,14 +136,14 @@ BEGIN
 	    // C3: Breaker пріоритет над No_Feedback
 	    9:
 	        #B.Status := "STS_RUNNING";
-	        #S.DI_Breaker_OK := FALSE;
+			// DI_Breaker_OK removed for Separator
 	        #S.DI_Feedback_OK := FALSE;
 	        #Exp_Status := "STS_FAULT";
 	        #Exp_FLTCode := "FLT_BREAKER";
 
 	    // C4: Форсування BREAKER (BIT0) — latch ставить FLTCode, але статус не FAULT
 	    10:
-	        #S.DI_Breaker_OK := FALSE;
+			// DI_Breaker_OK removed for Separator
 	        #B.Force_Code := 1; // BIT0
 	        #Exp_Status := "STS_IDLE";
 	        #Exp_FLTCode := "FLT_BREAKER";
@@ -161,7 +161,7 @@ BEGIN
 	    12:
 	        #B.Status := "STS_FAULT";
 	        #B.FLTCode := "FLT_BREAKER";
-	        #S.DI_Breaker_OK := FALSE;
+			// DI_Breaker_OK removed for Separator
 	        #B.Force_Code := 1; // BIT0
 	        #B.Cmd := "CMD_RESET";
 
@@ -293,7 +293,7 @@ BEGIN
 	    29:
 	        #B.Status := "STS_FAULT";
 	        #B.FLTCode := "FLT_BREAKER";
-	        #S.DI_Breaker_OK := TRUE;
+			// DI_Breaker_OK removed for Separator
 	        #S.StartMs := 12345;
 	        #S.FeedbackLostMs := 67890;
 	        #B.Cmd := "CMD_RESET";
