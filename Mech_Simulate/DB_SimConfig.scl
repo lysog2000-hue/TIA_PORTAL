@@ -1,5 +1,5 @@
-п»ї// ==============================================================================
-// DB_SimConfig - РљРѕРЅС„С–РіСѓСЂР°С†С–СЏ СЃРёРјСѓР»СЏС‚РѕСЂС–РІ РјРµС…Р°РЅС–Р·РјС–РІ
+// ==============================================================================
+// DB_SimConfig - Конфігурація симуляторів механізмів
 // ==============================================================================
 // Generated: 2026-03-20 09:40:14
 // Source   : graph.json
@@ -424,8 +424,6 @@ BEGIN
     Noria[0].FaultTime_Breaker_ms := 10000;
     Noria[0].SimFault_Alignment := FALSE;
     Noria[0].FaultTime_Alignment_ms := 20000;
-    Noria[0].SimFault_Overflow := FALSE;
-    Noria[0].FaultTime_Overflow_ms := 15000;
     Noria[0].ManualReset := FALSE;
 
     // Noria "NR2" (id=52, TypedIndex=1)
@@ -436,8 +434,6 @@ BEGIN
     Noria[1].FaultTime_Breaker_ms := 10000;
     Noria[1].SimFault_Alignment := FALSE;
     Noria[1].FaultTime_Alignment_ms := 20000;
-    Noria[1].SimFault_Overflow := FALSE;
-    Noria[1].FaultTime_Overflow_ms := 15000;
     Noria[1].ManualReset := FALSE;
 
     // Noria "NR3" (id=53, TypedIndex=2)
@@ -448,8 +444,6 @@ BEGIN
     Noria[2].FaultTime_Breaker_ms := 10000;
     Noria[2].SimFault_Alignment := FALSE;
     Noria[2].FaultTime_Alignment_ms := 20000;
-    Noria[2].SimFault_Overflow := FALSE;
-    Noria[2].FaultTime_Overflow_ms := 15000;
     Noria[2].ManualReset := FALSE;
 
     // Noria "NR4" (id=54, TypedIndex=3)
@@ -460,8 +454,6 @@ BEGIN
     Noria[3].FaultTime_Breaker_ms := 10000;
     Noria[3].SimFault_Alignment := FALSE;
     Noria[3].FaultTime_Alignment_ms := 20000;
-    Noria[3].SimFault_Overflow := FALSE;
-    Noria[3].FaultTime_Overflow_ms := 15000;
     Noria[3].ManualReset := FALSE;
 
     // Noria "NR5" (id=55, TypedIndex=4)
@@ -472,8 +464,6 @@ BEGIN
     Noria[4].FaultTime_Breaker_ms := 10000;
     Noria[4].SimFault_Alignment := FALSE;
     Noria[4].FaultTime_Alignment_ms := 20000;
-    Noria[4].SimFault_Overflow := FALSE;
-    Noria[4].FaultTime_Overflow_ms := 15000;
     Noria[4].ManualReset := FALSE;
 
     // Noria "NR6" (id=56, TypedIndex=5)
@@ -484,8 +474,6 @@ BEGIN
     Noria[5].FaultTime_Breaker_ms := 10000;
     Noria[5].SimFault_Alignment := FALSE;
     Noria[5].FaultTime_Alignment_ms := 20000;
-    Noria[5].SimFault_Overflow := FALSE;
-    Noria[5].FaultTime_Overflow_ms := 15000;
     Noria[5].ManualReset := FALSE;
 
     // Noria "NR7" (id=57, TypedIndex=6)
@@ -496,8 +484,6 @@ BEGIN
     Noria[6].FaultTime_Breaker_ms := 10000;
     Noria[6].SimFault_Alignment := FALSE;
     Noria[6].FaultTime_Alignment_ms := 20000;
-    Noria[6].SimFault_Overflow := FALSE;
-    Noria[6].FaultTime_Overflow_ms := 15000;
     Noria[6].ManualReset := FALSE;
 
     // Noria "NR8" (id=58, TypedIndex=7)
@@ -508,8 +494,6 @@ BEGIN
     Noria[7].FaultTime_Breaker_ms := 10000;
     Noria[7].SimFault_Alignment := FALSE;
     Noria[7].FaultTime_Alignment_ms := 20000;
-    Noria[7].SimFault_Overflow := FALSE;
-    Noria[7].FaultTime_Overflow_ms := 15000;
     Noria[7].ManualReset := FALSE;
 
     // Noria "NR9" (id=59, TypedIndex=8)
@@ -520,8 +504,6 @@ BEGIN
     Noria[8].FaultTime_Breaker_ms := 10000;
     Noria[8].SimFault_Alignment := FALSE;
     Noria[8].FaultTime_Alignment_ms := 20000;
-    Noria[8].SimFault_Overflow := FALSE;
-    Noria[8].FaultTime_Overflow_ms := 15000;
     Noria[8].ManualReset := FALSE;
 
     // Noria "NR10" (id=60, TypedIndex=9)
@@ -532,8 +514,6 @@ BEGIN
     Noria[9].FaultTime_Breaker_ms := 10000;
     Noria[9].SimFault_Alignment := FALSE;
     Noria[9].FaultTime_Alignment_ms := 20000;
-    Noria[9].SimFault_Overflow := FALSE;
-    Noria[9].FaultTime_Overflow_ms := 15000;
     Noria[9].ManualReset := FALSE;
 
     // Noria "NR11" (id=61, TypedIndex=10)
@@ -544,8 +524,6 @@ BEGIN
     Noria[10].FaultTime_Breaker_ms := 10000;
     Noria[10].SimFault_Alignment := FALSE;
     Noria[10].FaultTime_Alignment_ms := 20000;
-    Noria[10].SimFault_Overflow := FALSE;
-    Noria[10].FaultTime_Overflow_ms := 15000;
     Noria[10].ManualReset := FALSE;
 
     // Noria "NR12" (id=62, TypedIndex=11)
@@ -556,8 +534,6 @@ BEGIN
     Noria[11].FaultTime_Breaker_ms := 10000;
     Noria[11].SimFault_Alignment := FALSE;
     Noria[11].FaultTime_Alignment_ms := 20000;
-    Noria[11].SimFault_Overflow := FALSE;
-    Noria[11].FaultTime_Overflow_ms := 15000;
     Noria[11].ManualReset := FALSE;
 
     // === Gate2P ===
@@ -1209,7 +1185,7 @@ BEGIN
     Gate2P[80].FaultTime_Breaker_ms := 10000;
     Gate2P[80].ManualReset := FALSE;
 
-    // === ReceivingPit (Р·Р°РіР»СѓС€РєРё) ===
+    // === ReceivingPit (заглушки) ===
     // ReceivingPit "RP1" (id=305, TypedIndex=0)
     ReceivingPit[0].Enable := TRUE;
     
@@ -1457,8 +1433,8 @@ BEGIN
     Valve3P[29].FaultTime_Breaker_ms := 10000;
     Valve3P[29].ManualReset := FALSE;
 
-    // === Silos (Р·Р°РіР»СѓС€РєРё) ===
-    // Silos С–РЅРґРµРєСЃРё 0..27
+    // === Silos (заглушки) ===
+    // Silos індекси 0..27
 
         Silos[0].Enable := TRUE;
 Silos[1].Enable := TRUE;
@@ -1489,8 +1465,8 @@ Silos[25].Enable := TRUE;
 Silos[26].Enable := TRUE;
 Silos[27].Enable := TRUE;
 
-    // === Sushka (Р·Р°РіР»СѓС€РєРё) ===
-    // Sushka С–РЅРґРµРєСЃРё 0..3
+    // === Sushka (заглушки) ===
+    // Sushka індекси 0..3
 
         Sushka[0].Enable := TRUE;
 Sushka[1].Enable := TRUE;

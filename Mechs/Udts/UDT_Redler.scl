@@ -5,13 +5,11 @@ STRUCT
     DI_Speed_OK     : BOOL;    // контроль швидкості (тахо)
     DI_Breaker_OK   : BOOL;    // автомат захисту
     DI_Overflow_OK  : BOOL;    // датчик переповнення
-    DI_Feedback_OK  : BOOL;    // зворотний зв'язок контактора
     DO_Run          : BOOL;    // вихід на контактор
 
     // ===== Стан/таймінги редлера =====
     StartMs         : DINT;    // час старту (мітка)
     SpeedLostMs     : DINT;    // мітка втрати Speed_OK
-    FeedbackLostMs  : DINT;    // мітка втрати Feedback_OK
     StopMs          : DINT;    // мітка початку зупинки (для таймауту вибігу)
     LastStopMs      : DINT;    // час останньої зупинки (для мін. інтервалу перезапуску)
 

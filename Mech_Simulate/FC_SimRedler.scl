@@ -1,22 +1,19 @@
-ÔªøFUNCTION "FC_SimRedler" : Void
+FUNCTION "FC_SimRedler" : Void
 { S7_Optimized_Access := 'TRUE' }
 VERSION : 2.1
 // ==============================================================================
-// FC_SimRedler - –°–∏–º—É–ª—è—Ç–æ—Ä —Ñ—ñ–∑–∏–∫–∏ —Ç–∞ –Ω–µ—Å–ø—Ä–∞–≤–Ω–æ—Å—Ç–µ–π —Ä–µ–¥–ª–µ—Ä–∞
+// FC_SimRedler - —ËÏÛÎˇÚÓ Ù≥ÁËÍË Ú‡ ÌÂÒÔ‡‚ÌÓÒÚÂÈ Â‰ÎÂ‡
 // ==============================================================================
-// –í–µ—Ä—Å—ñ—è: 2.1.0
-// –î–∞—Ç–∞: 2026-04-10
+// ¬ÂÒ≥ˇ: 2.1.0
+// ƒ‡Ú‡: 2026-04-10
 // ==============================================================================
-// –ó–º—ñ–Ω–∏ v2.1:
-//   + –î–æ–¥–∞–Ω–æ —Å–∏–º—É–ª—è—Ü—ñ—é DI_Feedback_OK (PHASE 3) ‚Äî —Ñ—ñ–¥–±–µ–∫ –∫–æ–Ω—Ç–∞–∫—Ç–æ—Ä–∞
-//   + –î–æ–¥–∞–Ω–æ —Å–∏–º—É–ª—è—Ü—ñ—é SimFault_Feedback (PHASE 5) ‚Äî FLT_NO_FEEDBACK
-//   + –î–æ–¥–∞–Ω–æ –ø–∞—Ä–∞–º–µ—Ç—Ä–∏ SimFault_Feedback —Ç–∞ FaultTime_Feedback_ms
-//   + –î–æ–¥–∞–Ω–æ ManualReset –¥–ª—è Feedback_Tripped
+// «Ï≥ÌË v2.1:
+//   + ƒÓ‰‡ÌÓ ÒËÏÛÎˇˆ≥˛ DI_Speed_OK (PHASE 2) ó Ú‡ıÓ
+//   + ƒÓ‰‡ÌÓ ÒËÏÛÎˇˆ≥˛ SimFault_Breaker Ú‡ SimFault_Overflow
 // ==============================================================================
-// –ö–æ–º—É–Ω—ñ–∫–∞—Ü—ñ—è –∑ FC_Redler –¢–Ü–õ–¨–ö–ò —á–µ—Ä–µ–∑ —Å–∏–≥–Ω–∞–ª–∏:
-//   - –ß–∏—Ç–∞—î:  DB_Mechs.Redler[RedlerIdx].DO_Run
-//   - –ü–∏—à–µ:   DB_Mechs.Redler[RedlerIdx].DI_Speed_OK
-//             DB_Mechs.Redler[RedlerIdx].DI_Feedback_OK
+//  ÓÏÛÌ≥Í‡ˆ≥ˇ Á FC_Redler “≤À‹ » ˜ÂÂÁ ÒË„Ì‡ÎË:
+//   - ◊ËÚ‡∫:  DB_Mechs.Redler[RedlerIdx].DO_Run
+//   - œË¯Â:   DB_Mechs.Redler[RedlerIdx].DI_Speed_OK
 //             DB_Mechs.Redler[RedlerIdx].DI_Breaker_OK
 //             DB_Mechs.Redler[RedlerIdx].DI_Overflow_OK
 // ==============================================================================
@@ -28,8 +25,6 @@ VERSION : 2.1
       FaultTime_Breaker_ms : DInt;
       SimFault_Overflow : Bool;
       FaultTime_Overflow_ms : DInt;
-      SimFault_Feedback : Bool;
-      FaultTime_Feedback_ms : DInt;
       ManualReset : Bool;
    END_VAR
 
@@ -41,7 +36,6 @@ VERSION : 2.1
       stopTimeout : Bool;
       breakerTimeout : Bool;
       overflowTimeout : Bool;
-      feedbackTimeout : Bool;
    END_VAR
 
 
@@ -56,17 +50,12 @@ BEGIN
 	    #idx := #RedlerIdx;
 	    
 	    // =========================================================
-	    // PHASE 0: –†—É—á–Ω–∏–π —Å–∫–∏–¥ –∞–≤–∞—Ä—ñ–π
+	    // PHASE 0: –Û˜ÌËÈ ÒÍË‰ ‡‚‡≥È
 	    // =========================================================
 	    IF #ManualReset THEN
 	        "DB_SimMechs".Redler[#idx].Breaker_Tripped := FALSE;
 	        "DB_SimMechs".Redler[#idx].Overflow_Tripped := FALSE;
-	        "DB_SimMechs".Redler[#idx].Feedback_Tripped := FALSE;
-	    END_IF;
-	    
-	    // =========================================================
-	    // PHASE 1: Edge detection DO_Run
-	    // =========================================================
+	END_IF;
 	    IF "DB_Mechs".Redler[#idx].DO_Run AND NOT "DB_SimMechs".Redler[#idx].LastDO_Run THEN
 	        "DB_SimMechs".Redler[#idx].MotorStartTck := TIME_TCK();
 	        "DB_SimMechs".Redler[#idx].FaultStartTck := TIME_TCK();
@@ -85,7 +74,7 @@ BEGIN
 	    "DB_SimMechs".Redler[#idx].LastDO_Run := "DB_Mechs".Redler[#idx].DO_Run;
 	    
 	    // =========================================================
-	    // PHASE 2: –°–∏–º—É–ª—è—Ü—ñ—è DI_Speed_OK (—Ç–∞—Ö–æ)
+	    // PHASE 2: —ËÏÛÎˇˆ≥ˇ DI_Speed_OK (Ú‡ıÓ)
 	    // =========================================================
 	    IF "DB_SimMechs".Redler[#idx].IsSpinningUp THEN
 	        #startupTimeout := "FC_TimeElapsedMs"(
@@ -120,30 +109,7 @@ BEGIN
 	    END_IF;
 	    
 	    // =========================================================
-	    // PHASE 3: –°–∏–º—É–ª—è—Ü—ñ—è DI_Feedback_OK (—Ñ—ñ–¥–±–µ–∫ –∫–æ–Ω—Ç–∞–∫—Ç–æ—Ä–∞)
-	    // =========================================================
-	    IF "DB_SimMechs".Redler[#idx].IsSpinningUp THEN
-	        "DB_Mechs".Redler[#idx].DI_Feedback_OK := FALSE;
-	    ELSIF "DB_SimMechs".Redler[#idx].IsSpinningDown THEN
-	        #stopTimeout := "FC_TimeElapsedMs"(
-	                                           StartTck := "DB_SimMechs".Redler[#idx].MotorStopTck,
-	                                           TimeoutMs := #StopTime_ms,
-	                                           ElapsedMs => #elapsedMs,
-	                                           NowTck => #nowTck
-	        );
-	        IF #stopTimeout THEN
-	            "DB_Mechs".Redler[#idx].DI_Feedback_OK := FALSE;
-	        ELSE
-	            "DB_Mechs".Redler[#idx].DI_Feedback_OK := TRUE;
-	        END_IF;
-	    ELSIF "DB_SimMechs".Redler[#idx].IsMotorRunning THEN
-	        "DB_Mechs".Redler[#idx].DI_Feedback_OK := TRUE;
-	    ELSE
-	        "DB_Mechs".Redler[#idx].DI_Feedback_OK := FALSE;
-	    END_IF;
-	    
-	    // =========================================================
-	    // PHASE 4: –°–∏–º—É–ª—è—Ü—ñ—è –∞–≤–∞—Ä—ñ—ó BREAKER
+	    // PHASE 4: —ËÏÛÎˇˆ≥ˇ ‡‚‡≥ø BREAKER
 	    // =========================================================
 	    IF #SimFault_Breaker AND "DB_SimMechs".Redler[#idx].IsMotorRunning AND NOT "DB_SimMechs".Redler[#idx].Breaker_Tripped THEN
 	        #breakerTimeout := "FC_TimeElapsedMs"(
@@ -159,7 +125,7 @@ BEGIN
 	    "DB_Mechs".Redler[#idx].DI_Breaker_OK := NOT "DB_SimMechs".Redler[#idx].Breaker_Tripped;
 	    
 	    // =========================================================
-	    // PHASE 5: –°–∏–º—É–ª—è—Ü—ñ—è –∞–≤–∞—Ä—ñ—ó OVERFLOW
+	    // PHASE 5: —ËÏÛÎˇˆ≥ˇ ‡‚‡≥ø OVERFLOW
 	    // =========================================================
 	    IF #SimFault_Overflow AND "DB_SimMechs".Redler[#idx].IsMotorRunning AND NOT "DB_SimMechs".Redler[#idx].Overflow_Tripped THEN
 	        #overflowTimeout := "FC_TimeElapsedMs"(
@@ -175,22 +141,5 @@ BEGIN
 	    "DB_Mechs".Redler[#idx].DI_Overflow_OK := NOT "DB_SimMechs".Redler[#idx].Overflow_Tripped;
 	    
 	    // =========================================================
-	    // PHASE 6: –°–∏–º—É–ª—è—Ü—ñ—è –∞–≤–∞—Ä—ñ—ó FEEDBACK (FLT_NO_FEEDBACK)
-	    // =========================================================
-	    IF #SimFault_Feedback AND "DB_SimMechs".Redler[#idx].IsMotorRunning AND NOT "DB_SimMechs".Redler[#idx].Feedback_Tripped THEN
-	        #feedbackTimeout := "FC_TimeElapsedMs"(
-	                                               StartTck := "DB_SimMechs".Redler[#idx].FaultStartTck,
-	                                               TimeoutMs := #FaultTime_Feedback_ms,
-	                                               ElapsedMs => #elapsedMs,
-	                                               NowTck => #nowTck
-	        );
-	        IF #feedbackTimeout THEN
-	            "DB_SimMechs".Redler[#idx].Feedback_Tripped := TRUE;
-	        END_IF;
-	    END_IF;
-	    // –Ø–∫—â–æ Feedback_Tripped ‚Äî –ø—Ä–∏–º—É—Å–æ–≤–æ –∑–Ω—ñ–º–∞—î–º–æ DI_Feedback_OK
-	    IF "DB_SimMechs".Redler[#idx].Feedback_Tripped THEN
-	        "DB_Mechs".Redler[#idx].DI_Feedback_OK := FALSE;
-	    END_IF;
-	    
+
 END_FUNCTION

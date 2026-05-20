@@ -25,8 +25,6 @@ BEGIN
 	                               FaultTime_Breaker_ms := "DB_SimConfig".Redler[#i].FaultTime_Breaker_ms,
 	                               SimFault_Overflow := "DB_SimConfig".Redler[#i].SimFault_Overflow,
 	                               FaultTime_Overflow_ms := "DB_SimConfig".Redler[#i].FaultTime_Overflow_ms,
-	                               SimFault_Feedback := "DB_SimConfig".Redler[#i].SimFault_Feedback,
-	                               FaultTime_Feedback_ms := "DB_SimConfig".Redler[#i].FaultTime_Feedback_ms,
 	                               ManualReset := "DB_SimConfig".Redler[#i].ManualReset
 	                );
 	            END_IF;
@@ -43,10 +41,6 @@ BEGIN
 	                              FaultTime_Breaker_ms := "DB_SimConfig".Noria[#i].FaultTime_Breaker_ms,
 	                              SimFault_Alignment := "DB_SimConfig".Noria[#i].SimFault_Alignment,
 	                              FaultTime_Alignment_ms := "DB_SimConfig".Noria[#i].FaultTime_Alignment_ms,
-	                              SimFault_Overflow := "DB_SimConfig".Noria[#i].SimFault_Overflow,
-	                              FaultTime_Overflow_ms:="DB_SimConfig".Noria[#i].FaultTime_Overflow_ms,
-	                              SimFault_Feedback := "DB_SimConfig".Noria[#i].SimFault_Feedback,
-	                              FaultTime_Feedback_ms := "DB_SimConfig".Noria[#i].FaultTime_Feedback_ms,
 	                              ManualReset := "DB_SimConfig".Noria[#i].ManualReset
 	                );
 	            END_IF;

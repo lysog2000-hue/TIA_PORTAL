@@ -13,11 +13,9 @@ BEGIN
 	    "DB_Mechs".Redler[#i].DI_Breaker_OK   := FALSE;
 	    "DB_Mechs".Redler[#i].DI_Overflow_OK  := FALSE;
 	    "DB_Mechs".Redler[#i].DI_Speed_OK     := FALSE;
-	    "DB_Mechs".Redler[#i].DI_Feedback_OK  := FALSE;
 	    "DB_Mechs".Redler[#i].DO_Run          := FALSE;
 	    "DB_Mechs".Redler[#i].StartMs         := 0;
 	    "DB_Mechs".Redler[#i].SpeedLostMs     := 0;
-	    "DB_Mechs".Redler[#i].FeedbackLostMs  := 0;
 	    "DB_Mechs".Redler[#i].StopMs          := 0;
 	    "DB_Mechs".Redler[#i].LastStopMs      := 0;
 	END_FOR;
@@ -25,14 +23,11 @@ BEGIN
 	// === Noria ===
 	FOR #i := 0 TO "NORIAS_COUNT" DO
 	    "DB_Mechs".Noria[#i].DI_Breaker_OK   := FALSE;
-	    "DB_Mechs".Noria[#i].DI_Overflow_OK  := FALSE;
 	    "DB_Mechs".Noria[#i].DI_Alingment_OK := FALSE;
 	    "DB_Mechs".Noria[#i].DI_Speed_OK     := FALSE;
-	    "DB_Mechs".Noria[#i].DI_Feedback_OK  := FALSE;
 	    "DB_Mechs".Noria[#i].DO_Run          := FALSE;
 	    "DB_Mechs".Noria[#i].StartMs         := 0;
 	    "DB_Mechs".Noria[#i].SpeedLostMs     := 0;
-	    "DB_Mechs".Noria[#i].FeedbackLostMs  := 0;
 	    "DB_Mechs".Noria[#i].StopMs          := 0;
 	    "DB_Mechs".Noria[#i].LastStopMs      := 0;
 	END_FOR;
@@ -72,8 +67,8 @@ BEGIN
 	
 	// === Silos ===
 	FOR #i := 0 TO "SILOS_COUNT" DO
-	    "DB_Mechs".Silos[#i].DI_LevelLow  := FALSE;
-	    "DB_Mechs".Silos[#i].DI_LevelHigh := FALSE;
+	    "DB_Mechs".Silos[#i].DI_LevelLow_OK  := FALSE;
+	    "DB_Mechs".Silos[#i].DI_LevelHigh_OK := FALSE;
 	    "DB_Mechs".Silos[#i].AI_Level     := 0;
 	END_FOR;
 	

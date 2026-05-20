@@ -12,7 +12,6 @@ VERSION : 0.6
       forceBreaker : Bool;
       forceOverflow : Bool;
       forceSpeed : Bool;
-      forceFeedback : Bool;
       forceStopTimeout : Bool;
       isFault : Bool;
       isBlocked : Bool;
@@ -22,11 +21,10 @@ VERSION : 0.6
 BEGIN
 	
 	REGION "0) Декодування форсування"
-	    // BIT0(1)=forceBreaker, BIT1(2)=forceOverflow, BIT2(4)=forceSpeed, BIT8(256)=forceFeedback, BIT6(64)=forceStopTimeout
+	    // BIT0(1)=forceBreaker, BIT1(2)=forceOverflow, BIT2(4)=forceSpeed, BIT6(64)=forceStopTimeout
 	    #forceBreaker := (#B.Force_Code AND 1) <> 0;
 	    #forceOverflow := (#B.Force_Code AND 2) <> 0;
 	    #forceSpeed := (#B.Force_Code AND 4) <> 0;
-	    #forceFeedback := (#B.Force_Code AND 256) <> 0;
 	    #forceStopTimeout := (#B.Force_Code AND 64) <> 0;
 	END_REGION
 	
@@ -48,11 +46,6 @@ BEGIN
 	                #B.FLTCode := #B.FLTCode AND NOT "FLT_NO_RUNFB";
 	            END_IF;
 	        END_IF;
-	        IF (#B.FLTCode AND "FLT_NO_FEEDBACK") <> 0 THEN
-	            IF #R.DI_Feedback_OK OR #forceFeedback THEN
-	                #B.FLTCode := #B.FLTCode AND NOT "FLT_NO_FEEDBACK";
-	            END_IF;
-	        END_IF;
 	        IF (#B.FLTCode AND "FLT_STOP_TIMEOUT") <> 0 THEN
 	            IF NOT #R.DI_Speed_OK OR #forceStopTimeout THEN
 	                #B.FLTCode := #B.FLTCode AND NOT "FLT_STOP_TIMEOUT";
@@ -63,7 +56,6 @@ BEGIN
 	            #B.Status := "STS_IDLE";
 	            #R.StartMs := 0;
 	            #R.SpeedLostMs := 0;
-	            #R.FeedbackLostMs := 0;
 	            #R.StopMs := 0;
 	        END_IF;
 	    END_IF;
@@ -107,9 +99,6 @@ BEGIN
 	        IF (#B.FLTCode AND "FLT_NO_RUNFB") <> 0 AND NOT #forceSpeed THEN
 	            #isFault := TRUE;
 	        END_IF;
-	        IF (#B.FLTCode AND "FLT_NO_FEEDBACK") <> 0 AND NOT #forceFeedback THEN
-	            #isFault := TRUE;
-	        END_IF;
 	        IF (#B.FLTCode AND "FLT_STOP_TIMEOUT") <> 0 AND NOT #forceStopTimeout THEN
 	            #isFault := TRUE;
 	        END_IF;
@@ -150,19 +139,17 @@ BEGIN
 	                END_IF;
 	                
 	            "STS_RUNNING":
-	                IF NOT (#R.DI_Feedback_OK OR #forceFeedback) THEN
-	                    IF #R.FeedbackLostMs = 0 THEN
-	                        #R.FeedbackLostMs := TIME_TCK();
-	                    END_IF;
-	                    IF "FC_TimeElapsedMs"(StartTck := #R.FeedbackLostMs, TimeoutMs := "TimeoutMs_Redler_FeedbackPause",
-	                                              ElapsedMs => #elapsedMs, NowTck => #nowTck) THEN
-	                        #B.FLTCode := #B.FLTCode OR "FLT_NO_FEEDBACK";
-	                        #B.Status := "STS_FAULT";
-	                    END_IF;
-	                ELSE
-	                    #R.FeedbackLostMs := 0;
-	                END_IF;
 	                IF NOT (#R.DI_Speed_OK OR #forceSpeed) THEN
+	                    IF #R.SpeedLostMs = 0 THEN
+	                        #R.SpeedLostMs := TIME_TCK();
+	                    END_IF;
+	                    IF "FC_TimeElapsedMs"(StartTck := #R.SpeedLostMs, TimeoutMs := "TimeoutMs_Redler_SpeedPause",
+	                                              ElapsedMs => #elapsedMs, NowTck => #nowTck) THEN
+	                        #B.FLTCode := #B.FLTCode OR "FLT_NO_RUNFB";
+	                        #B.Status := "STS_FAULT";
+	                		ELSE
+	                    #R.SpeedLostMs := 0;
+	                	END_IF;
 	                    IF #R.SpeedLostMs = 0 THEN
 	                        #R.SpeedLostMs := TIME_TCK();
 	                    END_IF;

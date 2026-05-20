@@ -50,13 +50,11 @@ BEGIN
 	
 	#R.StartMs        := 0;
 	#R.SpeedLostMs    := 0;
-	#R.FeedbackLostMs := 0;
 	
 	// HAL — здоровий стан
 	#R.DI_Breaker_OK  := TRUE;
 	#R.DI_Overflow_OK := TRUE;
 	#R.DI_Speed_OK    := FALSE;
-	#R.DI_Feedback_OK := FALSE;
 	
 	// дефолт очікувань
 	#Exp_Status  := #B.Status;
@@ -85,7 +83,6 @@ BEGIN
 	        #R.DI_Overflow_OK := TRUE;
 	        #R.StartMs        := 111;
 	        #R.SpeedLostMs    := 222;
-	        #R.FeedbackLostMs := 333;
 	        #B.Cmd          := "CMD_RESET";
 	        #Exp_Status      := "STS_IDLE";
 	        #Exp_FLTCode     := "FLT_NONE";
@@ -103,7 +100,7 @@ BEGIN
 	    15:
 	        #B.Status         := "STS_FAULT";
 	        #B.FLTCode        := "FLT_NO_FEEDBACK";
-	        #R.DI_Feedback_OK := TRUE;
+	
 	        #B.Cmd            := "CMD_RESET";
 	        #Exp_Status       := "STS_IDLE";
 	        #Exp_FLTCode      := "FLT_NONE";
@@ -163,7 +160,6 @@ BEGIN
 	    11:
 	        #B.Status         := "STS_RUNNING";
 	        #R.DI_Speed_OK    := FALSE;
-	        #R.DI_Feedback_OK := TRUE;
 	        #R.SpeedLostMs    := #now - "TimeoutMs_Redler_SpeedPause" - 1;
 	        #Exp_Status       := "STS_FAULT";
 	        #Exp_FLTCode      := "FLT_NO_RUNFB";
@@ -172,10 +168,7 @@ BEGIN
 	    16:
 	        #B.Status         := "STS_RUNNING";
 	        #R.DI_Speed_OK    := TRUE;
-	        #R.DI_Feedback_OK := FALSE;
-	        #R.FeedbackLostMs := #now - "TimeoutMs_Redler_FeedbackPause" - 1;
 	        #Exp_Status       := "STS_FAULT";
-	        #Exp_FLTCode      := "FLT_NO_FEEDBACK";
 	    
 	    // D6: STOPPING + DI_Speed_OK=FALSE → IDLE
 	    12:
@@ -227,9 +220,6 @@ BEGIN
 	    END_IF;
 	    IF #R.SpeedLostMs <> 0 THEN
 	        #FailMask := #FailMask OR 16#0020;
-	    END_IF;
-	    IF #R.FeedbackLostMs <> 0 THEN
-	        #FailMask := #FailMask OR 16#0040;
 	    END_IF;
 	END_IF;
 	

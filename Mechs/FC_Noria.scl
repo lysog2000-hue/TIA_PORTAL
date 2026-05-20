@@ -10,10 +10,8 @@ VERSION : 0.5
       elapsedMs : DInt;
       nowTck : DInt;
       forceBreaker : Bool;
-      forceOverflow : Bool;
       forceAlingment : Bool;
       forceSpeed : Bool;
-      forceFeedback : Bool;
       forceStopTimeout : Bool;
       isFault : Bool;
       isBlocked : Bool;
@@ -23,12 +21,10 @@ VERSION : 0.5
 BEGIN
 	
 	REGION "0) Декодування форсування"
-	    // BIT0(1)=forceBreaker, BIT1(2)=forceOverflow, BIT2(4)=forceSpeed, BIT3(8)=forceAlingment, BIT8(256)=forceFeedback, BIT6(64)=forceStopTimeout
+	    // BIT0(1)=forceBreaker, BIT2(4)=forceSpeed, BIT3(8)=forceAlingment, BIT6(64)=forceStopTimeout
 	    #forceBreaker := (#B.Force_Code AND 1) <> 0;
-	    #forceOverflow := (#B.Force_Code AND 2) <> 0;
 	    #forceSpeed := (#B.Force_Code AND 4) <> 0;
 	    #forceAlingment := (#B.Force_Code AND 8) <> 0;
-	    #forceFeedback := (#B.Force_Code AND 256) <> 0;
 	    #forceStopTimeout := (#B.Force_Code AND 64) <> 0;
 	END_REGION
 	
@@ -38,11 +34,6 @@ BEGIN
 	        IF (#B.FLTCode AND "FLT_BREAKER") <> 0 THEN
 	            IF #N.DI_Breaker_OK OR #forceBreaker THEN
 	                #B.FLTCode := #B.FLTCode AND NOT "FLT_BREAKER";
-	            END_IF;
-	        END_IF;
-	        IF (#B.FLTCode AND "FLT_OVERFLOW") <> 0 THEN
-	            IF #N.DI_Overflow_OK OR #forceOverflow THEN
-	                #B.FLTCode := #B.FLTCode AND NOT "FLT_OVERFLOW";
 	            END_IF;
 	        END_IF;
 	        IF (#B.FLTCode AND "FLT_ALINGMENT") <> 0 THEN
@@ -55,11 +46,6 @@ BEGIN
 	                #B.FLTCode := #B.FLTCode AND NOT "FLT_NO_RUNFB";
 	            END_IF;
 	        END_IF;
-	        IF (#B.FLTCode AND "FLT_NO_FEEDBACK") <> 0 THEN
-	            IF #N.DI_Feedback_OK OR #forceFeedback THEN
-	                #B.FLTCode := #B.FLTCode AND NOT "FLT_NO_FEEDBACK";
-	            END_IF;
-	        END_IF;
 	        IF (#B.FLTCode AND "FLT_STOP_TIMEOUT") <> 0 THEN
 	            IF NOT #N.DI_Speed_OK OR #forceStopTimeout THEN
 	                #B.FLTCode := #B.FLTCode AND NOT "FLT_STOP_TIMEOUT";
@@ -70,7 +56,6 @@ BEGIN
 	            #B.Status := "STS_IDLE";
 	            #N.StartMs := 0;
 	            #N.SpeedLostMs := 0;
-	            #N.FeedbackLostMs := 0;
 	            #N.StopMs := 0;
 	        END_IF;
 	    END_IF;
@@ -96,9 +81,6 @@ BEGIN
 	        IF NOT #N.DI_Breaker_OK THEN
 	            #B.FLTCode := #B.FLTCode OR "FLT_BREAKER";
 	        END_IF;
-	        IF NOT #N.DI_Overflow_OK THEN
-	            #B.FLTCode := #B.FLTCode OR "FLT_OVERFLOW";
-	        END_IF;
 	        IF NOT #N.DI_Alingment_OK THEN
 	            #B.FLTCode := #B.FLTCode OR "FLT_ALINGMENT";
 	        END_IF;
@@ -112,16 +94,10 @@ BEGIN
 	        IF (#B.FLTCode AND "FLT_BREAKER") <> 0 AND NOT #forceBreaker THEN
 	            #isFault := TRUE;
 	        END_IF;
-	        IF (#B.FLTCode AND "FLT_OVERFLOW") <> 0 AND NOT #forceOverflow THEN
-	            #isFault := TRUE;
-	        END_IF;
 	        IF (#B.FLTCode AND "FLT_ALINGMENT") <> 0 AND NOT #forceAlingment THEN
 	            #isFault := TRUE;
 	        END_IF;
 	        IF (#B.FLTCode AND "FLT_NO_RUNFB") <> 0 AND NOT #forceSpeed THEN
-	            #isFault := TRUE;
-	        END_IF;
-	        IF (#B.FLTCode AND "FLT_NO_FEEDBACK") <> 0 AND NOT #forceFeedback THEN
 	            #isFault := TRUE;
 	        END_IF;
 	        IF (#B.FLTCode AND "FLT_STOP_TIMEOUT") <> 0 AND NOT #forceStopTimeout THEN
@@ -164,18 +140,6 @@ BEGIN
 	                END_IF;
 	                
 	            "STS_RUNNING":
-	                IF NOT (#N.DI_Feedback_OK OR #forceFeedback) THEN
-	                    IF #N.FeedbackLostMs = 0 THEN
-	                        #N.FeedbackLostMs := TIME_TCK();
-	                    END_IF;
-	                    IF "FC_TimeElapsedMs"(StartTck := #N.FeedbackLostMs, TimeoutMs := "TimeoutMs_Noria_FeedbackPause",
-	                                              ElapsedMs => #elapsedMs, NowTck => #nowTck) THEN
-	                        #B.FLTCode := #B.FLTCode OR "FLT_NO_FEEDBACK";
-	                        #B.Status := "STS_FAULT";
-	                    END_IF;
-	                ELSE
-	                    #N.FeedbackLostMs := 0;
-	                END_IF;
 	                IF NOT (#N.DI_Speed_OK OR #forceSpeed) THEN
 	                    IF #N.SpeedLostMs = 0 THEN
 	                        #N.SpeedLostMs := TIME_TCK();
