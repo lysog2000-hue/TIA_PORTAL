@@ -179,15 +179,15 @@ VERSION : 4.5
       doAdvance : Bool;   // TRUE = виконати advance у STOPPING (після Phase A або Phase B)
       stepDelayMs : DInt;   // індивідуальна затримка з механізму (StartDelayMs/StopDelayMs)
       grainTypePit : Int;   // тип зерна ями (для перевірки сумісності)
-      grainTypeSilo : Int;  // тип зерна силосу (для перевірки сумісності)
-      firstSiloGrainType : Int; // тип першого силосу в маршруті
-      siloCnt : Int;            // кількість силосів у маршрутi
+      grainTypeSilo : Int;   // тип зерна силосу (для перевірки сумісності)
+      firstSiloGrainType : Int;   // тип першого силосу в маршруті
+      siloCnt : Int;   // кількість силосів у маршрутi
       siloMissingType : Bool;   // TRUE = один із силосів має незаданий тип
-      siloGrainMismatch : Bool; // TRUE = в маршруті два силоси з різними типами зерна
-      isSiloExcluded : Bool;    // TRUE = силос виключений з перевірки GrainType
-      forceGrainType : Bool; // TRUE = силос має Force_Code BIT10 — ігнорувати перевірку GrainType
-      hasPit  : Bool;        // TRUE = у маршруті є яма
-      hasSilo : Bool;        // TRUE = у маршруті є силос
+      siloGrainMismatch : Bool;   // TRUE = в маршруті два силоси з різними типами зерна
+      isSiloExcluded : Bool;   // TRUE = силос виключений з перевірки GrainType
+      forceGrainType : Bool;   // TRUE = силос має Force_Code BIT10 — ігнорувати перевірку GrainType
+      hasPit : Bool;   // TRUE = у маршруті є яма
+      hasSilo : Bool;   // TRUE = у маршруті є силос
    END_VAR
 
 
@@ -376,65 +376,65 @@ BEGIN
 	            END_FOR;
 	            
 	            IF #Fsm.RF_State = "ROUTE_STS_VALIDATING" THEN
-// Перевірка GrainType: яма і силос повинні мати однаковий ненульовий тип,
-                // а якщо в маршруті два силоси — їхні типи також повинні співпадати.
-                #grainTypePit := 0;
-                #grainTypeSilo := 0;
-                #firstSiloGrainType := 0;
-                #siloCnt := 0;
-                #siloMissingType := FALSE;
-                #siloGrainMismatch := FALSE;
-                #isSiloExcluded := FALSE;
-                #forceGrainType := FALSE;
-                #hasPit := FALSE;
-                #hasSilo := FALSE;
-                
-                FOR #Fsm.i := 1 TO #Fsm.stepCnt DO
-                    #Fsm.slot := #Cmd.RC_Steps[#Fsm.i].RS_Slot;
-                    IF #Fsm.slot <= "MECHS_COUNT" THEN
-                        IF #Mechs[#Fsm.slot].DeviceType = "TYPE_Receiving_PIT" THEN
-                            #hasPit := TRUE;
-                            #grainTypePit := "DB_Mechs".ReceivingPit[#Mechs[#Fsm.slot].TypedIndex].GrainType;
-                        ELSIF #Mechs[#Fsm.slot].DeviceType = "TYPE_SILOS" THEN
-                            #hasSilo := TRUE;
-                            // Исключения: силосы с TypedIndex 1,2,19,25,26,27 не проверяем GrainType
-                            #isSiloExcluded := (#Mechs[#Fsm.slot].TypedIndex = 1 OR #Mechs[#Fsm.slot].TypedIndex = 2 OR
-                                               #Mechs[#Fsm.slot].TypedIndex = 19 OR #Mechs[#Fsm.slot].TypedIndex = 25 OR
-                                               #Mechs[#Fsm.slot].TypedIndex = 26 OR #Mechs[#Fsm.slot].TypedIndex = 27);
-                            IF NOT #isSiloExcluded THEN
-                                #siloCnt := #siloCnt + 1;
-                                #grainTypeSilo := "DB_Mechs".Silos[#Mechs[#Fsm.slot].TypedIndex].GrainType;
-                                IF #grainTypeSilo = 0 THEN
-                                    #siloMissingType := TRUE;
-                                END_IF;
-                                IF #siloCnt = 1 THEN
-                                    #firstSiloGrainType := #grainTypeSilo;
-                                ELSIF #firstSiloGrainType <> #grainTypeSilo THEN
-                                    #siloGrainMismatch := TRUE;
-                                END_IF;
-                            END_IF;
-                            IF (#Mechs[#Fsm.slot].Force_Code AND 1024) <> 0 THEN
-                                #forceGrainType := TRUE;
-                            END_IF;
+	                // Перевірка GrainType: яма і силос повинні мати однаковий ненульовий тип,
+	                // а якщо в маршруті два силоси — їхні типи також повинні співпадати.
+	                #grainTypePit := 0;
+	                #grainTypeSilo := 0;
+	                #firstSiloGrainType := 0;
+	                #siloCnt := 0;
+	                #siloMissingType := FALSE;
+	                #siloGrainMismatch := FALSE;
+	                #isSiloExcluded := FALSE;
+	                #forceGrainType := FALSE;
+	                #hasPit := FALSE;
+	                #hasSilo := FALSE;
+	                
+	                FOR #Fsm.i := 1 TO #Fsm.stepCnt DO
+	                    #Fsm.slot := #Cmd.RC_Steps[#Fsm.i].RS_Slot;
+	                    IF #Fsm.slot <= "MECHS_COUNT" THEN
+	                        IF #Mechs[#Fsm.slot].DeviceType = "TYPE_Receiving_PIT" THEN
+	                            #hasPit := TRUE;
+	                            #grainTypePit := "DB_Mechs".ReceivingPit[#Mechs[#Fsm.slot].TypedIndex].GrainType;
+	                        ELSIF #Mechs[#Fsm.slot].DeviceType = "TYPE_SILOS" THEN
+	                            #hasSilo := TRUE;
+	                            // Исключения: силосы с TypedIndex 1,2,19,25,26,27 не проверяем GrainType
+	                            #isSiloExcluded := (#Mechs[#Fsm.slot].TypedIndex = 1 OR #Mechs[#Fsm.slot].TypedIndex = 2 OR
+	                            #Mechs[#Fsm.slot].TypedIndex = 19 OR #Mechs[#Fsm.slot].TypedIndex = 25 OR
+	                            #Mechs[#Fsm.slot].TypedIndex = 26 OR #Mechs[#Fsm.slot].TypedIndex = 27);
+	                            IF NOT #isSiloExcluded THEN
+	                                #siloCnt := #siloCnt + 1;
+	                                #grainTypeSilo := "DB_Mechs".Silos[#Mechs[#Fsm.slot].TypedIndex].GrainType;
+	                                IF #grainTypeSilo = 0 THEN
+	                                    #siloMissingType := TRUE;
+	                                END_IF;
+	                                IF #siloCnt = 1 THEN
+	                                    #firstSiloGrainType := #grainTypeSilo;
+	                                ELSIF #firstSiloGrainType <> #grainTypeSilo THEN
+	                                    #siloGrainMismatch := TRUE;
+	                                END_IF;
+	                            END_IF;
+	                            IF (#Mechs[#Fsm.slot].Force_Code AND 1024) <> 0 THEN
+	                                #forceGrainType := TRUE;
+	                            END_IF;
 	                        END_IF;
 	                    END_IF;
 	                END_FOR;
 	                
 	                IF NOT #forceGrainType THEN
-                    // Силос в маршруті і один із силосів не має заданого типу
-                    IF #hasSilo AND #siloMissingType THEN
-                        #Fsm.RF_State := "ROUTE_STS_REJECTED";
-                        #Fsm.RF_ResultCode := "ROUTE_REJ_GRAIN_NOT_SET";
-                    // Яма в маршруті і її тип = 0
-                    ELSIF #hasPit AND #grainTypePit = 0 THEN
-                        #Fsm.RF_State := "ROUTE_STS_REJECTED";
-                        #Fsm.RF_ResultCode := "ROUTE_REJ_GRAIN_NOT_SET";
-                    // Два силоси в маршруті і їхні типи не співпадають
-                    ELSIF #siloGrainMismatch THEN
-                        #Fsm.RF_State := "ROUTE_STS_REJECTED";
-                        #Fsm.RF_ResultCode := "ROUTE_REJ_SILOS_GRAIN_MISMATCH";
-                    // Обидва (яма + силос) в маршруті і типи не співпадають
-                    ELSIF #hasSilo AND #hasPit AND #firstSiloGrainType <> #grainTypePit THEN
+	                    // Силос в маршруті і один із силосів не має заданого типу
+	                    IF #hasSilo AND #siloMissingType THEN
+	                        #Fsm.RF_State := "ROUTE_STS_REJECTED";
+	                        #Fsm.RF_ResultCode := "ROUTE_REJ_GRAIN_NOT_SET";
+	                        // Яма в маршруті і її тип = 0
+	                    ELSIF #hasPit AND #grainTypePit = 0 THEN
+	                        #Fsm.RF_State := "ROUTE_STS_REJECTED";
+	                        #Fsm.RF_ResultCode := "ROUTE_REJ_GRAIN_NOT_SET";
+	                        // Два силоси в маршруті і їхні типи не співпадають
+	                    ELSIF #siloGrainMismatch THEN
+	                        #Fsm.RF_State := "ROUTE_STS_REJECTED";
+	                        #Fsm.RF_ResultCode := "ROUTE_REJ_SILOS_GRAIN_MISMATCH";
+	                        // Обидва (яма + силос) в маршруті і типи не співпадають
+	                    ELSIF #hasSilo AND #hasPit AND #firstSiloGrainType <> #grainTypePit THEN
 	                        #Fsm.RF_State := "ROUTE_STS_REJECTED";
 	                        #Fsm.RF_ResultCode := "ROUTE_REJ_GRAIN_MISMATCH";
 	                    END_IF;

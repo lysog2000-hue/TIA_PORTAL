@@ -51,8 +51,8 @@ BEGIN
 	        END_IF;
 	    END_FOR;
 	    
-	    // === GATES (slot 116..182) ===
-	    FOR #slot := 116 TO 182 DO
+	    // === GATES (slot 101..182) ===
+	    FOR #slot := 101 TO 183 DO
 	        IF #Mechs[#slot].DeviceType = "TYPE_GATE2P" THEN
 	            #idx := #Mechs[#slot].TypedIndex;
 	            "FC_Gate2P"(G := #Gate[#idx],
@@ -73,8 +73,8 @@ BEGIN
 	    FOR #slot := 305 TO 306 DO
 	        IF #Mechs[#slot].DeviceType = "TYPE_Receiving_PIT" THEN
 	            #idx := #Mechs[#slot].TypedIndex;
-	            // "FC_ReceivingPit"(P := #ReceivingPit[#idx],
-	            //  B := #Mechs[#slot]);
+	             "FC_ReceivingPit"(P := #ReceivingPit[#idx],
+	             B := #Mechs[#slot]);
 	        END_IF;
 	    END_FOR;
 	    
@@ -88,7 +88,7 @@ BEGIN
 	    END_FOR;
 	    
 	    // === VALVE3P (slot 201..229) ===
-	    FOR #slot := 201 TO 229 DO
+	    FOR #slot := 201 TO 230 DO
 	        IF #Mechs[#slot].DeviceType = "TYPE_VALVE3P" THEN
 	            #idx := #Mechs[#slot].TypedIndex;
 	            "FC_Valve3P"(F := #Valve3P[#idx],
@@ -101,7 +101,7 @@ BEGIN
 	        IF #Mechs[#slot].DeviceType = "TYPE_SILOS" THEN
 	            #idx := #Mechs[#slot].TypedIndex;
 	            "FC_Silos"(S := #Silos[#idx],
-	                       B := #Mechs[#slot]);
+	            B := #Mechs[#slot]);
 	        END_IF;
 	    END_FOR;
 	    

@@ -8,7 +8,7 @@ VERSION : 0.2
 // Единственная функция - хранить GrainType (тип зерна задаётся из SCADA)
 // ==============================================================================
    VAR_IN_OUT 
-      F : "UDT_ReceivingPit";
+      P : "UDT_ReceivingPit";
       B : "UDT_BaseMechanism";
    END_VAR
 

@@ -19,6 +19,7 @@ VERSION : 0.3
 
 BEGIN
 	
+	
 	REGION "0) Декодування форсування"
 	    // BIT8(256)=forceFeedback, BIT6(64)=forceStopTimeout
 	    #forceFeedback := (#B.Force_Code AND 256) <> 0;
@@ -94,7 +95,7 @@ BEGIN
 	                IF #B.Cmd = "CMD_START" THEN
 	                    // Перевірка мінімального інтервалу перезапуску
 	                    IF #F.LastStopMs = 0 OR "FC_TimeElapsedMs"(StartTck := #F.LastStopMs, TimeoutMs := "TimeoutMs_Feeder_MinRestart",
-	                                                                ElapsedMs => #elapsedMs, NowTck => #nowTck) THEN
+	                                                                   ElapsedMs => #elapsedMs, NowTck => #nowTck) THEN
 	                        #B.Status := "STS_STARTING";
 	                        #F.StartMs := TIME_TCK();
 	                    END_IF;
@@ -157,4 +158,6 @@ BEGIN
 	    #B.Cmd := "CMD_NONE";
 	END_REGION
 	
+	
 END_FUNCTION
+

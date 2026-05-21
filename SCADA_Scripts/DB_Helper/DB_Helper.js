@@ -7,6 +7,63 @@ let variantList = []; // Здесь будем хранить {id, path}
 let cachedRoute = [];
 //}
 
+export function Button_Base(slot) {
+    if (slot >= 1 && slot <= 50) {
+        return "Base_Redler";
+    } else if (slot >= 51 && slot <= 99) {
+        return "Base_Noria";
+    } else if (slot >= 100 && slot <= 240) {
+        return "Base";
+    } else if (slot >= 251 && slot <= 278) {
+        return "Base_Silos";
+    } else if (slot >= 311 && slot <= 313) {
+        return "Base_Separator";
+    } else if (slot >= 314 && slot <= 316) {
+        return "Base_Feeder";
+    } else if (slot >= 317 && slot <= 319) {
+        return "Base_Fan";
+    }
+    return null;
+}
+
+export function Button_Control(slot) {
+    if (slot >= 1 && slot <= 99) {
+        return "Control";
+    } else if (slot >= 100 && slot <= 199) {
+        return "Control_Gate2p";
+    } else if (slot >= 201 && slot <= 240) {
+        if (slot === 219) {
+            return "Control_Valve3P";
+        }
+        return "Control_Valve2P";
+    } else if (slot >= 311 && slot <= 319) {
+        return "Control";
+    }
+    return null;
+}
+
+export function Button_Force(slot) {
+if (slot >= 1 && slot <= 50) {
+        return "Force_Redler";
+    } else if (slot >= 51 && slot <= 99) {
+        return "Force_Noria";
+    } else if (slot >= 100 && slot <= 250) {
+        return "Force_Gate_Valve";
+    } else if (slot >= 251 && slot <= 300) {
+        return "Force_Silos";
+    } else if (slot >= 301 && slot <= 304) {
+        return "Force_Sushka";
+    } else if (slot >= 311 && slot <= 313) {
+        return "Force_Separator";
+    } else if (slot >= 314 && slot <= 316) {
+        return "Force_Feeder";
+    } else if (slot >= 317 && slot <= 319) {
+        return "Force_Fan";
+    }
+    return null;
+}
+
+
 export function GetActiveRouteData(vIdFromScreen) {
     // Чистим входящий ID через стандартный Number
     let vId = Number(vIdFromScreen);
@@ -21,9 +78,161 @@ export function GetActiveRouteData(vIdFromScreen) {
         }));
 }
 
+
+export function GetGateColor(Status, ownerId) {
+    
+    const colors = {
+        lightGreen:  0xFF99CC00,   // Status=1: светло-зеленый
+        lightBlue:   0xFF00FFFF,   // Status=3: светло-синий
+        green:       0xFF00FF00,   // Status=2: зелёный (local/manual)
+        red:         0xFFFF0000,   // Status=4: красный
+        basic:       0xFF808080    // Серый по умолчанию
+    };
+
+    let newColor;
+    switch(Number(Status)) {
+        case 7:
+            if (ownerId !== 0) {
+                newColor = Tags(`RouteColor${ownerId}`).Read();
+            } else {
+                newColor = colors.green;  // Зелёный для Status=2 без маршрута
+            }
+            break;
+        case 9:
+            newColor = colors.red;
+            break;
+        default:
+            newColor = colors.basic;
+    }
+    return newColor;
+}
+
+export function GetMechColor(Status, ownerId) {
+    
+    const colors = {
+        lightGreen:  0xFF99CC00,   // Status=1: светло-зеленый
+        lightBlue:   0xFF00FFFF,   // Status=3: светло-синий
+        green:       0xFF00FF00,   // Status=2: зелёный (local/manual)
+        red:         0xFFFF0000,   // Status=4: красный
+        basic:       0xFF808080    // Серый по умолчанию
+    };
+
+    let newColor;
+    switch(Number(Status)) {
+        case 1:
+            newColor = colors.lightGreen;
+            break;
+        case 2:
+            if (ownerId !== 0) {
+                newColor = Tags(`RouteColor${ownerId}`).Read();
+            } else {
+                newColor = colors.green;  // Зелёный для Status=2 без маршрута
+            }
+            break;
+        case 3:
+            newColor = colors.lightBlue;
+            break;
+        case 4:
+            newColor = colors.red;
+            break;
+        default:
+            newColor = colors.basic;
+    }
+    return newColor;
+}
+
+
 export function GetStepsByVariant(vId) {
     return routeBuffer.filter(row => row.VariantId == vId);
 }
+
+export function GetValveCenterColor(Status, ownerId) {
+    
+    const colors = {
+        lightGreen:  0xFF99CC00,   // Status=1: светло-зеленый
+        lightBlue:   0xFF00FFFF,   // Status=3: светло-синий
+        green:       0xFF00FF00,   // Status=2: зелёный (local/manual)
+        red:         0xFFFF0000,   // Status=4: красный
+        basic:       0xFF808080    // Серый по умолчанию
+    };
+
+    let newColor;
+    switch(Number(Status)) {
+        case 5:
+            if (ownerId !== 0) {
+                newColor = Tags(`RouteColor${ownerId}`).Read();
+            } else {
+                newColor = colors.green;  // Зелёный для Status=2 без маршрута
+            }
+            break;
+        case 9:
+            newColor = colors.red;
+            break;
+        default:
+            newColor = colors.basic;
+    }
+    return newColor;
+}
+
+export function GetValveLeftColor(Status, ownerId) {
+    
+    const colors = {
+        lightGreen:  0xFF99CC00,   // Status=1: светло-зеленый
+        lightBlue:   0xFF00FFFF,   // Status=3: светло-синий
+        green:       0xFF00FF00,   // Status=2: зелёный (local/manual)
+        red:         0xFFFF0000,   // Status=4: красный
+        basic:       0xFF808080    // Серый по умолчанию
+    };
+
+    let newColor;
+    switch(Number(Status)) {
+        case 3:
+            if (ownerId !== 0) {
+                newColor = Tags(`RouteColor${ownerId}`).Read();
+            } else {
+                newColor = colors.green;  // Зелёный для Status=2 без маршрута
+            }
+            break;
+        case 9:
+            newColor = colors.red;
+            break;
+        default:
+            newColor = colors.basic;
+    }
+    return newColor;
+}
+
+
+export function GetValveRightColor(Status, ownerId) {
+    
+    const colors = {
+        lightGreen:  0xFF99CC00,   // Status=1: светло-зеленый
+        lightBlue:   0xFF00FFFF,   // Status=3: светло-синий
+        green:       0xFF00FF00,   // Status=2: зелёный (local/manual)
+        red:         0xFFFF0000,   // Status=4: красный
+        basic:       0xFF808080    // Серый по умолчанию
+    };
+
+    let newColor;
+    switch(Number(Status)) {
+        case 4:
+            if (ownerId !== 0) {
+                newColor = Tags(`RouteColor${ownerId}`).Read();
+            } else {
+                newColor = colors.green;  // Зелёный для Status=2 без маршрута
+            }
+            break;
+        case 9:
+            newColor = colors.red;
+            break;
+        default:
+            newColor = colors.basic;
+    }
+    return newColor;
+}
+
+
+
 
 export function GetVariantFromBuffer(variantId) {
     let target = parseInt((variantId + "").replace(/[^\d]/g, '')) || 0;
@@ -34,7 +243,25 @@ export function GetVariantList(parameter1, parameter2) {
     return variantList;
 }
 
+export function OnMechTapped(item) {
+let mode = Tags("SelectModeActive").Read();
+    if (mode === 0) return;
+    
+    Tags("SelectModeActive").Write(0);
+    
+    let slotId = parseInt(item.Name.replace(/[^0-9]/g, ""), 10);
+    if (isNaN(slotId)) return;
+    
+    switch (mode) {
+        case 1: Tags("StartPortId").Write(slotId); break;
+        case 2: Tags("EndPortId").Write(slotId);  break;
+        case 3: Tags("MidPortId").Write(slotId);   break;
+    }
+}
+
+
 export function resetMechanism(obj) {
+    try { if (obj.Properties.Contur === 0xFFF00000){return;} } catch(e) {}
     try { obj.Properties.Contur = 0xFF000000; } catch(e) {}
     try { obj.Properties.MainContur = 0xFF000000; } catch(e) {}
     try { obj.Properties.LeftContur = 0xFF000000; } catch(e) {}

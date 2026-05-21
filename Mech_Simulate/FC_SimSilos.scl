@@ -1,9 +1,9 @@
-FUNCTION "FC_SimSilos" : Void
+﻿FUNCTION "FC_SimSilos" : Void
 { S7_Optimized_Access := 'TRUE' }
 VERSION : 1.1
-// Симулятор силосу
-// За замовчуванням: рівні в нормі (TRUE = OK)
-// Реальна симуляція заповнення може бути додана пізніше
+// Ð¡Ð¸Ð¼ÑƒÐ»ÑÑ‚Ð¾Ñ€ ÑÐ¸Ð»Ð¾ÑÑƒ
+// Ð—Ð° Ð·Ð°Ð¼Ð¾Ð²Ñ‡ÑƒÐ²Ð°Ð½Ð½ÑÐ¼: Ñ€Ñ–Ð²Ð½Ñ– Ð² Ð½Ð¾Ñ€Ð¼Ñ– (TRUE = OK)
+// Ð ÐµÐ°Ð»ÑŒÐ½Ð° ÑÐ¸Ð¼ÑƒÐ»ÑÑ†Ñ–Ñ Ð·Ð°Ð¿Ð¾Ð²Ð½ÐµÐ½Ð½Ñ Ð¼Ð¾Ð¶Ðµ Ð±ÑƒÑ‚Ð¸ Ð´Ð¾Ð´Ð°Ð½Ð° Ð¿Ñ–Ð·Ð½Ñ–ÑˆÐµ
    VAR_INPUT 
       SilosIdx : Int;
       Enable : Bool;
@@ -12,14 +12,16 @@ VERSION : 1.1
 
 BEGIN
 	
+	
 	IF #SilosIdx > "SILOS_COUNT" THEN
 	    RETURN;
 	END_IF;
 	
 	IF #Enable THEN
-	    // Симулюємо нормальний стан: рівні в нормі
 	    "DB_Mechs".Silos[#SilosIdx].DI_LevelHigh_OK := TRUE;
-	    "DB_Mechs".Silos[#SilosIdx].DI_LevelLow_OK  := TRUE;
+	    "DB_Mechs".Silos[#SilosIdx].DI_LevelLow_OK := TRUE;
 	END_IF;
 	
+	
 END_FUNCTION
+

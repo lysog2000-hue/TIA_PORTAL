@@ -20,6 +20,7 @@ VERSION : 0.6
 
 BEGIN
 	
+	
 	REGION "0) Декодування форсування"
 	    // BIT0(1)=forceBreaker, BIT1(2)=forceOverflow, BIT2(4)=forceSpeed, BIT6(64)=forceStopTimeout
 	    #forceBreaker := (#B.Force_Code AND 1) <> 0;
@@ -121,7 +122,7 @@ BEGIN
 	                IF #B.Cmd = "CMD_START" THEN
 	                    // Перевірка мінімального інтервалу перезапуску
 	                    IF #R.LastStopMs = 0 OR "FC_TimeElapsedMs"(StartTck := #R.LastStopMs, TimeoutMs := "TimeoutMs_Redler_MinRestart",
-	                                                                ElapsedMs => #elapsedMs, NowTck => #nowTck) THEN
+	                                                                   ElapsedMs => #elapsedMs, NowTck => #nowTck) THEN
 	                        #B.Status := "STS_STARTING";
 	                        #R.StartMs := TIME_TCK();
 	                    END_IF;
@@ -147,36 +148,36 @@ BEGIN
 	                                              ElapsedMs => #elapsedMs, NowTck => #nowTck) THEN
 	                        #B.FLTCode := #B.FLTCode OR "FLT_NO_RUNFB";
 	                        #B.Status := "STS_FAULT";
-	                		ELSE
-	                    #R.SpeedLostMs := 0;
-	                	END_IF;
-	                    IF #R.SpeedLostMs = 0 THEN
-	                        #R.SpeedLostMs := TIME_TCK();
-	                    END_IF;
-	                    IF "FC_TimeElapsedMs"(StartTck := #R.SpeedLostMs, TimeoutMs := "TimeoutMs_Redler_SpeedPause",
-	                                              ElapsedMs => #elapsedMs, NowTck => #nowTck) THEN
-	                        #B.FLTCode := #B.FLTCode OR "FLT_NO_RUNFB";
-	                        #B.Status := "STS_FAULT";
 	                    END_IF;
 	                ELSE
 	                    #R.SpeedLostMs := 0;
 	                END_IF;
-	                
-	            "STS_STOPPING":
-	                IF (NOT #R.DI_Speed_OK) OR #forceSpeed THEN
-	                    #B.Status := "STS_IDLE";
-	                    #R.StopMs := 0;
-	                    #R.LastStopMs := TIME_TCK();  // Зберігаємо час останньої зупинки
-	                ELSE
-	                    IF #R.StopMs = 0 THEN
-	                        #R.StopMs := TIME_TCK();
-	                    END_IF;
-	                    IF "FC_TimeElapsedMs"(StartTck := #R.StopMs, TimeoutMs := "TimeoutMs_Redler_Stop",
-	                                              ElapsedMs => #elapsedMs, NowTck => #nowTck) THEN
-	                        #B.FLTCode := #B.FLTCode OR "FLT_STOP_TIMEOUT";
-	                        #B.Status := "STS_FAULT";
-	                    END_IF;
+	                IF #R.SpeedLostMs = 0 THEN
+	                    #R.SpeedLostMs := TIME_TCK();
 	                END_IF;
+	                IF "FC_TimeElapsedMs"(StartTck := #R.SpeedLostMs, TimeoutMs := "TimeoutMs_Redler_SpeedPause",
+	                                          ElapsedMs => #elapsedMs, NowTck => #nowTck) THEN
+	                    #B.FLTCode := #B.FLTCode OR "FLT_NO_RUNFB";
+	                    #B.Status := "STS_FAULT";
+	                ELSE
+	                #R.SpeedLostMs := 0;
+	                END_IF;
+	            
+	        "STS_STOPPING":
+	            IF (NOT #R.DI_Speed_OK) OR #forceSpeed THEN
+	                #B.Status := "STS_IDLE";
+	                #R.StopMs := 0;
+	                #R.LastStopMs := TIME_TCK();  // Зберігаємо час останньої зупинки
+	            ELSE
+	                IF #R.StopMs = 0 THEN
+	                    #R.StopMs := TIME_TCK();
+	                END_IF;
+	                IF "FC_TimeElapsedMs"(StartTck := #R.StopMs, TimeoutMs := "TimeoutMs_Redler_Stop",
+	                                          ElapsedMs => #elapsedMs, NowTck => #nowTck) THEN
+	                    #B.FLTCode := #B.FLTCode OR "FLT_STOP_TIMEOUT";
+	                    #B.Status := "STS_FAULT";
+	                END_IF;
+	            END_IF;
 	        END_CASE;
 	        
 	        IF #B.Cmd = "CMD_STOP" AND #B.Status <> "STS_IDLE" THEN
@@ -194,4 +195,6 @@ BEGIN
 	    #B.Cmd := "CMD_NONE";
 	END_REGION
 	
+	
 END_FUNCTION
+

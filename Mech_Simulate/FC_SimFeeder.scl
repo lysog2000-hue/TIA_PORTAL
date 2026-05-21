@@ -42,7 +42,6 @@ VERSION : 1.0
       nowTck : DInt;   // Ð¿Ð¾Ñ‚Ð¾Ñ‡Ð½Ð¸Ð¹ TIME_TCK
       startupTimeout : Bool;   // Ñ„Ð»Ð°Ð³ Ð¿Ð¾ÑÐ²Ð¸ Ñ„Ñ–Ð´Ð±ÐµÐºÑƒ
       stopTimeout : Bool;   // Ñ„Ð»Ð°Ð³ Ð·Ð½Ð¸ÐºÐ½ÐµÐ½Ð½Ñ Ñ„Ñ–Ð´Ð±ÐµÐºÑƒ
-      
    END_VAR
 
 

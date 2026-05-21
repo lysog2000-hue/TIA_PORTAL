@@ -2,19 +2,19 @@
 { S7_Optimized_Access := 'TRUE' }
 VERSION : 2.1
 // ==============================================================================
-// FC_SimFan - Симулятор фізики та несправностей вентилятора
+// FC_SimFan - Ð¡Ð¸Ð¼ÑƒÐ»ÑÑ‚Ð¾Ñ€ Ñ„Ñ–Ð·Ð¸ÐºÐ¸ Ñ‚Ð° Ð½ÐµÑÐ¿Ñ€Ð°Ð²Ð½Ð¾ÑÑ‚ÐµÐ¹ Ð²ÐµÐ½Ñ‚Ð¸Ð»ÑÑ‚Ð¾Ñ€Ð°
 // ==============================================================================
-// Версія: 2.1.0
-// Дата: 2026-04-10
+// Ð’ÐµÑ€ÑÑ–Ñ: 2.1.0
+// Ð”Ð°Ñ‚Ð°: 2026-04-10
 // ==============================================================================
-// Зміни v2.1:
-//   + Додано симуляцію SimFault_Feedback (PHASE 4) — FLT_NO_FEEDBACK
-//   + Додано параметри SimFault_Feedback та FaultTime_Feedback_ms
-//   + Додано ManualReset для Feedback_Tripped
+// Ð—Ð¼Ñ–Ð½Ð¸ v2.1:
+//   + Ð”Ð¾Ð´Ð°Ð½Ð¾ ÑÐ¸Ð¼ÑƒÐ»ÑÑ†Ñ–ÑŽ SimFault_Feedback (PHASE 4) â€” FLT_NO_FEEDBACK
+//   + Ð”Ð¾Ð´Ð°Ð½Ð¾ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ð¸ SimFault_Feedback Ñ‚Ð° FaultTime_Feedback_ms
+//   + Ð”Ð¾Ð´Ð°Ð½Ð¾ ManualReset Ð´Ð»Ñ Feedback_Tripped
 // ==============================================================================
-// Комунікація з FC_Fan ТІЛЬКИ через сигнали:
-//   - Читає:  DB_Mechs.Fan[FanIdx].DO_Run
-//   - Пише:   DB_Mechs.Fan[FanIdx].DI_Breaker_OK
+// ÐšÐ¾Ð¼ÑƒÐ½Ñ–ÐºÐ°Ñ†Ñ–Ñ Ð· FC_Fan Ð¢Ð†Ð›Ð¬ÐšÐ˜ Ñ‡ÐµÑ€ÐµÐ· ÑÐ¸Ð³Ð½Ð°Ð»Ð¸:
+//   - Ð§Ð¸Ñ‚Ð°Ñ”:  DB_Mechs.Fan[FanIdx].DO_Run
+//   - ÐŸÐ¸ÑˆÐµ:   DB_Mechs.Fan[FanIdx].DI_Breaker_OK
 //             DB_Mechs.Fan[FanIdx].DI_Feedback_OK
 // ==============================================================================
    VAR_INPUT 
@@ -40,110 +40,113 @@ VERSION : 2.1
 
 
 BEGIN
-	    // =========================================================
-	    // VALIDATE INDEX
-	    // =========================================================
-	    IF #FanIdx >= "FANS_COUNT" THEN
-	        RETURN;
-	    END_IF;
-	    
-	    #idx := #FanIdx;
-	    
-	    // =========================================================
-	    // PHASE 0: Ручний скид аварій
-	    // =========================================================
-	    IF #ManualReset THEN
-	        "DB_SimMechs".Fan[#idx].Breaker_Tripped := FALSE;
-	        "DB_SimMechs".Fan[#idx].Feedback_Tripped := FALSE;
-	    END_IF;
-	    
-	    // =========================================================
-	    // PHASE 1: Edge detection DO_Run
-	    // =========================================================
-	    IF "DB_Mechs".Fan[#idx].DO_Run AND NOT "DB_SimMechs".Fan[#idx].LastDO_Run THEN
-	        "DB_SimMechs".Fan[#idx].MotorStartTck := TIME_TCK();
-	        "DB_SimMechs".Fan[#idx].FaultStartTck := TIME_TCK();
-	        "DB_SimMechs".Fan[#idx].IsMotorRunning := TRUE;
-	        "DB_SimMechs".Fan[#idx].IsSpinningUp := TRUE;
-	        "DB_SimMechs".Fan[#idx].IsSpinningDown := FALSE;
-	    END_IF;
-	    
-	    IF NOT "DB_Mechs".Fan[#idx].DO_Run AND "DB_SimMechs".Fan[#idx].LastDO_Run THEN
-	        "DB_SimMechs".Fan[#idx].MotorStopTck := TIME_TCK();
-	        "DB_SimMechs".Fan[#idx].IsMotorRunning := FALSE;
-	        "DB_SimMechs".Fan[#idx].IsSpinningUp := FALSE;
-	        "DB_SimMechs".Fan[#idx].IsSpinningDown := TRUE;
-	    END_IF;
-	    
-	    "DB_SimMechs".Fan[#idx].LastDO_Run := "DB_Mechs".Fan[#idx].DO_Run;
-	    
-	    // =========================================================
-	    // PHASE 2: Симуляція DI_Feedback_OK (фізика розгону/вибігу)
-	    // =========================================================
-	    IF "DB_SimMechs".Fan[#idx].IsSpinningUp THEN
-	        #startupTimeout := "FC_TimeElapsedMs"(
-	                                              StartTck := "DB_SimMechs".Fan[#idx].MotorStartTck,
-	                                              TimeoutMs := #StartupTime_ms,
-	                                              ElapsedMs => #elapsedMs,
-	                                              NowTck => #nowTck
-	        );
-	        IF #startupTimeout THEN
-	            "DB_Mechs".Fan[#idx].DI_Feedback_OK := TRUE;
-	            "DB_SimMechs".Fan[#idx].IsSpinningUp := FALSE;
-	        ELSE
-	            "DB_Mechs".Fan[#idx].DI_Feedback_OK := FALSE;
-	        END_IF;
-	    ELSIF "DB_SimMechs".Fan[#idx].IsSpinningDown THEN
-	        #stopTimeout := "FC_TimeElapsedMs"(
-	                                           StartTck := "DB_SimMechs".Fan[#idx].MotorStopTck,
-	                                           TimeoutMs := #StopTime_ms,
-	                                           ElapsedMs => #elapsedMs,
-	                                           NowTck => #nowTck
-	        );
-	        IF #stopTimeout THEN
-	            "DB_Mechs".Fan[#idx].DI_Feedback_OK := FALSE;
-	            "DB_SimMechs".Fan[#idx].IsSpinningDown := FALSE;
-	        ELSE
-	            "DB_Mechs".Fan[#idx].DI_Feedback_OK := TRUE;
-	        END_IF;
-	    ELSIF "DB_SimMechs".Fan[#idx].IsMotorRunning THEN
+	
+	// =========================================================
+	// VALIDATE INDEX
+	// =========================================================
+	IF #FanIdx >= "FANS_COUNT" THEN
+	    RETURN;
+	END_IF;
+	
+	#idx := #FanIdx;
+	
+	// =========================================================
+	// PHASE 0: Ð ÑƒÑ‡Ð½Ð¸Ð¹ ÑÐºÐ¸Ð´ Ð°Ð²Ð°Ñ€Ñ–Ð¹
+	// =========================================================
+	IF #ManualReset THEN
+	    "DB_SimMechs".Fan[#idx].Breaker_Tripped := FALSE;
+	    "DB_SimMechs".Fan[#idx].Feedback_Tripped := FALSE;
+	END_IF;
+	
+	// =========================================================
+	// PHASE 1: Edge detection DO_Run
+	// =========================================================
+	IF "DB_Mechs".Fan[#idx].DO_Run AND NOT "DB_SimMechs".Fan[#idx].LastDO_Run THEN
+	    "DB_SimMechs".Fan[#idx].MotorStartTck := TIME_TCK();
+	    "DB_SimMechs".Fan[#idx].FaultStartTck := TIME_TCK();
+	    "DB_SimMechs".Fan[#idx].IsMotorRunning := TRUE;
+	    "DB_SimMechs".Fan[#idx].IsSpinningUp := TRUE;
+	    "DB_SimMechs".Fan[#idx].IsSpinningDown := FALSE;
+	END_IF;
+	
+	IF NOT "DB_Mechs".Fan[#idx].DO_Run AND "DB_SimMechs".Fan[#idx].LastDO_Run THEN
+	    "DB_SimMechs".Fan[#idx].MotorStopTck := TIME_TCK();
+	    "DB_SimMechs".Fan[#idx].IsMotorRunning := FALSE;
+	    "DB_SimMechs".Fan[#idx].IsSpinningUp := FALSE;
+	    "DB_SimMechs".Fan[#idx].IsSpinningDown := TRUE;
+	END_IF;
+	
+	"DB_SimMechs".Fan[#idx].LastDO_Run := "DB_Mechs".Fan[#idx].DO_Run;
+	
+	// =========================================================
+	// PHASE 2: Ð¡Ð¸Ð¼ÑƒÐ»ÑÑ†Ñ–Ñ DI_Feedback_OK (Ñ„Ñ–Ð·Ð¸ÐºÐ° Ñ€Ð¾Ð·Ð³Ð¾Ð½Ñƒ/Ð²Ð¸Ð±Ñ–Ð³Ñƒ)
+	// =========================================================
+	IF "DB_SimMechs".Fan[#idx].IsSpinningUp THEN
+	    #startupTimeout := "FC_TimeElapsedMs"(
+	                                          StartTck := "DB_SimMechs".Fan[#idx].MotorStartTck,
+	                                          TimeoutMs := #StartupTime_ms,
+	                                          ElapsedMs => #elapsedMs,
+	                                          NowTck => #nowTck
+	    );
+	    IF #startupTimeout THEN
 	        "DB_Mechs".Fan[#idx].DI_Feedback_OK := TRUE;
+	        "DB_SimMechs".Fan[#idx].IsSpinningUp := FALSE;
 	    ELSE
 	        "DB_Mechs".Fan[#idx].DI_Feedback_OK := FALSE;
 	    END_IF;
-	    
-	    // =========================================================
-	    // PHASE 3: Симуляція аварії BREAKER
-	    // =========================================================
-	    IF #SimFault_Breaker AND "DB_SimMechs".Fan[#idx].IsMotorRunning AND NOT "DB_SimMechs".Fan[#idx].Breaker_Tripped THEN
-	        #breakerTimeout := "FC_TimeElapsedMs"(
-	                                              StartTck := "DB_SimMechs".Fan[#idx].FaultStartTck,
-	                                              TimeoutMs := #FaultTime_Breaker_ms,
-	                                              ElapsedMs => #elapsedMs,
-	                                              NowTck => #nowTck
-	        );
-	        IF #breakerTimeout THEN
-	            "DB_SimMechs".Fan[#idx].Breaker_Tripped := TRUE;
-	        END_IF;
-	    END_IF;
-	    "DB_Mechs".Fan[#idx].DI_Breaker_OK := NOT "DB_SimMechs".Fan[#idx].Breaker_Tripped;
-	    
-	    // =========================================================
-	    // PHASE 4: Симуляція аварії FEEDBACK (FLT_NO_FEEDBACK)
-	    // =========================================================
-	    IF #SimFault_Feedback AND "DB_SimMechs".Fan[#idx].IsMotorRunning AND NOT "DB_SimMechs".Fan[#idx].Feedback_Tripped THEN
-	        #feedbackTimeout := "FC_TimeElapsedMs"(
-	                                               StartTck := "DB_SimMechs".Fan[#idx].FaultStartTck,
-	                                               TimeoutMs := #FaultTime_Feedback_ms,
-	                                               ElapsedMs => #elapsedMs,
-	                                               NowTck => #nowTck
-	        );
-	        IF #feedbackTimeout THEN
-	            "DB_SimMechs".Fan[#idx].Feedback_Tripped := TRUE;
-	        END_IF;
-	    END_IF;
-	    IF "DB_SimMechs".Fan[#idx].Feedback_Tripped THEN
+	ELSIF "DB_SimMechs".Fan[#idx].IsSpinningDown THEN
+	    #stopTimeout := "FC_TimeElapsedMs"(
+	                                       StartTck := "DB_SimMechs".Fan[#idx].MotorStopTck,
+	                                       TimeoutMs := #StopTime_ms,
+	                                       ElapsedMs => #elapsedMs,
+	                                       NowTck => #nowTck
+	    );
+	    IF #stopTimeout THEN
 	        "DB_Mechs".Fan[#idx].DI_Feedback_OK := FALSE;
+	        "DB_SimMechs".Fan[#idx].IsSpinningDown := FALSE;
+	    ELSE
+	        "DB_Mechs".Fan[#idx].DI_Feedback_OK := TRUE;
 	    END_IF;
-	    
+	ELSIF "DB_SimMechs".Fan[#idx].IsMotorRunning THEN
+	    "DB_Mechs".Fan[#idx].DI_Feedback_OK := TRUE;
+	ELSE
+	    "DB_Mechs".Fan[#idx].DI_Feedback_OK := FALSE;
+	END_IF;
+	
+	// =========================================================
+	// PHASE 3: Ð¡Ð¸Ð¼ÑƒÐ»ÑÑ†Ñ–Ñ Ð°Ð²Ð°Ñ€Ñ–Ñ— BREAKER
+	// =========================================================
+	IF #SimFault_Breaker AND "DB_SimMechs".Fan[#idx].IsMotorRunning AND NOT "DB_SimMechs".Fan[#idx].Breaker_Tripped THEN
+	    #breakerTimeout := "FC_TimeElapsedMs"(
+	                                          StartTck := "DB_SimMechs".Fan[#idx].FaultStartTck,
+	                                          TimeoutMs := #FaultTime_Breaker_ms,
+	                                          ElapsedMs => #elapsedMs,
+	                                          NowTck => #nowTck
+	    );
+	    IF #breakerTimeout THEN
+	        "DB_SimMechs".Fan[#idx].Breaker_Tripped := TRUE;
+	    END_IF;
+	END_IF;
+	"DB_Mechs".Fan[#idx].DI_Breaker_OK := NOT "DB_SimMechs".Fan[#idx].Breaker_Tripped;
+	
+	// =========================================================
+	// PHASE 4: Ð¡Ð¸Ð¼ÑƒÐ»ÑÑ†Ñ–Ñ Ð°Ð²Ð°Ñ€Ñ–Ñ— FEEDBACK (FLT_NO_FEEDBACK)
+	// =========================================================
+	IF #SimFault_Feedback AND "DB_SimMechs".Fan[#idx].IsMotorRunning AND NOT "DB_SimMechs".Fan[#idx].Feedback_Tripped THEN
+	    #feedbackTimeout := "FC_TimeElapsedMs"(
+	                                           StartTck := "DB_SimMechs".Fan[#idx].FaultStartTck,
+	                                           TimeoutMs := #FaultTime_Feedback_ms,
+	                                           ElapsedMs => #elapsedMs,
+	                                           NowTck => #nowTck
+	    );
+	    IF #feedbackTimeout THEN
+	        "DB_SimMechs".Fan[#idx].Feedback_Tripped := TRUE;
+	    END_IF;
+	END_IF;
+	IF "DB_SimMechs".Fan[#idx].Feedback_Tripped THEN
+	    "DB_Mechs".Fan[#idx].DI_Feedback_OK := FALSE;
+	END_IF;
+	
+	
 END_FUNCTION
+

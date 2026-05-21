@@ -20,6 +20,7 @@ VERSION : 0.5
 
 BEGIN
 	
+	
 	REGION "0) Декодування форсування"
 	    // BIT0(1)=forceBreaker, BIT2(4)=forceSpeed, BIT3(8)=forceAlingment, BIT6(64)=forceStopTimeout
 	    #forceBreaker := (#B.Force_Code AND 1) <> 0;
@@ -122,7 +123,7 @@ BEGIN
 	                IF #B.Cmd = "CMD_START" THEN
 	                    // Перевірка мінімального інтервалу перезапуску
 	                    IF #N.LastStopMs = 0 OR "FC_TimeElapsedMs"(StartTck := #N.LastStopMs, TimeoutMs := "TimeoutMs_Noria_MinRestart",
-	                                                                ElapsedMs => #elapsedMs, NowTck => #nowTck) THEN
+	                                                                   ElapsedMs => #elapsedMs, NowTck => #nowTck) THEN
 	                        #B.Status := "STS_STARTING";
 	                        #N.StartMs := TIME_TCK();
 	                    END_IF;
@@ -185,4 +186,6 @@ BEGIN
 	    #B.Cmd := "CMD_NONE";
 	END_REGION
 	
+	
 END_FUNCTION
+

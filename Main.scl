@@ -30,17 +30,17 @@ BEGIN
 	            END_IF;
 	        END_FOR;
 	        
-			//Симуляція Сілосів
-			FOR #i := 0 TO "SILOS_COUNT" DO
+	        //Симуляція Сілосів
+	        FOR #i := 0 TO "SILOS_COUNT" DO
 	            IF "DB_SimConfig".Silos[#i].Enable THEN
 	                "FC_SimSilos"(
-							                               SilosIdx := #i,
-	                               Enable := "DB_SimConfig".Silos[#i].Enable
+	                              SilosIdx := #i,
+	                              Enable := "DB_SimConfig".Silos[#i].Enable
 	                );
 	            END_IF;
 	        END_FOR;
-					
-
+	        
+	        
 	        // Симуляція норій
 	        FOR #i := 0 TO "NORIAS_COUNT" DO
 	            IF "DB_SimConfig".Noria[#i].Enable THEN
@@ -110,36 +110,35 @@ BEGIN
 	        END_FOR;
 	        FOR #i := 0 TO "SEPARATORS_COUNT" DO
 	            IF "DB_SimConfig".Separator[#i].Enable THEN
-                "FC_SimSeparator"(
-                                  SeparatorIdx := #i,
-                                  StartupTime_ms := "DB_SimConfig".Separator[#i].StartupTime_ms,
-                                  StopTime_ms := "DB_SimConfig".Separator[#i].StopTime_ms
-                );
+	                "FC_SimSeparator"(
+	                                  SeparatorIdx := #i,
+	                                  StartupTime_ms := "DB_SimConfig".Separator[#i].StartupTime_ms,
+	                                  StopTime_ms := "DB_SimConfig".Separator[#i].StopTime_ms
+	                );
 	            END_IF;
 	        END_FOR;
-	        
-	    END_REGION
-	    
-	    "FC_ManualMechCmdHandler"();
-	    
-	 
-	    
-	    "FC_Route_Supervisor"();
-	    
-	    "FC_DeviceRunner"(
-	                      Mechs := "DB_Mechs".Mechs,
-	                      Redler := "DB_Mechs".Redler,
-	                      Noria := "DB_Mechs".Noria,
-	                      Gate := "DB_Mechs".Gate2P,
-	                      Valve3P:="DB_Mechs".Valve3P,
-	                      Separator:="DB_Mechs".Separator,
-	                      Sushka:="DB_Mechs".Sushka,
-	                      Silos:="DB_Mechs".Silos,
-	                      ReceivingPit:="DB_Mechs".ReceivingPit,
-	                      Fan := "DB_Mechs".Fan,
-	                      Feeder := "DB_Mechs".Feeder
-	    );
-	    
-	   
+	            END_REGION
+	            
+	            "FC_ManualMechCmdHandler"();
+	            
+	            
+	            
+	            "FC_Route_Supervisor"();
+	            
+	            "FC_DeviceRunner"(
+	                              Mechs := "DB_Mechs".Mechs,
+	                              Redler := "DB_Mechs".Redler,
+	                              Noria := "DB_Mechs".Noria,
+	                              Gate := "DB_Mechs".Gate2P,
+	                              Valve3P := "DB_Mechs".Valve3P,
+	                              Separator := "DB_Mechs".Separator,
+	                              Sushka := "DB_Mechs".Sushka,
+	                              Silos := "DB_Mechs".Silos,
+	                              ReceivingPit := "DB_Mechs".ReceivingPit,
+	                              Fan := "DB_Mechs".Fan,
+	                              Feeder := "DB_Mechs".Feeder
+	            );
+	            
+	            
 END_ORGANIZATION_BLOCK
 
