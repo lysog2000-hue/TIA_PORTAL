@@ -105,12 +105,13 @@ BEGIN
 	        END_IF;
 	    END_FOR;
 	    
-	    // === SUSHKA (slot 281..284) ===
-	    FOR #slot := 281 TO 284 DO
+	    // === SUSHKA (slot 301..304) ===
+	    FOR #slot := 301 TO 304 DO
 	        IF #Mechs[#slot].DeviceType = "TYPE_SUSHKA" THEN
 	            #idx := #Mechs[#slot].TypedIndex;
-	            // "FC_Sushka"(S := #Sushka[#idx],
-	            //  B := #Mechs[#slot]);
+                   "FC_Sushka"(S := #Sushka[#idx],
+                         B := #Mechs[#slot],
+                         Index := #slot);
 	        END_IF;
 	    END_FOR;
 	    

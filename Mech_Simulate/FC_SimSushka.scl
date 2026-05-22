@@ -1,38 +1,65 @@
-﻿FUNCTION "FC_SimSushka" : Void
+FUNCTION "FC_SimSushka" : Void
 { S7_Optimized_Access := 'TRUE' }
-VERSION : 1.0
-// ==============================================================================
-// FC_SimSushka - Ð¡Ð¸Ð¼ÑƒÐ»ÑÑ‚Ð¾Ñ€ ÑÑƒÑˆÐ°Ñ€ÐºÐ¸ (Ð·Ð°Ð³Ð»ÑƒÑˆÐºÐ°)
-// ==============================================================================
-// Ð’ÐµÑ€ÑÑ–Ñ: 1.0.0
-// Ð”Ð°Ñ‚Ð°: 2026-03-24
-// ==============================================================================
-// ÐŸÑ€Ð¸Ð·Ð½Ð°Ñ‡ÐµÐ½Ð½Ñ:
-//   Ð—Ð°Ð³Ð»ÑƒÑˆÐºÐ° Ð´Ð»Ñ ÑƒÐ½Ð¸ÐºÐ½ÐµÐ½Ð½Ñ Ð¿Ð¾Ð¼Ð¸Ð»Ð¾Ðº Ð¿Ñ€Ð¸ ÐºÐ¾Ð¼Ð¿Ñ–Ð»ÑÑ†Ñ–Ñ—
-//   Ð ÐµÐ°Ð»ÑŒÐ½Ð° Ñ„ÑƒÐ½ÐºÑ†Ñ–Ð¾Ð½Ð°Ð»ÑŒÐ½Ñ–ÑÑ‚ÑŒ Ð¼Ð¾Ð¶Ðµ Ð±ÑƒÑ‚Ð¸ Ð´Ð¾Ð´Ð°Ð½Ð° Ð¿Ñ–Ð·Ð½Ñ–ÑˆÐµ
-// ==============================================================================
+VERSION : 0.1
    VAR_INPUT 
-      SushkaIdx : Int;   // Ñ–Ð½Ð´ÐµÐºÑ Ñƒ DB_Mechs.Sushka[]
-      Enable : Bool;   // ÑƒÐ²Ñ–Ð¼ÐºÐ½ÑƒÑ‚Ð¸ ÑÐ¸Ð¼ÑƒÐ»ÑÑ†Ñ–ÑŽ
+      SushkaIdx : Int;
+      StartupTime_ms : DInt;
+      StopTime_ms : DInt;
+      SimFault_Breaker : Bool;
+      FaultTime_Breaker_ms : DInt;
+      ManualReset : Bool;
+      TempRampRate : Int;
    END_VAR
 
+   VAR_IN_OUT 
+      S : "UDT_Sushka";
+   END_VAR
+
+   VAR_IN_OUT 
+      State : "UDT_SimSushkaState";
+   END_VAR
+
+   VAR_TEMP 
+      i : Int;
+      anyBurnerOn : Bool;
+   END_VAR
 
 BEGIN
+	// 1. Симуляция обратных связей вентиляторов
+	FOR #i := 1 TO 7 DO
+	    #S.Fans[#i].DI_Breaker_OK := NOT #SimFault_Breaker;
+	    #S.Fans[#i].DI_Feedback_OK := #S.Fans[#i].DO_Run AND NOT #SimFault_Breaker;
+	END_FOR;
 	
-	// === Ð—ÐÐ“Ð£Ð›Ð¨ÐšÐ ===
-	// Ð ÐµÐ°Ð»ÑŒÐ½Ð° Ñ„ÑƒÐ½ÐºÑ†Ñ–Ð¾Ð½Ð°Ð»ÑŒÐ½Ñ–ÑÑ‚ÑŒ Ð±ÑƒÐ´Ðµ Ð´Ð¾Ð´Ð°Ð½Ð° Ð¿Ñ–Ð·Ð½Ñ–ÑˆÐµ
-	// ÐÐ°Ñ€Ð°Ð·Ñ– Ð¿Ñ€Ð¾ÑÑ‚Ð¾ ÑƒÐ½Ð¸ÐºÐ°Ñ”Ð¼Ð¾ Ð¿Ð¾Ð¼Ð¸Ð»Ð¾Ðº Ð¿Ñ€Ð¸ Ð²Ð¸ÐºÐ»Ð¸ÐºÑƒ
+	// 2. Симуляция обратных связей горелок
+	#anyBurnerOn := FALSE;
+	FOR #i := 1 TO 2 DO
+	    #S.Burners[#i].DI_Breaker_OK := NOT #SimFault_Breaker;
+	    #S.Burners[#i].DI_Alarm := #SimFault_Breaker;
+	    #S.Burners[#i].DI_Feedback1_OK := #S.Burners[#i].DO_Run AND NOT #SimFault_Breaker;
+	    #S.Burners[#i].DI_Feedback2_OK := #S.Burners[#i].DO_Run AND NOT #SimFault_Breaker;
+	    #S.Burners[#i].DI_Temp_OK := #S.Burners[#i].DO_Run AND NOT #SimFault_Breaker;
+	    IF #S.Burners[#i].DO_Run THEN #anyBurnerOn := TRUE; END_IF;
+	END_FOR;
 	
-	// ÐŸÐµÑ€ÐµÐ²Ñ–Ñ€ÐºÐ° Ñ–Ð½Ð´ÐµÐºÑÑƒ (Ñ‰Ð¾Ð± ÑƒÐ½Ð¸ÐºÐ½ÑƒÑ‚Ð¸ OOB)
-	IF #SushkaIdx > "SUSHKAS_COUNT" THEN
-	    RETURN;
-	END_IF;
+	// 3. Расчет динамики температуры (ramp)
+	FOR #i := 1 TO 16 DO
+	    IF #anyBurnerOn THEN
+	        // Нагрев до 80.0 C
+	        IF #State.InternalTemp[#i] < 800.0 THEN
+	            #State.InternalTemp[#i] := #State.InternalTemp[#i] + (INT_TO_REAL(#TempRampRate) / 10.0);
+	        END_IF;
+	    ELSE
+	        // Охлаждение до 20.0 C
+	        IF #State.InternalTemp[#i] > 200.0 THEN
+	            #State.InternalTemp[#i] := #State.InternalTemp[#i] - 0.5;
+	        END_IF;
+	    END_IF;
+	    #S.Temps[#i] := REAL_TO_INT(#State.InternalTemp[#i]);
+	END_FOR;
 	
-	// Ð¢ÑƒÑ‚ Ð±ÑƒÐ´Ðµ Ð»Ð¾Ð³Ñ–ÐºÐ° ÑÐ¸Ð¼ÑƒÐ»ÑÑ†Ñ–Ñ— ÑÑƒÑˆÐ°Ñ€ÐºÐ¸:
-	// - Ð¡Ð¸Ð¼ÑƒÐ»ÑÑ†Ñ–Ñ Ñ‚ÐµÐ¼Ð¿ÐµÑ€Ð°Ñ‚ÑƒÑ€Ð¸
-	// - Ð¡Ð¸Ð¼ÑƒÐ»ÑÑ†Ñ–Ñ Ð·Ð²Ð¾Ñ€Ð¾Ñ‚Ð½Ð¾Ð³Ð¾ Ð·Ð²'ÑÐ·ÐºÑƒ
-	// - Ð¡Ð¸Ð¼ÑƒÐ»ÑÑ†Ñ–Ñ Ð°Ð²Ð°Ñ€Ñ–Ð¹
-	
-	
+	// 4. Прочее
+	#S.Discharge.DI_Feedback_OK := #S.Discharge.DO_Run AND NOT #SimFault_Breaker;
+	#S.Levels.Low_OK := TRUE; 
+	#S.Levels.High_OK := FALSE;
 END_FUNCTION
-

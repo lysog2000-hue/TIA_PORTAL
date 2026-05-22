@@ -1,16 +1,20 @@
-﻿TYPE "UDT_Sushka"
-VERSION : 0.3
-STRUCT
-    // ===== Дискретні входи/виходи (HAL / залізо) =====
-    DI_Breaker_OK   : BOOL;    // автомат захисту
-    DI_Feedback_OK  : BOOL;    // зворотний зв'язок контактора
-    DO_Run          : BOOL;    // вихід на контактор
+TYPE "UDT_Sushka"
+VERSION : 0.1
+   STRUCT
+      Fans : Array[1..7] of "UDT_SushkaFan";
+      Burners : Array[1..2] of "UDT_SushkaBurner";
+      Discharge : STRUCT        // Вигрузка (теги UW)
+         DI_Feedback_OK : Bool;
+         DO_Run : Bool;
+      END_STRUCT;
+      Levels : STRUCT           // Датчики рівня
+         High_OK : Bool;        // Верхній рівень
+         Low_OK : Bool;         // Нижній рівень
+      END_STRUCT;
+      Temps : Array[1..16] of Int; // Аналогові датчики температури
+      
+      Status : UInt;            // Загальний статус сушарки (для SCADA)
+      FLTCode : Word;           // Бітова маска аварій сушарки
+   END_STRUCT;
 
-    // ===== Аналогові входи =====
-    AI_TempIn       : INT;     // температура на вході (raw)
-    AI_TempOut      : INT;     // температура на виході (raw)
-
-    // ===== Стан/таймінги =====
-    StartMs         : DINT;    // час старту (мітка)
-END_STRUCT;
 END_TYPE

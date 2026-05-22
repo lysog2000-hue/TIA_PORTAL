@@ -73,6 +73,23 @@ BEGIN
 	            END_IF;
 	        END_FOR;
 	        
+	        // Симуляція сушарок
+	        FOR #i := 0 TO "SUSHKAS_COUNT" DO
+	            IF "DB_SimConfig".Sushka[#i].Enable THEN
+	                "FC_SimSushka"(
+	                               SushkaIdx := #i,
+	                               StartupTime_ms := "DB_SimConfig".Sushka[#i].StartupTime_ms,
+	                               StopTime_ms := "DB_SimConfig".Sushka[#i].StopTime_ms,
+	                               SimFault_Breaker := "DB_SimConfig".Sushka[#i].SimFault_Breaker,
+	                               FaultTime_Breaker_ms := "DB_SimConfig".Sushka[#i].FaultTime_Breaker_ms,
+	                               ManualReset := "DB_SimConfig".Sushka[#i].ManualReset,
+	                               TempRampRate := "DB_SimConfig".Sushka[#i].TempRampRate,
+	                               S := "DB_Mechs".Sushka[#i],
+	                               State := "DB_SimMechs".Sushka[#i]
+	                );
+	            END_IF;
+	        END_FOR;
+	        
 	        // Симуляція засувок двопозиційних
 	        FOR #i := 0 TO "GATES2P_COUNT" DO
 	            IF "DB_SimConfig".Gate2P[#i].Enable THEN
@@ -141,4 +158,3 @@ BEGIN
 	            
 	            
 END_ORGANIZATION_BLOCK
-
