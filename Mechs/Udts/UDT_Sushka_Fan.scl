@@ -1,0 +1,11 @@
+TYPE "UDT_Sushka_Fan"
+VERSION : 0.2
+   STRUCT
+      DI_Breaker_OK : Bool;   // Автомат защиты двигателя
+      DI_Feedback_OK : Bool;  // Фідбек контактору
+      DO_Run : Bool;          // Команда на запуск
+      Status : Uint;           // Текущий статус (0-Idle, 1-Starting, 2-Running, 3-Stopping, 4-Fault)
+      LastStopMs : DInt;      // Метка времени последней остановки
+   END_STRUCT;
+
+END_TYPE

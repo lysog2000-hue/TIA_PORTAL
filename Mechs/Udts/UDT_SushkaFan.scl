@@ -1,9 +1,0 @@
-TYPE "UDT_SushkaFan"
-VERSION : 0.1
-   STRUCT
-      DI_Breaker_OK : Bool;   // Автоматичний вимикач
-      DI_Feedback_OK : Bool;  // Зворотній зв'язок контактора
-      DO_Run : Bool;          // Команда Пуск
-   END_STRUCT;
-
-END_TYPE

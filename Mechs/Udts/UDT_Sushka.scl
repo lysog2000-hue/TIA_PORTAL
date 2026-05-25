@@ -1,8 +1,8 @@
 TYPE "UDT_Sushka"
-VERSION : 0.1
+VERSION : 0.3
    STRUCT
-      Fans : Array[1..7] of "UDT_SushkaFan";
-      Burners : Array[1..2] of "UDT_SushkaBurner";
+      Fans : Array[1..7] of "UDT_Sushka_Fan";     // Вентилятори (FN)
+      Burners : Array[1..2] of "UDT_Sushka_Burner"; // Пальники (PAL)
       Discharge : STRUCT        // Вигрузка (теги UW)
          DI_Feedback_OK : Bool;
          DO_Run : Bool;
@@ -12,9 +12,10 @@ VERSION : 0.1
          Low_OK : Bool;         // Нижній рівень
       END_STRUCT;
       Temps : Array[1..16] of Int; // Аналогові датчики температури
-      
+
       Status : UInt;            // Загальний статус сушарки (для SCADA)
       FLTCode : Word;           // Бітова маска аварій сушарки
+      Step : Int;               // Поточний крок автомата пуску/останова
+      StepStartTck : DInt;      // Мітка часу початку кроку
    END_STRUCT;
-
 END_TYPE

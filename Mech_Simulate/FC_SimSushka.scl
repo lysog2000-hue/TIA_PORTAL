@@ -1,4 +1,4 @@
-FUNCTION "FC_SimSushka" : Void
+﻿FUNCTION "FC_SimSushka" : Void
 { S7_Optimized_Access := 'TRUE' }
 VERSION : 0.1
    VAR_INPUT 
@@ -13,9 +13,6 @@ VERSION : 0.1
 
    VAR_IN_OUT 
       S : "UDT_Sushka";
-   END_VAR
-
-   VAR_IN_OUT 
       State : "UDT_SimSushkaState";
    END_VAR
 
@@ -24,42 +21,51 @@ VERSION : 0.1
       anyBurnerOn : Bool;
    END_VAR
 
+
 BEGIN
-	// 1. Симуляция обратных связей вентиляторов
+	// 1. Симуляция исправности и обратных связей вентиляторов (Fans 1..7)
 	FOR #i := 1 TO 7 DO
+	    // Исправность автомата защиты (всегда TRUE, если не взведен бит ошибки)
 	    #S.Fans[#i].DI_Breaker_OK := NOT #SimFault_Breaker;
+	    // Обратная связь: появляется только когда подана команда на запуск
 	    #S.Fans[#i].DI_Feedback_OK := #S.Fans[#i].DO_Run AND NOT #SimFault_Breaker;
 	END_FOR;
 	
-	// 2. Симуляция обратных связей горелок
+	// 2. Симуляция исправности и обратных связей горелок (Burners 1..2)
 	#anyBurnerOn := FALSE;
 	FOR #i := 1 TO 2 DO
+	    // Сигналы исправности цепи безопасности (Safety Chain)
 	    #S.Burners[#i].DI_Breaker_OK := NOT #SimFault_Breaker;
-	    #S.Burners[#i].DI_Alarm := #SimFault_Breaker;
+	    #S.Burners[#i].DI_Alarm      := #SimFault_Breaker;
+	    #S.Burners[#i].DI_Auto_OK   := TRUE; // Горелка в режиме AUTO (нужно для FC_Sushka)
+	    
+	    // Обратные связи по работе
 	    #S.Burners[#i].DI_Feedback1_OK := #S.Burners[#i].DO_Run AND NOT #SimFault_Breaker;
 	    #S.Burners[#i].DI_Feedback2_OK := #S.Burners[#i].DO_Run AND NOT #SimFault_Breaker;
-	    #S.Burners[#i].DI_Temp_OK := #S.Burners[#i].DO_Run AND NOT #SimFault_Breaker;
-	    IF #S.Burners[#i].DO_Run THEN #anyBurnerOn := TRUE; END_IF;
+	    #S.Burners[#i].DI_Temp_OK := NOT #SimFault_Breaker;
+	    IF #S.Burners[#i].DO_Run THEN
+	        #anyBurnerOn := TRUE;
+	    END_IF;
 	END_FOR;
 	
-	// 3. Расчет динамики температуры (ramp)
+	// 3. Расчет динамики температуры (Ramp)
 	FOR #i := 1 TO 16 DO
 	    IF #anyBurnerOn THEN
-	        // Нагрев до 80.0 C
+	        // Нагрев до 80.0 градусов (умножаем на 10 для целочисленного хранения)
 	        IF #State.InternalTemp[#i] < 800.0 THEN
 	            #State.InternalTemp[#i] := #State.InternalTemp[#i] + (INT_TO_REAL(#TempRampRate) / 10.0);
 	        END_IF;
 	    ELSE
-	        // Охлаждение до 20.0 C
+	        // Охлаждение до 20.0 градусов
 	        IF #State.InternalTemp[#i] > 200.0 THEN
 	            #State.InternalTemp[#i] := #State.InternalTemp[#i] - 0.5;
 	        END_IF;
 	    END_IF;
-	    #S.Temps[#i] := REAL_TO_INT(#State.InternalTemp[#i]);
+	    #S.Temps[#i] := REAL_TO_INT(#State.InternalTemp[#i]); // Запись в массив температур сушилки
 	END_FOR;
 	
-	// 4. Прочее
+	// 4. Датчики уровней и выгрузка
 	#S.Discharge.DI_Feedback_OK := #S.Discharge.DO_Run AND NOT #SimFault_Breaker;
-	#S.Levels.Low_OK := TRUE; 
-	#S.Levels.High_OK := FALSE;
+	#S.Levels.Low_OK  := TRUE;  // Зерно в сушилке есть
+	#S.Levels.High_OK := FALSE; // Перелива нет
 END_FUNCTION
