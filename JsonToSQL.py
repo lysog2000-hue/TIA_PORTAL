@@ -331,10 +331,9 @@ BEGIN
         SELECT um.VariantId, um.PortOrder, um.MechanismId,
             CASE 
                 WHEN um.Type = 'Valve3P' THEN ISNULL(vp.ValvePosition,3)
-                WHEN um.Type IN ('Fan','Redler','Noria','Separator') THEN 1
+                WHEN um.Type IN ('Fan','Redler','Noria','Separator','Sushka') THEN 1
                 WHEN um.Type = 'Gate2P' THEN 7
                 WHEN um.Type = 'Silos' THEN 8
-                WHEN um.Type = 'Sushka' THEN 9
                 WHEN um.Type='ReceivingPit' THEN 8
                 ELSE 1 
             END, 1

@@ -1,8 +1,12 @@
 ﻿FUNCTION "FC_Sushka" : Void
 { S7_Optimized_Access := 'TRUE' }
-VERSION : 0.3
+VERSION : 0.4
 // ==============================================================================
-// FC_Sushka - Управление зерносушилкой с последовательным пуском/остановом
+// FC_Sushka - Детальная диагностика (27 бит в DWORD)
+// Fans: 0..6 (Breaker), 7..13 (FB)
+// Burners: 14..15 (Breaker), 16..17 (FB), 18..19 (Temp), 20..21 (Alarm), 22..23 (Auto)
+// Discharge: 24 (FB)
+// Levels: 25 (High), 26 (Low)
 // ==============================================================================
    VAR_INPUT 
       Index : Int;
@@ -21,6 +25,14 @@ VERSION : 0.3
       anyFanFault : Bool;   // Флаг аварии любого вентилятора
       anyBurnerFault : Bool;   // Флаг аварии любой горелки
       stepTimeout : DInt;   // Задержка между шагами
+      isBreakerFlt : Bool;
+      isFbFlt : Bool;
+      isTempFlt : Bool;
+      isAlarmFlt : Bool;
+      isAutoFlt : Bool;
+      isFbWait : Bool;      // Флаг завершения задержки пуска для контроля фидбека
+      tempWord : Word;
+      m : DWord;            // Временная маска бита
    END_VAR
 
 
@@ -29,17 +41,40 @@ BEGIN
 	    
 	    // 1. Сброс аварий (RESET)
 	    IF #B.Cmd = "CMD_RESET" THEN
-	        #B.FLTCode := #B.FLTCode AND NOT "FLT_BREAKER";
+	        #S.FLTCode := 16#0; // Сброс детальной маски
+	        #B.FLTCode := 16#0; // Сброс базовой маски
+			 IF #B.FLTCode = "FLT_NONE" AND #B.Status = "STS_FAULT" THEN
+            #B.Status := "STS_IDLE";
+            #S.Status := "STS_IDLE";
+        	END_IF;
 	    END_IF;
 	    
 	    // 2. Мониторинг под-устройств (Вентиляторы и Горелки)
 	    #anyFanFault := FALSE;
 	    FOR #i := 1 TO 7 DO
-	        // Определение аварии вентилятора (Автомат + обратная связь контактора)
-	        IF (NOT #S.Fans[#i].DI_Breaker_OK OR (NOT #S.Fans[#i].DI_Feedback_OK AND #S.Fans[#i].DO_Run AND (#B.Force_Code AND 256) = 0))
-	            AND (#B.Force_Code AND 1) = 0 THEN
+	        #isBreakerFlt := NOT #S.Fans[#i].DI_Breaker_OK AND ((#S.ForceCode AND SHL(IN := DW#16#1, N := INT_TO_UINT(#i - 1))) = 0);
+	        
+	        #isFbWait := (#B.Status = "STS_RUNNING") OR (#B.Status = "STS_STARTING" AND #S.Step > #i);
+	        #m := SHL(IN := DW#16#1, N := INT_TO_UINT(#i + 6)); // Бит 7..13 (Feedback)
+	        
+	        // Контроль фидбека вентиляторов с задержкой 2с
+	        IF #S.Fans[#i].DO_Run AND NOT #S.Fans[#i].DI_Feedback_OK AND #isFbWait AND ((#S.ForceCode AND #m) = 0) THEN
+	            IF #S.FbTck[#i] = 0 THEN
+	                #S.FbTck[#i] := TIME_TCK();
+	                #isFbFlt := FALSE;
+	            ELSE
+	                #isFbFlt := "FC_TimeElapsedMs"(StartTck := #S.FbTck[#i], TimeoutMs := 2000, ElapsedMs => #elapsedMs, NowTck => #nowTck);
+	            END_IF;
+	        ELSE
+	            #S.FbTck[#i] := 0;
+	            #isFbFlt := FALSE;
+	        END_IF;
+	        
+	        IF #isBreakerFlt OR #isFbFlt THEN
 	            #S.Fans[#i].Status := "STS_FAULT";
 	            #anyFanFault := TRUE;
+	            IF #isBreakerFlt THEN #S.FLTCode := #S.FLTCode OR SHL(IN := DW#16#1, N := INT_TO_UINT(#i - 1)); END_IF;
+	            IF #isFbFlt      THEN #S.FLTCode := #S.FLTCode OR #m; END_IF;
 	        ELSIF NOT #S.Fans[#i].DO_Run THEN
 	            IF #B.Status = "STS_STOPPING" AND #S.Step = #i THEN
 	                #S.Fans[#i].Status := "STS_STOPPING";
@@ -57,13 +92,35 @@ BEGIN
 	    
 	    #anyBurnerFault := FALSE;
 	    FOR #i := 1 TO 2 DO
-	        // Определение аварии горелки (Автомат + Авария + Обратка + Режим АВТО)
-	        IF (NOT #S.Burners[#i].DI_Breaker_OK OR #S.Burners[#i].DI_Alarm OR
-	            (NOT #S.Burners[#i].DI_Auto_OK AND (#B.Force_Code AND 1) = 0) OR
-	            (NOT #S.Burners[#i].DI_Feedback1_OK AND #S.Burners[#i].DO_Run AND (#B.Force_Code AND 256) = 0))
-	            AND (#B.Force_Code AND 1) = 0 THEN
+	        #isBreakerFlt := NOT #S.Burners[#i].DI_Breaker_OK AND ((#S.ForceCode AND SHL(IN := DW#16#1, N := INT_TO_UINT(13 + #i))) = 0);
+	        #isTempFlt    := NOT #S.Burners[#i].DI_Temp_OK    AND ((#S.ForceCode AND SHL(IN := DW#16#1, N := INT_TO_UINT(17 + #i))) = 0);
+	        #isAlarmFlt   := #S.Burners[#i].DI_Alarm          AND ((#S.ForceCode AND SHL(IN := DW#16#1, N := INT_TO_UINT(19 + #i))) = 0);
+	        #isAutoFlt    := NOT #S.Burners[#i].DI_Auto_OK   AND ((#S.ForceCode AND SHL(IN := DW#16#1, N := INT_TO_UINT(21 + #i))) = 0);
+	        
+	        #isFbWait := (#B.Status = "STS_RUNNING") OR (#B.Status = "STS_STARTING" AND #S.Step > (7 + #i));
+	        
+	        // Контроль фидбека горелок (Бит 16..17)
+	        IF #S.Burners[#i].DO_Run AND (NOT #S.Burners[#i].DI_Feedback1_OK OR NOT #S.Burners[#i].DI_Feedback2_OK) 
+	           AND #isFbWait AND ((#S.ForceCode AND SHL(IN := DW#16#1, N := INT_TO_UINT(15 + #i))) = 0) THEN
+	            IF #S.FbTck[#i + 7] = 0 THEN
+	                #S.FbTck[#i + 7] := TIME_TCK();
+	                #isFbFlt := FALSE;
+	            ELSE
+	                #isFbFlt := "FC_TimeElapsedMs"(StartTck := #S.FbTck[#i + 7], TimeoutMs := 2000, ElapsedMs => #elapsedMs, NowTck => #nowTck);
+	            END_IF;
+	        ELSE
+	            #S.FbTck[#i + 7] := 0;
+	            #isFbFlt := FALSE;
+	        END_IF;
+	        
+	        IF #isBreakerFlt OR #isTempFlt OR #isAlarmFlt OR #isFbFlt OR #isAutoFlt THEN
 	            #S.Burners[#i].Status := "STS_FAULT";
 	            #anyBurnerFault := TRUE;
+	            IF #isBreakerFlt THEN #S.FLTCode := #S.FLTCode OR SHL(IN := DW#16#1, N := INT_TO_UINT(13 + #i)); END_IF;
+	            IF #isFbFlt      THEN #S.FLTCode := #S.FLTCode OR SHL(IN := DW#16#1, N := INT_TO_UINT(15 + #i)); END_IF;
+	            IF #isTempFlt    THEN #S.FLTCode := #S.FLTCode OR SHL(IN := DW#16#1, N := INT_TO_UINT(17 + #i)); END_IF;
+	            IF #isAlarmFlt   THEN #S.FLTCode := #S.FLTCode OR SHL(IN := DW#16#1, N := INT_TO_UINT(19 + #i)); END_IF;
+	            IF #isAutoFlt    THEN #S.FLTCode := #S.FLTCode OR SHL(IN := DW#16#1, N := INT_TO_UINT(21 + #i)); END_IF;
 	        ELSIF NOT #S.Burners[#i].DO_Run THEN
 	            IF #B.Status = "STS_STOPPING" AND #S.Step = (7 + #i) THEN
 	                #S.Burners[#i].Status := "STS_STOPPING";
@@ -79,9 +136,28 @@ BEGIN
 	        END_IF;
 	    END_FOR;
 	    
-	    // 3. Установка агрегатной аварии
-	    IF (#anyFanFault OR #anyBurnerFault) AND (#B.Force_Code AND 1) = 0 THEN
-	        #B.FLTCode := #B.FLTCode OR "FLT_BREAKER";
+	    // 3. Выгрузка и Уровни
+	    IF #S.Discharge.DO_Run AND NOT #S.Discharge.DI_Feedback_OK AND ((#S.ForceCode AND DW#16#1000000) = 0) THEN
+	        IF #S.FbTck[10] = 0 THEN
+	            #S.FbTck[10] := TIME_TCK();
+	        ELSIF "FC_TimeElapsedMs"(StartTck := #S.FbTck[10], TimeoutMs := 2000, ElapsedMs => #elapsedMs, NowTck => #nowTck) THEN
+	            #S.FLTCode := #S.FLTCode OR DW#16#1000000; // Бит 24
+	        END_IF;
+	    ELSE
+	        #S.FbTck[10] := 0;
+	    END_IF;
+	    
+	    IF NOT #S.Levels.High_OK AND ((#S.ForceCode AND DW#16#2000000) = 0) THEN
+	        #S.FLTCode := #S.FLTCode OR DW#16#2000000; // Бит 25
+	    END_IF;
+	    IF NOT #S.Levels.Low_OK AND ((#S.ForceCode AND DW#16#4000000) = 0) THEN
+	        #S.FLTCode := #S.FLTCode OR DW#16#4000000; // Бит 26
+	    END_IF;
+	    
+	    // Связь с базовым механизмом: если есть хоть одна ошибка в S.FLTCode, 
+	    // ставим общую аварию в B.FLTCode для Арбитра и Маршрутов.
+	    IF #S.FLTCode <> DW#16#0 THEN
+	        #B.FLTCode := #B.FLTCode OR W#16#0001; // Просто "Авария" в базовом слоте
 	    END_IF;
 	    
 	    // 4. Определение общего статуса
@@ -91,7 +167,7 @@ BEGIN
 	    ELSIF #B.LocalManual THEN
 	        #B.Status := "STS_LOCAL";
 	        #S.Step := 0;
-	    ELSIF (#B.FLTCode AND "FLT_BREAKER") <> 0 THEN
+	    ELSIF #B.FLTCode <> 0 THEN // Любой бит в маске — это авария
 	        #B.Status := "STS_FAULT";
 	        #S.Step := 0;
 	    ELSE
