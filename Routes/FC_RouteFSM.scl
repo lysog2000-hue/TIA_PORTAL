@@ -4,9 +4,15 @@ VERSION : 4.5
 // ==============================================================================
 // FC_RouteFSM - Керування маршрутом (Mailbox Pattern v4.0)
 // ==============================================================================
-// Версія: 4.0.0
+// Версія: 4.5.0
 // Дата: 2026-04-10
 // ==============================================================================
+// ЗМІНИ v4.5.0:
+//   [FEAT] Додана детальна перевірка GrainType для ям та силосів.
+//   [FIX] Виключено перевірку типу для конкретних силосів (1,2,19,25,26,27).
+//   [FEAT] Додано очікування цільової позиції для засувок (Gate2P) та клапанів (Valve3P).
+//   [FIX] Виправлено назву константи TYPE_RECEIVING_PIT.
+//
 // ЗМІНИ v4.0.0:
 //   [FIX] RUNNING/STOPPING: затримка (StartDelayMs/StopDelayMs) тепер відбувається
 //         ПЕРЕД видачею команди, а не ПІСЛЯ досягнення цільового стану.
@@ -392,7 +398,7 @@ BEGIN
 	                FOR #Fsm.i := 1 TO #Fsm.stepCnt DO
 	                    #Fsm.slot := #Cmd.RC_Steps[#Fsm.i].RS_Slot;
 	                    IF #Fsm.slot <= "MECHS_COUNT" THEN
-	                        IF #Mechs[#Fsm.slot].DeviceType = "TYPE_Receiving_PIT" THEN
+	                        IF #Mechs[#Fsm.slot].DeviceType = "TYPE_RECEIVING_PIT" THEN
 	                            #hasPit := TRUE;
 	                            #grainTypePit := "DB_Mechs".ReceivingPit[#Mechs[#Fsm.slot].TypedIndex].GrainType;
 	                        ELSIF #Mechs[#Fsm.slot].DeviceType = "TYPE_SILOS" THEN
@@ -618,11 +624,20 @@ BEGIN
 	                                #Fsm.RF_StepSts := "STEP_STS_DONE";
 	                            END_IF;
 	                        ELSE  // RS_WAIT_STOPPED
-	                            IF #Mechs[#Fsm.slot].Status = "STS_IDLE" THEN
-	                                #Fsm.stepPauseTck := 0;
-	                                #Fsm.RF_ActiveStep := #Fsm.RF_ActiveStep + 1;
-	                                #Fsm.RF_StepSts := "STEP_STS_DONE";
-	                            END_IF;
+                            // Для засувок та клапанів перевіряємо досягнення цільової позиції
+                            IF (#Mechs[#Fsm.slot].DeviceType = "TYPE_GATE2P" OR #Mechs[#Fsm.slot].DeviceType = "TYPE_VALVE3P") THEN
+                                IF (#Mechs[#Fsm.slot].Status = "STS_IDLE") AND (#Mechs[#Fsm.slot].Status_Param = #Cmd.RC_Steps[#Fsm.stepIdx].RS_StartParam) THEN
+                                    #Fsm.stepPauseTck := 0;
+                                    #Fsm.RF_ActiveStep := #Fsm.RF_ActiveStep + 1;
+                                    #Fsm.RF_StepSts := "STEP_STS_DONE";
+                                END_IF;
+                            ELSE
+                                IF #Mechs[#Fsm.slot].Status = "STS_IDLE" THEN
+                                    #Fsm.stepPauseTck := 0;
+                                    #Fsm.RF_ActiveStep := #Fsm.RF_ActiveStep + 1;
+                                    #Fsm.RF_StepSts := "STEP_STS_DONE";
+                                END_IF;
+                            END_IF;
 	                        END_IF;
 	                    END_IF;
 	                END_IF;
@@ -835,4 +850,3 @@ BEGIN
 	#Sts.RS_StepSts := #Fsm.RF_StepSts;
 	
 END_FUNCTION
-
