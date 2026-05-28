@@ -84,6 +84,7 @@ BEGIN
 	                               FaultTime_Breaker_ms := "DB_SimConfig".Sushka[#i].FaultTime_Breaker_ms,
 	                               ManualReset := "DB_SimConfig".Sushka[#i].ManualReset,
 	                               TempRampRate := "DB_SimConfig".Sushka[#i].TempRampRate,
+	                               CaseID := "Case".CaseID[#i],
 	                               S := "DB_Mechs".Sushka[#i],
 	                               State := "DB_SimMechs".Sushka[#i]
 	                );
@@ -134,27 +135,56 @@ BEGIN
 	                );
 	            END_IF;
 	        END_FOR;
-	            END_REGION
-	            
-	            "FC_ManualMechCmdHandler"();
-	            
-	            
-	            
-	            "FC_Route_Supervisor"();
-	            
-	            "FC_DeviceRunner"(
-	                              Mechs := "DB_Mechs".Mechs,
-	                              Redler := "DB_Mechs".Redler,
-	                              Noria := "DB_Mechs".Noria,
-	                              Gate := "DB_Mechs".Gate2P,
-	                              Valve3P := "DB_Mechs".Valve3P,
-	                              Separator := "DB_Mechs".Separator,
-	                              Sushka := "DB_Mechs".Sushka,
-	                              Silos := "DB_Mechs".Silos,
-	                              ReceivingPit := "DB_Mechs".ReceivingPit,
-	                              Fan := "DB_Mechs".Fan,
-	                              Feeder := "DB_Mechs".Feeder
-	            );
-	            
-	            
+	    END_REGION
+	    
+	    // ===================================================================
+	    // 5. Глобальні команди управління
+	    // ===================================================================
+	    
+	    // Логіка аварійної зупинки (Emergency Stop)
+	    IF "Emergency_Stop" THEN
+	        "GlobalSafetyStop" := TRUE; // Активуємо латч безпеки
+	    END_IF;
+	    
+	    IF "GlobalReset" THEN
+	        // Скидаємо латч безпеки тільки якщо фізична кнопка відпущена
+	            "Emergency_Stop" := FALSE;
+	            "GlobalSafetyStop" := FALSE;
+	        
+	        FOR #i := 1 TO "MECHS_COUNT" DO
+	            "DB_Mechs".Mechs[#i].Cmd := "CMD_RESET";
+	            "DB_Mechs".Mechs[#i].Enable_OK := TRUE;
+	        END_FOR;
+	        "GlobalReset" := FALSE; // Скидаємо прапор після обробки
+	    END_IF;
+	    
+	    // Поки активована безпека — примусово блокуємо роботу всіх механізмів
+	    IF "GlobalSafetyStop" THEN
+	        FOR #i := 1 TO "MECHS_COUNT" DO
+	            "DB_Mechs".Mechs[#i].Enable_OK := FALSE;
+	        END_FOR;
+	    END_IF;
+	    
+	    "FC_ManualMechCmdHandler"();
+	    
+	    
+	    
+	    "FC_Route_Supervisor"();
+	    
+	    "FC_DeviceRunner"(
+	                      Mechs := "DB_Mechs".Mechs,
+	                      Redler := "DB_Mechs".Redler,
+	                      Noria := "DB_Mechs".Noria,
+	                      Gate := "DB_Mechs".Gate2P,
+	                      Valve3P := "DB_Mechs".Valve3P,
+	                      Separator := "DB_Mechs".Separator,
+	                      Sushka := "DB_Mechs".Sushka,
+	                      Silos := "DB_Mechs".Silos,
+	                      ReceivingPit := "DB_Mechs".ReceivingPit,
+	                      Fan := "DB_Mechs".Fan,
+	                      Feeder := "DB_Mechs".Feeder
+	    );
+	    
+	    
 END_ORGANIZATION_BLOCK
+
