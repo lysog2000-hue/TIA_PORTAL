@@ -254,7 +254,7 @@ BEGIN
         IF NOT EXISTS (SELECT 1 FROM #StartPorts) OR (@EndPortId IS NULL AND @EndMechId <> 0)
         BEGIN
             SELECT 0 AS VariantId, 0 AS StepNum, 0 AS MechanismId, 0 AS RequiredState, 
-                   N'⚠️ ОШИБКА: Неверная конфигурация портов' AS RoutePath;
+                   N'⚠️ ПОМИЛКА: Невірна конфігурація портів' AS RoutePath;
             RETURN;
         END
 
@@ -287,7 +287,7 @@ BEGIN
         IF NOT EXISTS (SELECT 1 FROM #Routes)
         BEGIN
             SELECT 0 AS VariantId, 0 AS StepNum, 0 AS MechanismId, 0 AS RequiredState, 
-                   N'❌ Путь не найден' AS RoutePath;
+                   N'❌ Шлях не знайдено' AS RoutePath;
             RETURN;
         END
 
