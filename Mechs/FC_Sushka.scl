@@ -30,9 +30,9 @@ VERSION : 0.4
       isTempFlt : Bool;
       isAlarmFlt : Bool;
       isAutoFlt : Bool;
-      isFbWait : Bool;      // Флаг завершения задержки пуска для контроля фидбека
+      isFbWait : Bool;   // Флаг завершения задержки пуска для контроля фидбека
       tempWord : Word;
-      m : DWord;            // Временная маска бита
+      m : DWord;   // Временная маска бита
    END_VAR
 
 
@@ -43,10 +43,10 @@ BEGIN
 	    IF #B.Cmd = "CMD_RESET" THEN
 	        #S.FLTCode := 16#0; // Сброс детальной маски
 	        #B.FLTCode := 16#0; // Сброс базовой маски
-			 IF #B.FLTCode = "FLT_NONE" AND #B.Status = "STS_FAULT" THEN
-            #B.Status := "STS_IDLE";
-            #S.Status := "STS_IDLE";
-        	END_IF;
+	        IF #B.FLTCode = "FLT_NONE" AND #B.Status = "STS_FAULT" THEN
+	            #B.Status := "STS_IDLE";
+	            #S.Status := "STS_IDLE";
+	        END_IF;
 	    END_IF;
 	    
 	    // 2. Мониторинг под-устройств (Вентиляторы и Горелки)
@@ -73,8 +73,12 @@ BEGIN
 	        IF #isBreakerFlt OR #isFbFlt THEN
 	            #S.Fans[#i].Status := "STS_FAULT";
 	            #anyFanFault := TRUE;
-	            IF #isBreakerFlt THEN #S.FLTCode := #S.FLTCode OR SHL(IN := DW#16#1, N := INT_TO_UINT(#i - 1)); END_IF;
-	            IF #isFbFlt      THEN #S.FLTCode := #S.FLTCode OR #m; END_IF;
+	            IF #isBreakerFlt THEN
+	                #S.FLTCode := #S.FLTCode OR SHL(IN := DW#16#1, N := INT_TO_UINT(#i - 1));
+	            END_IF;
+	            IF #isFbFlt THEN
+	                #S.FLTCode := #S.FLTCode OR #m;
+	            END_IF;
 	        ELSIF NOT #S.Fans[#i].DO_Run THEN
 	            IF #B.Status = "STS_STOPPING" AND #S.Step = #i THEN
 	                #S.Fans[#i].Status := "STS_STOPPING";
@@ -93,15 +97,15 @@ BEGIN
 	    #anyBurnerFault := FALSE;
 	    FOR #i := 1 TO 2 DO
 	        #isBreakerFlt := NOT #S.Burners[#i].DI_Breaker_OK AND ((#S.ForceCode AND SHL(IN := DW#16#1, N := INT_TO_UINT(13 + #i))) = 0);
-	        #isTempFlt    := NOT #S.Burners[#i].DI_Temp_OK    AND ((#S.ForceCode AND SHL(IN := DW#16#1, N := INT_TO_UINT(17 + #i))) = 0);
-	        #isAlarmFlt   := #S.Burners[#i].DI_Alarm          AND ((#S.ForceCode AND SHL(IN := DW#16#1, N := INT_TO_UINT(19 + #i))) = 0);
-	        #isAutoFlt    := NOT #S.Burners[#i].DI_Auto_OK   AND ((#S.ForceCode AND SHL(IN := DW#16#1, N := INT_TO_UINT(21 + #i))) = 0);
+	        #isTempFlt := NOT #S.Burners[#i].DI_Temp_OK AND ((#S.ForceCode AND SHL(IN := DW#16#1, N := INT_TO_UINT(17 + #i))) = 0);
+	        #isAlarmFlt := #S.Burners[#i].DI_Alarm AND ((#S.ForceCode AND SHL(IN := DW#16#1, N := INT_TO_UINT(19 + #i))) = 0);
+	        #isAutoFlt := NOT #S.Burners[#i].DI_Auto_OK AND ((#S.ForceCode AND SHL(IN := DW#16#1, N := INT_TO_UINT(21 + #i))) = 0);
 	        
 	        #isFbWait := (#B.Status = "STS_RUNNING") OR (#B.Status = "STS_STARTING" AND #S.Step > (7 + #i));
 	        
 	        // Контроль фидбека горелок (Бит 16..17)
-	        IF #S.Burners[#i].DO_Run AND (NOT #S.Burners[#i].DI_Feedback1_OK OR NOT #S.Burners[#i].DI_Feedback2_OK) 
-	           AND #isFbWait AND ((#S.ForceCode AND SHL(IN := DW#16#1, N := INT_TO_UINT(15 + #i))) = 0) THEN
+	        IF #S.Burners[#i].DO_Run AND (NOT #S.Burners[#i].DI_Feedback1_OK OR NOT #S.Burners[#i].DI_Feedback2_OK)
+	            AND #isFbWait AND ((#S.ForceCode AND SHL(IN := DW#16#1, N := INT_TO_UINT(15 + #i))) = 0) THEN
 	            IF #S.FbTck[#i + 7] = 0 THEN
 	                #S.FbTck[#i + 7] := TIME_TCK();
 	                #isFbFlt := FALSE;
@@ -116,11 +120,21 @@ BEGIN
 	        IF #isBreakerFlt OR #isTempFlt OR #isAlarmFlt OR #isFbFlt OR #isAutoFlt THEN
 	            #S.Burners[#i].Status := "STS_FAULT";
 	            #anyBurnerFault := TRUE;
-	            IF #isBreakerFlt THEN #S.FLTCode := #S.FLTCode OR SHL(IN := DW#16#1, N := INT_TO_UINT(13 + #i)); END_IF;
-	            IF #isFbFlt      THEN #S.FLTCode := #S.FLTCode OR SHL(IN := DW#16#1, N := INT_TO_UINT(15 + #i)); END_IF;
-	            IF #isTempFlt    THEN #S.FLTCode := #S.FLTCode OR SHL(IN := DW#16#1, N := INT_TO_UINT(17 + #i)); END_IF;
-	            IF #isAlarmFlt   THEN #S.FLTCode := #S.FLTCode OR SHL(IN := DW#16#1, N := INT_TO_UINT(19 + #i)); END_IF;
-	            IF #isAutoFlt    THEN #S.FLTCode := #S.FLTCode OR SHL(IN := DW#16#1, N := INT_TO_UINT(21 + #i)); END_IF;
+	            IF #isBreakerFlt THEN
+	                #S.FLTCode := #S.FLTCode OR SHL(IN := DW#16#1, N := INT_TO_UINT(13 + #i));
+	            END_IF;
+	            IF #isFbFlt THEN
+	                #S.FLTCode := #S.FLTCode OR SHL(IN := DW#16#1, N := INT_TO_UINT(15 + #i));
+	            END_IF;
+	            IF #isTempFlt THEN
+	                #S.FLTCode := #S.FLTCode OR SHL(IN := DW#16#1, N := INT_TO_UINT(17 + #i));
+	            END_IF;
+	            IF #isAlarmFlt THEN
+	                #S.FLTCode := #S.FLTCode OR SHL(IN := DW#16#1, N := INT_TO_UINT(19 + #i));
+	            END_IF;
+	            IF #isAutoFlt THEN
+	                #S.FLTCode := #S.FLTCode OR SHL(IN := DW#16#1, N := INT_TO_UINT(21 + #i));
+	            END_IF;
 	        ELSIF NOT #S.Burners[#i].DO_Run THEN
 	            IF #B.Status = "STS_STOPPING" AND #S.Step = (7 + #i) THEN
 	                #S.Burners[#i].Status := "STS_STOPPING";
@@ -299,5 +313,11 @@ BEGIN
 	        #B.LastCmd := #B.Cmd;
 	    END_IF;
 	    #B.Cmd := "CMD_NONE";
+	    IF #S.ForceCode <> 0 THEN
+	        #B.Force_Code := 1;
+	    ELSE
+	        #B.Force_Code := 0;
+	    END_IF;
 	    
 END_FUNCTION
+

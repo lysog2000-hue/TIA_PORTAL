@@ -11,7 +11,7 @@ VERSION : 0.4
          High_OK : Bool;        // Верхній рівень
          Low_OK : Bool;         // Нижній рівень
       END_STRUCT;
-      Temps : Array[1..16] of Int; // Аналогові датчики температури
+      Temps : Array[0..15] of Int; // Аналогові датчики температури
 
       Status : UInt;            // Загальний статус сушарки (для SCADA)
       FLTCode : DWord;          // Расширенная битовая маска аварий (27 бит)

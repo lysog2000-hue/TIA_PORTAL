@@ -9,7 +9,7 @@ VERSION : 0.1
       FaultTime_Breaker_ms : DInt;
       ManualReset : Bool;
       TempRampRate : Int;
-      CaseID : Int; // 0 - норма, 1..27 - специфические аварии для тестов
+      CaseID : Int;   // 0 - норма, 1..27 - специфические аварии для тестов
    END_VAR
 
    VAR_IN_OUT 
@@ -37,8 +37,8 @@ BEGIN
 	FOR #i := 1 TO 2 DO
 	    // Сигналы исправности цепи безопасности (Safety Chain)
 	    #S.Burners[#i].DI_Breaker_OK := NOT #SimFault_Breaker;
-	    #S.Burners[#i].DI_Alarm      := #SimFault_Breaker;
-	    #S.Burners[#i].DI_Auto_OK   := TRUE; // Горелка в режиме AUTO (нужно для FC_Sushka)
+	    #S.Burners[#i].DI_Alarm := #SimFault_Breaker;
+	    #S.Burners[#i].DI_Auto_OK := TRUE; // Горелка в режиме AUTO (нужно для FC_Sushka)
 	    
 	    // Обратные связи по работе
 	    #S.Burners[#i].DI_Feedback1_OK := #S.Burners[#i].DO_Run AND NOT #SimFault_Breaker;
@@ -50,65 +50,157 @@ BEGIN
 	END_FOR;
 	
 	// 3. Расчет динамики температуры (Ramp)
-	FOR #i := 1 TO 16 DO
+	FOR #i := 0 TO 2 DO
 	    IF #anyBurnerOn THEN
 	        // Нагрев до 80.0 градусов (умножаем на 10 для целочисленного хранения)
 	        IF #State.InternalTemp[#i] < 800.0 THEN
-	            #State.InternalTemp[#i] := #State.InternalTemp[#i] + (INT_TO_REAL(#TempRampRate) / 10.0);
+	            #State.InternalTemp[#i] := #State.InternalTemp[#i] + (INT_TO_REAL(#TempRampRate) / 150.0);
 	        END_IF;
 	    ELSE
 	        // Охлаждение до 20.0 градусов
 	        IF #State.InternalTemp[#i] > 200.0 THEN
-	            #State.InternalTemp[#i] := #State.InternalTemp[#i] - 0.5;
+	            #State.InternalTemp[#i] := #State.InternalTemp[#i] - 0.01;
 	        END_IF;
 	    END_IF;
-	    // Преобразование температуры из (Celsius * 10) в значение АЦП (0-27648 для 0-200C)
-	    // (InternalTemp / 10.0) / 200.0 * 27648.0 = InternalTemp * (27648.0 / 2000.0) = InternalTemp * 13.824
-	    #S.Temps[#i] := REAL_TO_INT(#State.InternalTemp[#i] * 13.824); // Запись в массив в формате АЦП
+	    // Преобразование температуры из (Celsius * 10) в значение АЦП (0-27648 для диапазона -200..500C)
+	    // Формула: ((InternalTemp / 10.0) + 200.0) / 700.0 * 27648.0
+	    // В упрощенном виде: (InternalTemp * 3.949714) + 7899.428
+	    
+	    #S.Temps[#i] := REAL_TO_INT(#State.InternalTemp[#i] * 3.949714 + 7899.428); // Запись в массив в формате АЦП
 	END_FOR;
-	
+	FOR #i := 3 TO 5 DO
+	    IF #anyBurnerOn THEN
+	        // Нагрев до 80.0 градусов (умножаем на 10 для целочисленного хранения)
+	        IF #State.InternalTemp[#i] < 700.0 THEN
+	            #State.InternalTemp[#i] := #State.InternalTemp[#i] + (INT_TO_REAL(#TempRampRate) / 210.0);
+	        END_IF;
+	    ELSE
+	        // Охлаждение до 20.0 градусов
+	        IF #State.InternalTemp[#i] > 150.0 THEN
+	            #State.InternalTemp[#i] := #State.InternalTemp[#i] - 0.02;
+	        END_IF;
+	    END_IF;
+	    // Преобразование температуры из (Celsius * 10) в значение АЦП (0-27648 для диапазона -200..500C)
+	    // Формула: ((InternalTemp / 10.0) + 200.0) / 700.0 * 27648.0
+	    // В упрощенном виде: (InternalTemp * 3.949714) + 7899.428
+	    
+	    #S.Temps[#i] := REAL_TO_INT(#State.InternalTemp[#i] * 3.949714 + 7899.428); // Запись в массив в формате АЦП
+	END_FOR;
+	FOR #i := 6 TO 8 DO
+	    IF #anyBurnerOn THEN
+	        // Нагрев до 80.0 градусов (умножаем на 10 для целочисленного хранения)
+	        IF #State.InternalTemp[#i] < 1100.0 THEN
+	            #State.InternalTemp[#i] := #State.InternalTemp[#i] + (INT_TO_REAL(#TempRampRate) / 102.0);
+	        END_IF;
+	    ELSE
+	        // Охлаждение до 20.0 градусов
+	        IF #State.InternalTemp[#i] > 300.0 THEN
+	            #State.InternalTemp[#i] := #State.InternalTemp[#i] - 0.075;
+	        END_IF;
+	    END_IF;
+	    // Преобразование температуры из (Celsius * 10) в значение АЦП (0-27648 для диапазона -200..500C)
+	    // Формула: ((InternalTemp / 10.0) + 200.0) / 700.0 * 27648.0
+	    // В упрощенном виде: (InternalTemp * 3.949714) + 7899.428
+	    
+	    #S.Temps[#i] := REAL_TO_INT(#State.InternalTemp[#i] * 3.949714 + 7899.428); // Запись в массив в формате АЦП
+	END_FOR;
+	FOR #i := 9 TO 12 DO
+	    IF #anyBurnerOn THEN
+	        // Нагрев до 80.0 градусов (умножаем на 10 для целочисленного хранения)
+	        IF #State.InternalTemp[#i] < 1000.0 THEN
+	            #State.InternalTemp[#i] := #State.InternalTemp[#i] + (INT_TO_REAL(#TempRampRate) / 310.0);
+	        END_IF;
+	    ELSE
+	        // Охлаждение до 20.0 градусов
+	        IF #State.InternalTemp[#i] > 100.0 THEN
+	            #State.InternalTemp[#i] := #State.InternalTemp[#i] - 0.057;
+	        END_IF;
+	    END_IF;
+	    // Преобразование температуры из (Celsius * 10) в значение АЦП (0-27648 для диапазона -200..500C)
+	    // Формула: ((InternalTemp / 10.0) + 200.0) / 700.0 * 27648.0
+	    // В упрощенном виде: (InternalTemp * 3.949714) + 7899.428
+	    
+	    #S.Temps[#i] := REAL_TO_INT(#State.InternalTemp[#i] * 3.949714 + 7899.428); // Запись в массив в формате АЦП
+	END_FOR;
+	FOR #i := 13 TO 14 DO
+	    IF #anyBurnerOn THEN
+	        // Нагрев до 80.0 градусов (умножаем на 10 для целочисленного хранения)
+	        IF #State.InternalTemp[#i] < 600.0 THEN
+	            #State.InternalTemp[#i] := #State.InternalTemp[#i] + (INT_TO_REAL(#TempRampRate) / 405.0);
+	        END_IF;
+	    ELSE
+	        // Охлаждение до 20.0 градусов
+	        IF #State.InternalTemp[#i] > 250.0 THEN
+	            #State.InternalTemp[#i] := #State.InternalTemp[#i] - 0.03;
+	        END_IF;
+	    END_IF;
+	    // Преобразование температуры из (Celsius * 10) в значение АЦП (0-27648 для диапазона -200..500C)
+	    // Формула: ((InternalTemp / 10.0) + 200.0) / 700.0 * 27648.0
+	    // В упрощенном виде: (InternalTemp * 3.949714) + 7899.428
+	    
+	    #S.Temps[#i] := REAL_TO_INT(#State.InternalTemp[#i] * 3.949714 + 7899.428); // Запись в массив в формате АЦП
+	END_FOR;
+	FOR #i := 15 TO 15 DO
+	    IF #anyBurnerOn THEN
+	        // Нагрев до 80.0 градусов (умножаем на 10 для целочисленного хранения)
+	        IF #State.InternalTemp[#i] < 750.0 THEN
+	            #State.InternalTemp[#i] := #State.InternalTemp[#i] + (INT_TO_REAL(#TempRampRate) / 502.0);
+	        END_IF;
+	    ELSE
+	        // Охлаждение до 20.0 градусов
+	        IF #State.InternalTemp[#i] > 220.0 THEN
+	            #State.InternalTemp[#i] := #State.InternalTemp[#i] - 0.07;
+	        END_IF;
+	    END_IF;
+	    // Преобразование температуры из (Celsius * 10) в значение АЦП (0-27648 для диапазона -200..500C)
+	    // Формула: ((InternalTemp / 10.0) + 200.0) / 700.0 * 27648.0
+	    // В упрощенном виде: (InternalTemp * 3.949714) + 7899.428
+	    
+	    #S.Temps[#i] := REAL_TO_INT(#State.InternalTemp[#i] * 3.949714 + 7899.428); // Запись в массив в формате АЦП
+	END_FOR;
 	// 4. Датчики уровней и выгрузка
 	#S.Discharge.DI_Feedback_OK := #S.Discharge.DO_Run AND NOT #SimFault_Breaker;
-	#S.Levels.Low_OK  := TRUE;  // Зерно в сушилке есть (исправно)
+	#S.Levels.Low_OK := TRUE;  // Зерно в сушилке есть (исправно)
 	#S.Levels.High_OK := TRUE;  // Перелива нет (исправно)
-
-    // =========================================================
-    // 5. ТЕСТОВЫЕ СЦЕНАРИИ (CaseID)
-    // =========================================================
-    CASE #CaseID OF
-        1..7: // Авария автоматов вентиляторов (Fans 1..7)
-            #S.Fans[#CaseID].DI_Breaker_OK := FALSE;
-            
-        8..14: // Отсутствие фидбека вентиляторов (Fans 1..7)
-            #S.Fans[#CaseID - 7].DI_Feedback_OK := FALSE;
-            
-        15..16: // Авария автоматов горелок (Burners 1..2)
-            #S.Burners[#CaseID - 14].DI_Breaker_OK := FALSE;
-            
-        17..18: // Отсутствие фидбека горелок (Burners 1..2)
-            #S.Burners[#CaseID - 16].DI_Feedback1_OK := FALSE;
-            #S.Burners[#CaseID - 16].DI_Feedback2_OK := FALSE;
-            
-        19..20: // Температура горелки не в норме
-            #S.Burners[#CaseID - 18].DI_Temp_OK := FALSE;
-            
-        21..22: // Внешняя авария горелки (Alarm)
-            #S.Burners[#CaseID - 20].DI_Alarm := TRUE;
-            
-        23..24: // Горелка не в режиме AUTO
-            #S.Burners[#CaseID - 22].DI_Auto_OK := FALSE;
-            
-        25: // Нет фидбека выгрузки
-            #S.Discharge.DI_Feedback_OK := FALSE;
-            
-        26: // Сработал верхний уровень (High Level reached)
-            #S.Levels.High_OK := FALSE;
-            
-        27: // Пропал нижний уровень (Low Level empty)
-            #S.Levels.Low_OK := FALSE;
-            
-        ELSE
-            ; // При CaseID = 0 или вне диапазона — работа по умолчанию
-    END_CASE;
-
+	
+	// =========================================================
+	// 5. ТЕСТОВЫЕ СЦЕНАРИИ (CaseID)
+	// =========================================================
+	CASE #CaseID OF
+	    1..7: // Авария автоматов вентиляторов (Fans 1..7)
+	        #S.Fans[#CaseID].DI_Breaker_OK := FALSE;
+	        
+	    8..14: // Отсутствие фидбека вентиляторов (Fans 1..7)
+	        #S.Fans[#CaseID - 7].DI_Feedback_OK := FALSE;
+	        
+	    15..16: // Авария автоматов горелок (Burners 1..2)
+	        #S.Burners[#CaseID - 14].DI_Breaker_OK := FALSE;
+	        
+	    17..18: // Отсутствие фидбека горелок (Burners 1..2)
+	        #S.Burners[#CaseID - 16].DI_Feedback1_OK := FALSE;
+	        #S.Burners[#CaseID - 16].DI_Feedback2_OK := FALSE;
+	        
+	    19..20: // Температура горелки не в норме
+	        #S.Burners[#CaseID - 18].DI_Temp_OK := FALSE;
+	        
+	    21..22: // Внешняя авария горелки (Alarm)
+	        #S.Burners[#CaseID - 20].DI_Alarm := TRUE;
+	        
+	    23..24: // Горелка не в режиме AUTO
+	        #S.Burners[#CaseID - 22].DI_Auto_OK := FALSE;
+	        
+	    25: // Нет фидбека выгрузки
+	        #S.Discharge.DI_Feedback_OK := FALSE;
+	        
+	    26: // Сработал верхний уровень (High Level reached)
+	        #S.Levels.High_OK := FALSE;
+	        
+	    27: // Пропал нижний уровень (Low Level empty)
+	        #S.Levels.Low_OK := FALSE;
+	        
+	    ELSE
+	        ; // При CaseID = 0 или вне диапазона — работа по умолчанию
+	END_CASE;
+	
 END_FUNCTION
+
