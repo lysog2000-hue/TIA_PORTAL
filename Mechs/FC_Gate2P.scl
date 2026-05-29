@@ -49,9 +49,13 @@ BEGIN
 	        END_IF;
 	        
 	        IF #B.FLTCode = "FLT_NONE" AND #B.Status = "STS_FAULT" THEN
-	            #B.Status := "STS_IDLE";
-	            #G.MoveStartMs := 0;
-	            #G.UnknownPositionMs := 0;
+	            IF NOT #B.LocalManual THEN
+	                #B.Status := "STS_IDLE";
+	            ELSE
+	                #B.Status := "STS_LOCAL";
+	            END_IF;
+	                #G.MoveStartMs := 0;
+	                #G.UnknownPositionMs := 0;
 	        END_IF;
 	    END_IF;
 	END_REGION
@@ -197,9 +201,8 @@ BEGIN
 	    
 	    // ÐŸÐ¾Ñ‚Ð¾Ñ‡Ð½Ð° Ñ„Ñ–Ð·Ð¸Ñ‡Ð½Ð° Ð¿Ð¾Ð·Ð¸Ñ†Ñ–Ñ (Ð¾Ð½Ð¾Ð²Ð»ÑŽÑ”Ñ‚ÑŒÑÑ Ñ‰Ð¾ÑÐºÐ°Ð½Ð¾Ð²Ð¾ Ð·Ð° ÐºÑ–Ð½Ñ†ÐµÐ²Ð¸ÐºÐ°Ð¼Ð¸)
 	    // ÐžÐ±Ð¸Ð´Ð²Ð° Ð´Ð°Ñ‚Ñ‡Ð¸ÐºÐ¸ Ð°ÐºÑ‚Ð¸Ð²Ð½Ñ– = Ð°Ð²Ð°Ñ€Ñ–Ñ FLT_BOTH_SENSORS â†’ Ð¿Ð¾Ð·Ð¸Ñ†Ñ–Ñ Ð½ÐµÐ²Ñ–Ð´Ð¾Ð¼Ð°
-	    
-	    IF #B.Status = "STS_FAULT" OR #B.FLTCode <> 0 OR #B.Status = "STS_DISABLED" THEN
-	        #B.Status_Param := "VALVE_FAULT";
+	    IF #B.Status = "STS_FAULT" OR #B.FLTCode <> 0 OR #B.Status= "STS_DISABLED" THEN
+	        #B.Status_Param := "VALVE_FAULT"; 
 	    ELSIF #G.DI_Pos1_OK AND NOT #G.DI_Pos0_OK THEN
 	        #B.Status_Param := "GATE_AT_POS1";    // = 7
 	    ELSIF #G.DI_Pos0_OK AND NOT #G.DI_Pos1_OK THEN
@@ -207,6 +210,7 @@ BEGIN
 	    ELSE
 	        #B.Status_Param := 0;                 // Ð½ÐµÐ²Ñ–Ð´Ð¾Ð¼Ð° (Ð² Ñ€ÑƒÑÑ–, Ð¾Ð±Ð¸Ð´Ð²Ð° Ð´Ð°Ñ‚Ñ‡Ð¸ÐºÐ¸, Ð°Ð±Ð¾ Ð½Ðµ Ñ–Ð½Ñ–Ñ†Ñ–Ð°Ð»Ñ–Ð·Ð¾Ð²Ð°Ð½Ð°)
 	    END_IF;
+	    
 	    
 	    #B.Cmd := "CMD_NONE";
 	END_REGION

@@ -44,6 +44,15 @@ BEGIN
 	        #S.FLTCode := 16#0; // Сброс детальной маски
 	        #B.FLTCode := 16#0; // Сброс базовой маски
 	        IF #B.FLTCode = "FLT_NONE" AND #B.Status = "STS_FAULT" THEN
+	            IF NOT #B.LocalManual THEN
+	                #B.Status := "STS_IDLE";
+	                #S.Status := "STS_IDLE";
+	            ELSE
+	                #B.Status := "STS_LOCAL";
+	                #S.Status := "STS_IDLE";
+	            END_IF;
+	        END_IF;
+	        IF #B.Enable_OK AND #B.Status = "STS_DISABLED" THEN
 	            #B.Status := "STS_IDLE";
 	            #S.Status := "STS_IDLE";
 	        END_IF;
@@ -326,3 +335,4 @@ BEGIN
 	    END_IF;
 	    
 END_FUNCTION
+

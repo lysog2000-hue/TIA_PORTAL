@@ -46,7 +46,11 @@ BEGIN
 	        END_IF;
 	        
 	        IF #B.FLTCode = "FLT_NONE" AND #B.Status = "STS_FAULT" THEN
-	            #B.Status := "STS_IDLE";
+	            IF NOT #B.LocalManual THEN
+	                #B.Status := "STS_IDLE";
+	            ELSE
+	                #B.Status := "STS_LOCAL";
+	            END_IF;
 	            #F.StartMs := 0;
 	            #F.FeedbackLostMs := 0;
 	            #F.StopMs := 0;

@@ -34,7 +34,7 @@ VERSION : 1.1
 //   BIT5 (32) - forcePosUnknown (скидає FLT_VALVE_POS_UNKNOWN)
 // ==============================================================================
    VAR_IN_OUT 
-      F : "UDT_Valve3P";
+      V : "UDT_Valve3P";
       B : "UDT_BaseMechanism";
    END_VAR
 
@@ -65,7 +65,7 @@ BEGIN
 	REGION "1) RESET (Тільки за умови усунення причини)"
 	    IF #B.Cmd = "CMD_RESET" THEN
 	        IF (#B.FLTCode AND "FLT_BREAKER") <> 0 THEN
-	            IF #F.DI_Breaker_OK OR #forceBreaker THEN
+	            IF #V.DI_Breaker_OK OR #forceBreaker THEN
 	                #B.FLTCode := #B.FLTCode AND NOT "FLT_BREAKER";
 	            END_IF;
 	        END_IF;
@@ -80,9 +80,13 @@ BEGIN
 	        END_IF;
 	        
 	        IF #B.FLTCode = "FLT_NONE" AND #B.Status = "STS_FAULT" THEN
-	            #B.Status := "STS_IDLE";
-	            #F.MoveStartMs := 0;
-	            #F.UnknownPositionMs := 0;
+	            IF NOT #B.LocalManual THEN
+	                #B.Status := "STS_IDLE";
+	            ELSE
+	                #B.Status := "STS_LOCAL";
+	            END_IF;
+	            #V.MoveStartMs := 0;
+	            #V.UnknownPositionMs := 0;
 	        END_IF;
 	    END_IF;
 	END_REGION
@@ -103,19 +107,19 @@ BEGIN
 	    
 	    // Скидання міток часу при блокуванні
 	    IF #isBlocked THEN
-	        #F.MoveStartMs := 0;
-	        #F.UnknownPositionMs := 0;
+	        #V.MoveStartMs := 0;
+	        #V.UnknownPositionMs := 0;
 	    END_IF;
 	END_REGION
 	
 	REGION "3) Моніторинг аварій (Diagnostic Latch)"
 	    IF #B.FLTCode = "FLT_NONE" AND NOT #isBlocked THEN
-	        IF NOT #F.DI_Breaker_OK THEN
+	        IF NOT #V.DI_Breaker_OK THEN
 	            #B.FLTCode := #B.FLTCode OR "FLT_BREAKER";
 	        END_IF;
-	        IF (#F.DI_Pos0_OK AND #F.DI_Pos1_OK) OR
-	            (#F.DI_Pos0_OK AND #F.DI_Pos2_OK) OR
-	            (#F.DI_Pos1_OK AND #F.DI_Pos2_OK) THEN
+	        IF (#V.DI_Pos0_OK AND #V.DI_Pos1_OK) OR
+	            (#V.DI_Pos0_OK AND #V.DI_Pos2_OK) OR
+	            (#V.DI_Pos1_OK AND #V.DI_Pos2_OK) THEN
 	            #B.FLTCode := #B.FLTCode OR "FLT_VALVE_MULTIPLE_POS";
 	        END_IF;
 	    END_IF;
@@ -146,9 +150,9 @@ BEGIN
 	
 	REGION "5 & 6) Машина станів (FSM) та обробка команд"
 	    // Відоме положення = хоча б один датчик позиції активний (і не кілька одночасно)
-	    #isKnownPosition := (#F.DI_Pos0_OK AND NOT #F.DI_Pos1_OK AND NOT #F.DI_Pos2_OK) OR
-	    (#F.DI_Pos1_OK AND NOT #F.DI_Pos0_OK AND NOT #F.DI_Pos2_OK) OR
-	    (#F.DI_Pos2_OK AND NOT #F.DI_Pos0_OK AND NOT #F.DI_Pos1_OK);
+	    #isKnownPosition := (#V.DI_Pos0_OK AND NOT #V.DI_Pos1_OK AND NOT #V.DI_Pos2_OK) OR
+	    (#V.DI_Pos1_OK AND NOT #V.DI_Pos0_OK AND NOT #V.DI_Pos2_OK) OR
+	    (#V.DI_Pos2_OK AND NOT #V.DI_Pos0_OK AND NOT #V.DI_Pos1_OK);
 	    
 	    IF (NOT #isFault) AND (NOT #isBlocked) THEN
 	        IF #B.Cmd <> "CMD_NONE" THEN
@@ -159,11 +163,11 @@ BEGIN
 	            "STS_IDLE":
 	                // Контроль перебування у невідомій позиції
 	                IF NOT #isKnownPosition THEN
-	                    IF #F.UnknownPositionMs = 0 THEN
-	                        #F.UnknownPositionMs := TIME_TCK();
+	                    IF #V.UnknownPositionMs = 0 THEN
+	                        #V.UnknownPositionMs := TIME_TCK();
 	                    END_IF;
 	                    
-	                    IF "FC_TimeElapsedMs"(StartTck := #F.UnknownPositionMs, TimeoutMs := "TimeoutMs_Valve_Position_Unknown",
+	                    IF "FC_TimeElapsedMs"(StartTck := #V.UnknownPositionMs, TimeoutMs := "TimeoutMs_Valve_Position_Unknown",
 	                                              ElapsedMs => #elapsedMs, NowTck => #nowTck) THEN
 	                        // Фіксуємо аварію тільки якщо НЕ форсовано
 	                        IF NOT #forcePosUnknown THEN
@@ -172,15 +176,15 @@ BEGIN
 	                        END_IF;
 	                    END_IF;
 	                ELSE
-	                    #F.UnknownPositionMs := 0;
+	                    #V.UnknownPositionMs := 0;
 	                END_IF;
 	                
 	                // Старт руху
 	                IF #B.Cmd = "CMD_START" THEN
 	                    // Перевірка: чи вже досягнуто цільової позиції
-	                    #targetReached := (#B.CmdParam1 = "CMD_VALVE_POS0" AND #F.DI_Pos0_OK) OR
-	                    (#B.CmdParam1 = "CMD_VALVE_POS1" AND #F.DI_Pos1_OK) OR
-	                    (#B.CmdParam1 = "CMD_VALVE_POS2" AND #F.DI_Pos2_OK);
+	                    #targetReached := (#B.CmdParam1 = "CMD_VALVE_POS0" AND #V.DI_Pos0_OK) OR
+	                    (#B.CmdParam1 = "CMD_VALVE_POS1" AND #V.DI_Pos1_OK) OR
+	                    (#B.CmdParam1 = "CMD_VALVE_POS2" AND #V.DI_Pos2_OK);
 	                    
 	                    // Перевірка: валідність параметру команди
 	                    #paramValid := (#B.CmdParam1 = "CMD_VALVE_POS0") OR
@@ -189,15 +193,15 @@ BEGIN
 	                    
 	                    IF #paramValid AND NOT #targetReached THEN
 	                        #B.Status := "STS_STARTING";
-	                        #F.MoveStartMs := TIME_TCK();
+	                        #V.MoveStartMs := TIME_TCK();
 	                    END_IF;
 	                END_IF;
 	                
 	            "STS_STARTING":
 	                // Перехід у RUNNING, якщо клапан почав рух (зійшов з кінцевика)
-	                IF (#B.CmdParam1 = "CMD_VALVE_POS0" AND NOT #F.DI_Pos0_OK) OR
-	                    (#B.CmdParam1 = "CMD_VALVE_POS1" AND NOT #F.DI_Pos1_OK) OR
-	                    (#B.CmdParam1 = "CMD_VALVE_POS2" AND NOT #F.DI_Pos2_OK) THEN
+	                IF (#B.CmdParam1 = "CMD_VALVE_POS0" AND NOT #V.DI_Pos0_OK) OR
+	                    (#B.CmdParam1 = "CMD_VALVE_POS1" AND NOT #V.DI_Pos1_OK) OR
+	                    (#B.CmdParam1 = "CMD_VALVE_POS2" AND NOT #V.DI_Pos2_OK) THEN
 	                    #B.Status := "STS_RUNNING";
 	                ELSIF #isKnownPosition THEN
 	                    // Якщо вже на іншому кінцевику або не зійшла → повернутись у IDLE
@@ -206,7 +210,7 @@ BEGIN
 	                
 	            "STS_RUNNING":
 	                // Таймер контролю руху
-	                IF "FC_TimeElapsedMs"(StartTck := #F.MoveStartMs, TimeoutMs := "TimeoutMs_Valve_Move",
+	                IF "FC_TimeElapsedMs"(StartTck := #V.MoveStartMs, TimeoutMs := "TimeoutMs_Valve_Move",
 	                                          ElapsedMs => #elapsedMs, NowTck => #nowTck) THEN
 	                    // Фіксуємо аварію тільки якщо НЕ форсовано
 	                    IF NOT #forceMoveTimeout THEN
@@ -216,17 +220,17 @@ BEGIN
 	                END_IF;
 	                
 	                // Успішне завершення руху
-	                IF (#B.CmdParam1 = "CMD_VALVE_POS0" AND #F.DI_Pos0_OK) OR
-	                    (#B.CmdParam1 = "CMD_VALVE_POS1" AND #F.DI_Pos1_OK) OR
-	                    (#B.CmdParam1 = "CMD_VALVE_POS2" AND #F.DI_Pos2_OK) THEN
+	                IF (#B.CmdParam1 = "CMD_VALVE_POS0" AND #V.DI_Pos0_OK) OR
+	                    (#B.CmdParam1 = "CMD_VALVE_POS1" AND #V.DI_Pos1_OK) OR
+	                    (#B.CmdParam1 = "CMD_VALVE_POS2" AND #V.DI_Pos2_OK) THEN
 	                    #B.Status := "STS_STOPPING";
 	                END_IF;
 	                
 	            "STS_STOPPING":
 	                IF #isKnownPosition THEN
 	                    #B.Status := "STS_IDLE";
-	                    #F.MoveStartMs := 0;
-	                    #F.UnknownPositionMs := 0;
+	                    #V.MoveStartMs := 0;
+	                    #V.UnknownPositionMs := 0;
 	                END_IF;
 	        END_CASE;
 	        
@@ -240,24 +244,24 @@ BEGIN
 	REGION "7) Формування виходів DO та Status_Param"
 	    // Виходи DO: активні тільки під час STARTING або RUNNING
 	    IF (#B.Status = "STS_STARTING") OR (#B.Status = "STS_RUNNING") THEN
-	        #F.DO_Pos0 := (#B.CmdParam1 = "CMD_VALVE_POS0");
-	        #F.DO_Pos1 := (#B.CmdParam1 = "CMD_VALVE_POS1");
-	        #F.DO_Pos2 := (#B.CmdParam1 = "CMD_VALVE_POS2");
+	        #V.DO_Pos0 := (#B.CmdParam1 = "CMD_VALVE_POS0");
+	        #V.DO_Pos1 := (#B.CmdParam1 = "CMD_VALVE_POS1");
+	        #V.DO_Pos2 := (#B.CmdParam1 = "CMD_VALVE_POS2");
 	    ELSE
-	        #F.DO_Pos0 := FALSE;
-	        #F.DO_Pos1 := FALSE;
-	        #F.DO_Pos2 := FALSE;
+	        #V.DO_Pos0 := FALSE;
+	        #V.DO_Pos1 := FALSE;
+	        #V.DO_Pos2 := FALSE;
 	    END_IF;
 	    
 	    // Поточна фізична позиція (оновлюється щосканово за кінцевиками)
 	    // Два або більше датчиків активні = аварія FLT_VALVE_MULTIPLE_POS → позиція невідома
-	    IF #B.Status = "STS_FAULT" OR #B.FLTCode <> 0 OR #B.Status = "STS_DISABLED" THEN
+	    IF #B.Status = "STS_FAULT" OR #B.FLTCode <> 0 OR #B.Status="STS_DISABLED"  THEN
 	        #B.Status_Param := "VALVE_FAULT";
-	    ELSIF #F.DI_Pos1_OK AND NOT #F.DI_Pos0_OK AND NOT #F.DI_Pos2_OK THEN
+	    ELSIF #V.DI_Pos1_OK AND NOT #V.DI_Pos0_OK AND NOT #V.DI_Pos2_OK THEN
 	        #B.Status_Param := "VALVE_AT_POS1";    // = 4
-	    ELSIF #F.DI_Pos2_OK AND NOT #F.DI_Pos0_OK AND NOT #F.DI_Pos1_OK THEN
+	    ELSIF #V.DI_Pos2_OK AND NOT #V.DI_Pos0_OK AND NOT #V.DI_Pos1_OK THEN
 	        #B.Status_Param := "VALVE_AT_POS2";    // = 5
-	    ELSIF #F.DI_Pos0_OK AND NOT #F.DI_Pos1_OK AND NOT #F.DI_Pos2_OK THEN
+	    ELSIF #V.DI_Pos0_OK AND NOT #V.DI_Pos1_OK AND NOT #V.DI_Pos2_OK THEN
 	        #B.Status_Param := "VALVE_AT_POS0";    // = 3
 	    ELSE
 	        #B.Status_Param := 0;                  // невідома (у русі, обидва датчики, або не ініціалізована)
