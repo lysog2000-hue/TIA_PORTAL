@@ -51,7 +51,7 @@ export async function Circle_5_BackColor_OnPropertyChanged(item, value) {
     for (let r = 1; r <= 4; r++) {
         let rc = Tags(`ResultCode_Route${r}`).Read();
         let rs = Tags(`RS_State${r}`).Read()
-        if (rc !== ROUTE_OK_RUNNING&& rs !==RS_State_OK) {
+        if (rc !== ROUTE_OK_RUNNING && rs !==RS_State_OK) {
             routeIdx = r;
             break;
         }
