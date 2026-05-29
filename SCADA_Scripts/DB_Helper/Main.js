@@ -259,15 +259,17 @@ HMIRuntime.UI.SysFct.OpenScreenInPopup("Base", "MotorHours", true, "", 0, 0, fal
 //ЗАПИСЬ ВЫБРАННОГО МАРШРУТА ИЗ ТАБЛИЦЫ
 export async function Run_Route_OnTapped(item, x, y, modifiers, trigger) {
 
-// Находим свободный слот маршрута (ResultCode слота не равен 32768 = ROUTE_OK_RUNNING)
-        const ROUTE_OK_RUNNING = 32768;
-        let routeIdx = 0;
-        for (let r = 1; r <= 4; r++) {
-            let rc = await Tags(`ResultCode_Route${r}`).Read();
-            if (rc !== ROUTE_OK_RUNNING) {
-                routeIdx = r;
-                break;
-            }
+const ROUTE_OK_RUNNING = 32768;
+    const RS_State_OK =4;
+    let routeIdx = 0;
+    for (let r = 1; r <= 4; r++) {
+        let rc = Tags(`ResultCode_Route${r}`).Read();
+        let rs = Tags(`RS_State${r}`).Read()
+        if (rc !== ROUTE_OK_RUNNING&& rs !==RS_State_OK) {
+            routeIdx = r;
+            break;
+        }
+    }
         }
         if (routeIdx === 0) {
             return;
