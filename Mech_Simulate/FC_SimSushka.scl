@@ -24,17 +24,17 @@ VERSION : 0.1
 
 
 BEGIN
-	// 1. Симуляция исправности и обратных связей вентиляторов (Fans 1..7)
-	FOR #i := 1 TO 7 DO
+	// 1. Симуляция исправности и обратных связей вентиляторов (Fans 0..6)
+	FOR #i := 0 TO 6 DO
 	    // Исправность автомата защиты (всегда TRUE, если не взведен бит ошибки)
 	    #S.Fans[#i].DI_Breaker_OK := NOT #SimFault_Breaker;
 	    // Обратная связь: появляется только когда подана команда на запуск
 	    #S.Fans[#i].DI_Feedback_OK := #S.Fans[#i].DO_Run AND NOT #SimFault_Breaker;
 	END_FOR;
 	
-	// 2. Симуляция исправности и обратных связей горелок (Burners 1..2)
+	// 2. Симуляция исправности и обратных связей горелок (Burners 0..1)
 	#anyBurnerOn := FALSE;
-	FOR #i := 1 TO 2 DO
+	FOR #i := 0 TO 1 DO
 	    // Сигналы исправности цепи безопасности (Safety Chain)
 	    #S.Burners[#i].DI_Breaker_OK := NOT #SimFault_Breaker;
 	    #S.Burners[#i].DI_Alarm := #SimFault_Breaker;
@@ -167,27 +167,27 @@ BEGIN
 	// 5. ТЕСТОВЫЕ СЦЕНАРИИ (CaseID)
 	// =========================================================
 	CASE #CaseID OF
-	    1..7: // Авария автоматов вентиляторов (Fans 1..7)
-	        #S.Fans[#CaseID].DI_Breaker_OK := FALSE;
+	    1..7: // Авария автоматов вентиляторов (Fans 0..6). Case 1 -> Fan 0
+	        #S.Fans[#CaseID - 1].DI_Breaker_OK := FALSE;
 	        
-	    8..14: // Отсутствие фидбека вентиляторов (Fans 1..7)
-	        #S.Fans[#CaseID - 7].DI_Feedback_OK := FALSE;
+	    8..14: // Отсутствие фидбека вентиляторов (Fans 0..6). Case 8 -> Fan 0
+	        #S.Fans[#CaseID - 8].DI_Feedback_OK := FALSE;
 	        
-	    15..16: // Авария автоматов горелок (Burners 1..2)
-	        #S.Burners[#CaseID - 14].DI_Breaker_OK := FALSE;
+	    15..16: // Авария автоматов горелок (Burners 0..1). Case 15 -> Burner 0
+	        #S.Burners[#CaseID - 15].DI_Breaker_OK := FALSE;
 	        
-	    17..18: // Отсутствие фидбека горелок (Burners 1..2)
-	        #S.Burners[#CaseID - 16].DI_Feedback1_OK := FALSE;
-	        #S.Burners[#CaseID - 16].DI_Feedback2_OK := FALSE;
+	    17..18: // Отсутствие фидбека горелок (Burners 0..1). Case 17 -> Burner 0
+	        #S.Burners[#CaseID - 17].DI_Feedback1_OK := FALSE;
+	        #S.Burners[#CaseID - 17].DI_Feedback2_OK := FALSE;
 	        
-	    19..20: // Температура горелки не в норме
-	        #S.Burners[#CaseID - 18].DI_Temp_OK := FALSE;
+	    19..20: // Температура горелки не в норме (Burners 0..1). Case 19 -> Burner 0
+	        #S.Burners[#CaseID - 19].DI_Temp_OK := FALSE;
 	        
-	    21..22: // Внешняя авария горелки (Alarm)
-	        #S.Burners[#CaseID - 20].DI_Alarm := TRUE;
+	    21..22: // Внешняя авария горелки (Alarm) (Burners 0..1)
+	        #S.Burners[#CaseID - 21].DI_Alarm := TRUE;
 	        
-	    23..24: // Горелка не в режиме AUTO
-	        #S.Burners[#CaseID - 22].DI_Auto_OK := FALSE;
+	    23..24: // Горелка не в режиме AUTO (Burners 0..1)
+	        #S.Burners[#CaseID - 23].DI_Auto_OK := FALSE;
 	        
 	    25: // Нет фидбека выгрузки
 	        #S.Discharge.DI_Feedback_OK := FALSE;
@@ -203,4 +203,3 @@ BEGIN
 	END_CASE;
 	
 END_FUNCTION
-

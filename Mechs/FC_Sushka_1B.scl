@@ -1,6 +1,6 @@
 ﻿FUNCTION "FC_Sushka_1B" : Void
 { S7_Optimized_Access := 'TRUE' }
-VERSION : 0.5
+VERSION : 0.8
 // ==============================================================================
 // FC_Sushka_1B - Версия для сушилки с 1 горелкой
 // Fans: 0..6 (Breaker), 7..13 (FB)
@@ -33,6 +33,10 @@ VERSION : 0.5
       isFbWait : Bool;   // Флаг завершения задержки пуска для контроля фидбека
       tempWord : Word;
       m : DWord;   // Временная маска бита
+      totalCycleMs : DInt; // Общий цикл (Работа + Пауза)
+      runTimeMs : DInt;    // Рассчитанное время включения
+      scaledPower : Int;   // Для масштабирования AI_Power
+      rawNominal : DInt;   // NominalTemp сконвертирован в raw (0-27648)
    END_VAR
 
 
@@ -60,22 +64,22 @@ BEGIN
 	    
 	    // 2. Мониторинг под-устройств (Вентиляторы и Горелки)
 	    #anyFanFault := FALSE;
-	    FOR #i := 1 TO 7 DO
-	        #isBreakerFlt := NOT #S.Fans[#i].DI_Breaker_OK AND ((#S.ForceCode AND SHL(IN := DW#16#1, N := INT_TO_UINT(#i - 1))) = 0);
+	    FOR #i := 0 TO 6 DO
+	        #isBreakerFlt := NOT #S.Fans[#i].DI_Breaker_OK AND ((#S.ForceCode AND SHL(IN := DW#16#1, N := INT_TO_UINT(#i))) = 0);
 	        
-	        #isFbWait := (#B.Status = "STS_RUNNING") OR (#B.Status = "STS_STARTING" AND #S.Step > #i);
-	        #m := SHL(IN := DW#16#1, N := INT_TO_UINT(#i + 6)); // Бит 7..13 (Feedback)
+	        #isFbWait := (#B.Status = "STS_RUNNING") OR (#B.Status = "STS_STARTING" AND #S.Step > (#i + 1));
+	        #m := SHL(IN := DW#16#1, N := INT_TO_UINT(#i + 7)); // Бит 7..13 (Feedback)
 	        
 	        // Контроль фидбека вентиляторов с задержкой 2с
 	        IF #S.Fans[#i].DO_Run AND NOT #S.Fans[#i].DI_Feedback_OK AND #isFbWait AND ((#S.ForceCode AND #m) = 0) THEN
-	            IF #S.FbTck[#i] = 0 THEN
-	                #S.FbTck[#i] := TIME_TCK();
+	            IF #S.FbTck[#i + 1] = 0 THEN
+	                #S.FbTck[#i + 1] := TIME_TCK();
 	                #isFbFlt := FALSE;
 	            ELSE
-	                #isFbFlt := "FC_TimeElapsedMs"(StartTck := #S.FbTck[#i], TimeoutMs := 2000, ElapsedMs => #elapsedMs, NowTck => #nowTck);
+	                #isFbFlt := "FC_TimeElapsedMs"(StartTck := #S.FbTck[#i + 1], TimeoutMs := 2000, ElapsedMs => #elapsedMs, NowTck => #nowTck);
 	            END_IF;
 	        ELSE
-	            #S.FbTck[#i] := 0;
+	            #S.FbTck[#i + 1] := 0;
 	            #isFbFlt := FALSE;
 	        END_IF;
 	        
@@ -83,19 +87,19 @@ BEGIN
 	            #S.Fans[#i].Status := "STS_FAULT";
 	            #anyFanFault := TRUE;
 	            IF #isBreakerFlt THEN
-	                #S.FLTCode := #S.FLTCode OR SHL(IN := DW#16#1, N := INT_TO_UINT(#i - 1));
+	                #S.FLTCode := #S.FLTCode OR SHL(IN := DW#16#1, N := INT_TO_UINT(#i));
 	            END_IF;
 	            IF #isFbFlt THEN
 	                #S.FLTCode := #S.FLTCode OR #m;
 	            END_IF;
 	        ELSIF NOT #S.Fans[#i].DO_Run THEN
-	            IF #B.Status = "STS_STOPPING" AND #S.Step = #i THEN
+	            IF #B.Status = "STS_STOPPING" AND #S.Step = (#i + 1) THEN
 	                #S.Fans[#i].Status := "STS_STOPPING";
 	            ELSE
 	                #S.Fans[#i].Status := "STS_IDLE";
 	            END_IF;
 	        ELSE
-	            IF #B.Status = "STS_STARTING" AND #S.Step = #i THEN
+	            IF #B.Status = "STS_STARTING" AND #S.Step = (#i + 1) THEN
 	                #S.Fans[#i].Status := "STS_STARTING";
 	            ELSE
 	                #S.Fans[#i].Status := "STS_RUNNING";
@@ -104,25 +108,25 @@ BEGIN
 	    END_FOR;
 	    
 	    #anyBurnerFault := FALSE;
-	    FOR #i := 1 TO 1 DO
-	        #isBreakerFlt := NOT #S.Burners[#i].DI_Breaker_OK AND ((#S.ForceCode AND SHL(IN := DW#16#1, N := INT_TO_UINT(13 + #i))) = 0);
-	        #isTempFlt := NOT #S.Burners[#i].DI_Temp_OK AND ((#S.ForceCode AND SHL(IN := DW#16#1, N := INT_TO_UINT(17 + #i))) = 0);
-	        #isAlarmFlt := #S.Burners[#i].DI_Alarm AND ((#S.ForceCode AND SHL(IN := DW#16#1, N := INT_TO_UINT(19 + #i))) = 0);
-	        #isAutoFlt := NOT #S.Burners[#i].DI_Auto_OK AND ((#S.ForceCode AND SHL(IN := DW#16#1, N := INT_TO_UINT(21 + #i))) = 0);
+	    FOR #i := 0 TO 0 DO
+	        #isBreakerFlt := NOT #S.Burners[#i].DI_Breaker_OK AND ((#S.ForceCode AND SHL(IN := DW#16#1, N := INT_TO_UINT(14 + #i))) = 0);
+	        #isTempFlt := NOT #S.Burners[#i].DI_Temp_OK AND ((#S.ForceCode AND SHL(IN := DW#16#1, N := INT_TO_UINT(18 + #i))) = 0);
+	        #isAlarmFlt := #S.Burners[#i].DI_Alarm AND ((#S.ForceCode AND SHL(IN := DW#16#1, N := INT_TO_UINT(20 + #i))) = 0);
+	        #isAutoFlt := NOT #S.Burners[#i].DI_Auto_OK AND ((#S.ForceCode AND SHL(IN := DW#16#1, N := INT_TO_UINT(22 + #i))) = 0);
 	        
-	        #isFbWait := (#B.Status = "STS_RUNNING") OR (#B.Status = "STS_STARTING" AND #S.Step > (7 + #i));
+	        #isFbWait := (#B.Status = "STS_RUNNING") OR (#B.Status = "STS_STARTING" AND #S.Step > (8 + #i));
 	        
 	        // Контроль фидбека горелок (Бит 16..17)
 	        IF #S.Burners[#i].DO_Run AND (NOT #S.Burners[#i].DI_Feedback1_OK OR NOT #S.Burners[#i].DI_Feedback2_OK)
-	            AND #isFbWait AND ((#S.ForceCode AND SHL(IN := DW#16#1, N := INT_TO_UINT(15 + #i))) = 0) THEN
-	            IF #S.FbTck[#i + 7] = 0 THEN
-	                #S.FbTck[#i + 7] := TIME_TCK();
+	            AND #isFbWait AND ((#S.ForceCode AND SHL(IN := DW#16#1, N := INT_TO_UINT(16 + #i))) = 0) THEN
+	            IF #S.FbTck[#i + 8] = 0 THEN
+	                #S.FbTck[#i + 8] := TIME_TCK();
 	                #isFbFlt := FALSE;
 	            ELSE
-	                #isFbFlt := "FC_TimeElapsedMs"(StartTck := #S.FbTck[#i + 7], TimeoutMs := 2000, ElapsedMs => #elapsedMs, NowTck => #nowTck);
+	                #isFbFlt := "FC_TimeElapsedMs"(StartTck := #S.FbTck[#i + 8], TimeoutMs := 2000, ElapsedMs => #elapsedMs, NowTck => #nowTck);
 	            END_IF;
 	        ELSE
-	            #S.FbTck[#i + 7] := 0;
+	            #S.FbTck[#i + 8] := 0;
 	            #isFbFlt := FALSE;
 	        END_IF;
 	        
@@ -130,28 +134,28 @@ BEGIN
 	            #S.Burners[#i].Status := "STS_FAULT";
 	            #anyBurnerFault := TRUE;
 	            IF #isBreakerFlt THEN
-	                #S.FLTCode := #S.FLTCode OR SHL(IN := DW#16#1, N := INT_TO_UINT(13 + #i));
+	                #S.FLTCode := #S.FLTCode OR SHL(IN := DW#16#1, N := INT_TO_UINT(14 + #i));
 	            END_IF;
 	            IF #isFbFlt THEN
-	                #S.FLTCode := #S.FLTCode OR SHL(IN := DW#16#1, N := INT_TO_UINT(15 + #i));
+	                #S.FLTCode := #S.FLTCode OR SHL(IN := DW#16#1, N := INT_TO_UINT(16 + #i));
 	            END_IF;
 	            IF #isTempFlt THEN
-	                #S.FLTCode := #S.FLTCode OR SHL(IN := DW#16#1, N := INT_TO_UINT(17 + #i));
+	                #S.FLTCode := #S.FLTCode OR SHL(IN := DW#16#1, N := INT_TO_UINT(18 + #i));
 	            END_IF;
 	            IF #isAlarmFlt THEN
-	                #S.FLTCode := #S.FLTCode OR SHL(IN := DW#16#1, N := INT_TO_UINT(19 + #i));
+	                #S.FLTCode := #S.FLTCode OR SHL(IN := DW#16#1, N := INT_TO_UINT(20 + #i));
 	            END_IF;
 	            IF #isAutoFlt THEN
-	                #S.FLTCode := #S.FLTCode OR SHL(IN := DW#16#1, N := INT_TO_UINT(21 + #i));
+	                #S.FLTCode := #S.FLTCode OR SHL(IN := DW#16#1, N := INT_TO_UINT(22 + #i));
 	            END_IF;
 	        ELSIF NOT #S.Burners[#i].DO_Run THEN
-	            IF #B.Status = "STS_STOPPING" AND #S.Step = (7 + #i) THEN
+	            IF #B.Status = "STS_STOPPING" AND #S.Step = (8 + #i) THEN
 	                #S.Burners[#i].Status := "STS_STOPPING";
 	            ELSE
 	                #S.Burners[#i].Status := "STS_IDLE";
 	            END_IF;
 	        ELSE
-	            IF #B.Status = "STS_STARTING" AND #S.Step = (7 + #i) THEN
+	            IF #B.Status = "STS_STARTING" AND #S.Step = (8 + #i) THEN
 	                #S.Burners[#i].Status := "STS_STARTING";
 	            ELSE
 	                #S.Burners[#i].Status := "STS_RUNNING";
@@ -196,18 +200,19 @@ BEGIN
 	    ELSE
 	        CASE #B.Status OF
 	            "STS_IDLE":
-	                IF #B.Cmd = "CMD_START" THEN
+	                // Сушилка запускается ТОЛЬКО оператором вручную (OWNER_SCADA)
+	                IF #B.Cmd = "CMD_START" AND #B.OwnerCur = "OWNER_SCADA" THEN
 	                    // Сушилка готова к пуску если:
 	                    // 1. Прошло время отдыха первого вентилятора
 	                    // 2. Горелки в режиме AUTO
-	                    #timeElapsed := #S.Fans[1].LastStopMs = 0 OR
-	                    "FC_TimeElapsedMs"(StartTck := #S.Fans[1].LastStopMs,
+	                    #timeElapsed := #S.Fans[0].LastStopMs = 0 OR
+	                    "FC_TimeElapsedMs"(StartTck := #S.Fans[0].LastStopMs,
 	                                       TimeoutMs := 5000,
 	                                       ElapsedMs => #elapsedMs,
 	                                       NowTck => #nowTck);
 	                    
-	                    // Проверяем только горелку №1
-	                    IF #timeElapsed AND #S.Burners[1].DI_Auto_OK THEN
+	                    // Проверяем только горелку №0
+	                    IF #timeElapsed AND #S.Burners[0].DI_Auto_OK THEN
 	                        #B.Status := "STS_STARTING";
 	                        #S.Step := 1;
 	                        #S.StepStartTck := TIME_TCK();
@@ -223,7 +228,7 @@ BEGIN
 	                    IF #S.Step < 8 THEN
 	                        // Если следующий шаг — это вентилятор (шаги 2-7), проверяем его LastStopMs
 	                        IF (#S.Step + 1) <= 7 THEN
-	                            IF #S.Fans[#S.Step + 1].LastStopMs = 0 OR "FC_TimeElapsedMs"(StartTck := #S.Fans[#S.Step + 1].LastStopMs,
+	                            IF #S.Fans[#S.Step].LastStopMs = 0 OR "FC_TimeElapsedMs"(StartTck := #S.Fans[#S.Step].LastStopMs,
 	                                                                                             TimeoutMs := 5000,
 	                                                                                             ElapsedMs => #elapsedMs,
 	                                                                                             NowTck => #nowTck) THEN
@@ -236,7 +241,12 @@ BEGIN
 	                            #S.StepStartTck := TIME_TCK();
 	                        END_IF;
 	                    ELSE
-	                        #B.Status := "STS_RUNNING";
+	                        // Все компоненты запущены, ожидаем достижения номинальной температуры
+	                        // PT100: raw = (T + 200) * 27648 / 700
+	                        #rawNominal := (INT_TO_DINT(#S.NominalTemp) + 200) * 27648 / 700;
+	                        IF INT_TO_DINT(#S.Temps[14]) >= #rawNominal THEN
+	                            #B.Status := "STS_RUNNING";
+	                        END_IF;
 	                    END_IF;
 	                END_IF;
 	                
@@ -260,7 +270,7 @@ BEGIN
 	                IF #timeElapsed THEN
 	                    // Если текущий шаг — вентилятор, фиксируем время его остановки
 	                    IF #S.Step >= 1 AND #S.Step <= 7 THEN
-	                        #S.Fans[#S.Step].LastStopMs := TIME_TCK();
+	                        #S.Fans[#S.Step - 1].LastStopMs := TIME_TCK();
 	                    END_IF;
 	                    
 	                    IF #S.Step > 0 THEN
@@ -278,50 +288,73 @@ BEGIN
 	    // 5. Распределение команд на компоненты
 	    IF #B.Status = "STS_FAULT" OR #B.Status = "STS_DISABLED" THEN
 	        // Гасим всё при аварии или остановке
-	        FOR #i := 1 TO 7 DO
+	        FOR #i := 0 TO 6 DO
 	            #S.Fans[#i].DO_Run := FALSE;
 	        END_FOR;
-	        FOR #i := 1 TO 1 DO
+	        FOR #i := 0 TO 0 DO
 	            #S.Burners[#i].DO_Run := FALSE;
 	            #S.Burners[#i].AQ_Power := 0;
 	        END_FOR;
 	        #S.Discharge.DO_Run := FALSE;
+	        #S.DischargeTimerTck := 0;
 	    ELSE
 	        // Управление вентиляторами (Шаги 1-7)
-	        FOR #i := 1 TO 7 DO
+	        FOR #i := 0 TO 6 DO
 	            IF #B.Status = "STS_RUNNING" THEN
 	                #S.Fans[#i].DO_Run := TRUE;
-	            ELSIF #B.Status = "STS_STARTING" AND #S.Step >= #i THEN
+	            ELSIF #B.Status = "STS_STARTING" AND #S.Step >= (#i + 1) THEN
 	                #S.Fans[#i].DO_Run := TRUE;
-	            ELSIF #B.Status = "STS_STOPPING" AND #S.Step >= #i THEN
+	            ELSIF #B.Status = "STS_STOPPING" AND #S.Step >= (#i + 1) THEN
 	                #S.Fans[#i].DO_Run := TRUE;
 	            ELSE
 	                #S.Fans[#i].DO_Run := FALSE;
 	            END_IF;
 	        END_FOR;
-	        
+
 	        // Управление горелками (Шаги 8-9)
-	        FOR #i := 1 TO 1 DO
+	        FOR #i := 0 TO 0 DO
+            // Масштабируем AI_Power (0-100) в AQ_Power (0-27648)
+            #scaledPower := #S.Burners[#i].AI_Power;
+            IF #scaledPower < 0 THEN #scaledPower := 0; END_IF;
+            IF #scaledPower > 100 THEN #scaledPower := 100; END_IF;
+                #S.Burners[#i].AQ_Power := DINT_TO_INT((INT_TO_DINT(#scaledPower) * 27648) / 100);
+
 	            IF #B.Status = "STS_RUNNING" THEN
 	                #S.Burners[#i].DO_Run := TRUE;
-	                #S.Burners[#i].AQ_Power := 13824; // 50% мощности (от 27648)
-	            ELSIF #B.Status = "STS_STARTING" AND #S.Step >= (7 + #i) THEN
+	                
+	            ELSIF #B.Status = "STS_STARTING" AND #S.Step >= (8 + #i) THEN
 	                #S.Burners[#i].DO_Run := TRUE;
-	                #S.Burners[#i].AQ_Power := 8294;  // 30% мощности при розжиге
-	            ELSIF #B.Status = "STS_STOPPING" AND #S.Step >= (7 + #i) THEN
-	                #S.Burners[#i].DO_Run := TRUE;
-	                #S.Burners[#i].AQ_Power := 5530;  // 20% при охлаждении перед стопом
+	            ELSIF #B.Status = "STS_STOPPING" AND #S.Step >= (8 + #i) THEN
+	                #S.Burners[#i].DO_Run := FALSE;
 	            ELSE
 	                #S.Burners[#i].DO_Run := FALSE;
 	                #S.Burners[#i].AQ_Power := 0;
 	            END_IF;
 	        END_FOR;
 	        
-	        // Горелка №2 всегда выключена в этой версии
-	        #S.Burners[2].DO_Run := FALSE;
-	        #S.Burners[2].AQ_Power := 0;
+	        // Горелка №1 всегда выключена в этой версии
+	        #S.Burners[1].DO_Run := FALSE;
+	        #S.Burners[1].AQ_Power := 0;
 	        
-	        #S.Discharge.DO_Run := (#B.Status = "STS_RUNNING");
+	         // Периодическое управление выгрузкой (PWM на базе процента)
+	        IF #B.Status = "STS_RUNNING" AND #S.DischargePercent > 0 THEN
+	            #runTimeMs := (INT_TO_DINT(#S.DischargePercent) * #S.MaxTimeRun) / 100;
+	            #totalCycleMs := #runTimeMs + #S.MaxTimePause;
+	            
+	            // Проверка прогресса текущего цикла
+	            #timeElapsed := "FC_TimeElapsedMs"(StartTck := #S.DischargeTimerTck, TimeoutMs := #totalCycleMs, ElapsedMs => #elapsedMs, NowTck => #nowTck);
+	            
+	            // Сброс или перезапуск таймера при завершении цикла
+	            IF #S.DischargeTimerTck = 0 OR #timeElapsed THEN
+	                #S.DischargeTimerTck := #nowTck;
+	                #elapsedMs := 0;
+	            END_IF;
+	            
+	            #S.Discharge.DO_Run := #elapsedMs < #runTimeMs;
+	        ELSE
+	            #S.Discharge.DO_Run := FALSE;
+	            #S.DischargeTimerTck := 0;
+	        END_IF;
 	    END_IF;
 	    
 	    IF #B.Cmd <> "CMD_NONE" THEN
@@ -335,4 +368,3 @@ BEGIN
 	    END_IF;
 	    
 END_FUNCTION
-

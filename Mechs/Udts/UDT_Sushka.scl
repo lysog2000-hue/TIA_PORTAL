@@ -1,8 +1,8 @@
 TYPE "UDT_Sushka"
-VERSION : 0.4
+VERSION : 0.6 // Увеличиваем версию UDT из-за изменения UDT_Sushka_Burner
    STRUCT
-      Fans : Array[1..7] of "UDT_Sushka_Fan";     // Вентилятори (FN)
-      Burners : Array[1..2] of "UDT_Sushka_Burner"; // Пальники (PAL)
+      Fans : Array[0..6] of "UDT_Sushka_Fan";     // Вентилятори (FN)
+      Burners : Array[0..1] of "UDT_Sushka_Burner"; // Пальники (PAL)
       Discharge : STRUCT        // Вигрузка (теги UW)
          DI_Feedback_OK : Bool;
          DO_Run : Bool;
@@ -19,5 +19,11 @@ VERSION : 0.4
       Step : Int;               // Поточний крок автомата пуску/останова
       StepStartTck : DInt;      // Мітка часу початку кроку
       FbTck : Array[1..10] of DInt; // Таймеры подтверждения обратной связи
+
+      DischargePercent : Int;    // Задання вигрузки (0..100%)
+      MaxTimeRun : DInt;         // Час роботи при 100% (мс)
+      MaxTimePause : DInt;       // Час паузи при 100% (мс)
+      DischargeTimerTck : DInt;  // Мітка часу початку циклу вигрузки
+      NominalTemp : Int;         // Номінальна температура (0..200 °C), задається оператором
    END_STRUCT;
 END_TYPE

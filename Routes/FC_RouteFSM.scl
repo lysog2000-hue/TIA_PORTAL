@@ -335,6 +335,13 @@ BEGIN
 	                #Fsm.slot := #Cmd.RC_Steps[#Fsm.i].RS_Slot;
 	                #Fsm.stepOk := TRUE;
 	                
+	                // Сушилка не керується маршрутом — скіп
+	                IF #Fsm.slot <= "MECHS_COUNT" THEN
+	                    IF #Mechs[#Fsm.slot].DeviceType = "TYPE_SUSHKA" THEN
+	                        CONTINUE;
+	                    END_IF;
+	                END_IF;
+	                
 	                // Контракт: RS_Slot (перша перевірка — до будь-якого Mechs[slot])
 	                IF #Fsm.slot > "MECHS_COUNT" THEN
 	                    #Fsm.stepOk := FALSE;
@@ -464,6 +471,11 @@ BEGIN
 	            FOR #Fsm.i := 1 TO #Fsm.stepCnt DO
 	                #Fsm.slot := #Cmd.RC_Steps[#Fsm.i].RS_Slot;
 	                
+	                // Сушилка не керується маршрутом — не захоплюємо owner
+	                IF #Mechs[#Fsm.slot].DeviceType = "TYPE_SUSHKA" THEN
+	                    CONTINUE;
+	                END_IF;
+	                
 	                // CMD_SET_OWNER_SCADA = захопити власника без виконання команди
 	                #Fsm.lockOkOne := "FC_ArbiterMech"(
 	                                                   OwnerReq := "OWNER_ROUTE",
@@ -584,6 +596,12 @@ BEGIN
 	                    END_IF;
 	                END_IF;
 	                
+	                // === Сушилка: скіп кроку ===
+	                IF #Mechs[#Fsm.slot].DeviceType = "TYPE_SUSHKA" THEN
+	                    #Fsm.stepPauseTck := 0;
+	                    #Fsm.RF_ActiveStep := #Fsm.RF_ActiveStep + 1;
+	                    #Fsm.RF_StepSts := "STEP_STS_DONE";
+	                ELSE
 	                // === Фаза: Видача команди + очікування цілі ===
 	                IF NOT #Fsm.stepPause THEN
 	                    // Видати команду поточного кроку через арбітр (кожен цикл)
@@ -642,6 +660,7 @@ BEGIN
 	                        END_IF;
 	                    END_IF;
 	                END_IF;
+	                END_IF; // TYPE_SUSHKA skip (RUNNING)
 	            END_IF;
 	        END_IF;
 	        
@@ -691,6 +710,10 @@ BEGIN
 	            
 	            #doAdvance := FALSE;
 	            
+	            // === Сушилка: скіп кроку при зупинці ===
+	            IF #Mechs[#Fsm.slot].DeviceType = "TYPE_SUSHKA" THEN
+	                #doAdvance := TRUE;
+	            ELSE
 	            // === Фаза: Затримка ПЕРЕД командою ===
 	            IF #stepDelayMs > 0 AND #Fsm.stepPauseTck = 0 AND NOT #Fsm.stepPause THEN
 	                #timeElapsed := "FC_TimeElapsedMs"(
@@ -752,6 +775,7 @@ BEGIN
                     END_IF;
 	                END_IF;
 	            END_IF;
+	            END_IF; // TYPE_SUSHKA skip (STOPPING)
 	            
 	            // ── Advance ───────────────────────────────────────────────────
 	            IF #doAdvance THEN
