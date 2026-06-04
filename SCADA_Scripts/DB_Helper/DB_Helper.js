@@ -14,6 +14,8 @@ export function Button_Base(slot) {
         return "Base_Noria";
     } else if (slot >= 100 && slot <= 240) {
         return "Base";
+    } else if (slot >= 300 && slot <= 304) {
+        return "Base";
     } else if (slot >= 251 && slot <= 278) {
         return "Base_Silos";
     } else if (slot >= 311 && slot <= 313) {
@@ -36,7 +38,7 @@ export function Button_Control(slot) {
             return "Control_Valve3P";
         }
         return "Control_Valve2P";
-    } else if (slot >= 311 && slot <= 319) {
+    } else if (slot >= 300 && slot <= 319) {
         return "Control";
     }
     return null;
@@ -51,8 +53,6 @@ if (slot >= 1 && slot <= 50) {
         return "Force_Gate_Valve";
     } else if (slot >= 251 && slot <= 300) {
         return "Force_Silos";
-    } else if (slot >= 301 && slot <= 304) {
-        return "Force_Sushka";
     } else if (slot >= 311 && slot <= 313) {
         return "Force_Separator";
     } else if (slot >= 314 && slot <= 316) {
@@ -63,9 +63,8 @@ if (slot >= 1 && slot <= 50) {
     return null;
 }
 
-
 export function GetActiveRouteData(vIdFromScreen) {
-    // Чистим входящий ID через стандартный Number
+// Чистим входящий ID через стандартный Number
     let vId = Number(vIdFromScreen);
     
     if (routeBuffer.length === 0 || isNaN(vId)) return [];
@@ -135,6 +134,9 @@ export function GetMechColor(Status, ownerId) {
         case 4:
             newColor = colors.red;
             break;
+        case 10:
+            newColor = colors.red;
+            break;
         default:
             newColor = colors.basic;
     }
@@ -143,8 +145,9 @@ export function GetMechColor(Status, ownerId) {
 
 
 export function GetStepsByVariant(vId) {
-    return routeBuffer.filter(row => row.VariantId == vId);
+return routeBuffer.filter(row => row.VariantId == vId);
 }
+
 
 export function GetValveCenterColor(Status, ownerId) {
     
@@ -240,8 +243,36 @@ export function GetVariantFromBuffer(variantId) {
 }
 
 export function GetVariantList(parameter1, parameter2) {
-    return variantList;
+return variantList;
 }
+
+
+export async function LogForceChange(slotId, forceCode) {
+  // Используем созданный DSN и пользователя с правами db_owner
+    const connectionString = "DSN=ForceLog;UID=HMI_User;PWD=12345;";
+    let conn = null;
+
+    try {
+        // Создаем подключение
+        conn = await HMIRuntime.Database.CreateConnection(connectionString);
+        
+        // Формируем вызов хранимой процедуры sp_LogForceChange
+        // Процедура сама разберет, какие биты изменились, и сопоставит имена из MechDefinitions
+        const sql = `EXEC [dbo].[sp_LogForceChange] @SlotId=${slotId}, @NewForceCode=${forceCode}`;
+        HMIRuntime.Trace(sql);
+        await conn.Execute(sql);
+        
+        // HMIRuntime.Trace(`Force log updated for SlotId: ${slotId}`);
+    } catch (err) {
+        HMIRuntime.Trace("Force logging SQL error: " + err.message);
+    } finally {
+        conn = null;
+    }
+}
+
+
+
+
 
 export function OnMechTapped(item) {
 let mode = Tags("SelectModeActive").Read();
@@ -269,9 +300,10 @@ export function resetMechanism(obj) {
 }
 
 export async function RunQueryAndCache(startId, endId, midId) {
-    let connectionString = "DSN=ElevatorRouting;UID=HMI_User;PWD=12345;";
+let connectionString = "DSN=ElevatorRouting;UID=HMI_User;PWD=12345;";
+// Используем Number() напрямую, чтобы гарантировать числа на входе в SQL
 
-    let sqlQuery = "EXEC dbo.FindRoute " + Number(startId) + ", " + Number(endId) + ", " + Number(midId);
+    let sqlQuery = "EXEC dbo.FindRoute " + Number(startId) + ", " + Number(endId)+", " + Number(midId);
     let conn = null;
 
     try {
@@ -297,6 +329,7 @@ export async function RunQueryAndCache(startId, endId, midId) {
         for (let key in rows) {
             let row = rows[key];
 
+            // Используем стандартный Number()
             let vId = Number(row["VariantId"]);
             let rPath = String(row["RoutePath"] || ""); 
 
@@ -328,5 +361,5 @@ export async function RunQueryAndCache(startId, endId, midId) {
 }
 
 export function SetRouteData(data) {
-    routeBuffer = data;
+routeBuffer = data;
 }

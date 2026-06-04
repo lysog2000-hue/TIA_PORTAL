@@ -1,10 +1,17 @@
 // Main.js
 // Основные обработчики кнопок для работы с маршрутами
 // Импорт из GlobalDefinitions.js (DB_Helper)
-//КНОПКА ВЫЗОВА СПИСКА МАРШРУТОВ
+
 import {OnMechTapped, GetActiveRouteData, GetStepsByVariant,GetVariantFromBuffer, GetVariantList, RunQueryAndCache, SetRouteData,resetMechanism } from "DB_Helper";
 
 
+
+
+
+
+
+
+// Кнопка формування маршруту та виводу його в таблицю
 export async function Open_Route_OnTapped(item, x, y, modifiers, trigger) {
 let startId = Tags("StartPortId").Read();
     let endId = Tags("EndPortId").Read();
@@ -42,6 +49,11 @@ let midId = Tags("MidPortId").Read();
 
 
 
+
+
+
+
+
 //ФУНКЦИЯ ПОКРАСКИ МЕХАНИЗМОВ 
 export async function Circle_5_BackColor_OnPropertyChanged(item, value) {
   let previousColor = Tags("CurrentRouteColor").Read(); // Запоминаем предыдущий цвет
@@ -51,7 +63,7 @@ export async function Circle_5_BackColor_OnPropertyChanged(item, value) {
     for (let r = 1; r <= 4; r++) {
         let rc = Tags(`ResultCode_Route${r}`).Read();
         let rs = Tags(`RS_State${r}`).Read()
-        if (rc !== ROUTE_OK_RUNNING && rs !==RS_State_OK) {
+        if (rc !== ROUTE_OK_RUNNING&& rs !==RS_State_OK) {
             routeIdx = r;
             break;
         }
@@ -113,7 +125,7 @@ export async function Circle_5_BackColor_OnPropertyChanged(item, value) {
 
                     let state = found.state;
                     
-                    let errorColor = 0xFFF50000;  // Красный для state 0
+                    let errorColor = 0xFFFF0000;  // Красный для state 0
 
                     try {
                         if (state === 6) {
@@ -185,7 +197,13 @@ export async function Circle_5_BackColor_OnPropertyChanged(item, value) {
 
 
 
-// МОТОЧАСИ — завантаження з SQL в таблицю
+
+
+
+
+
+
+// МОТОГОДИНИ — завантаження з SQL в таблицю
 export async function Btn_OpenMotoHours_OnTapped(item, x, y, modifiers, trigger) {
     let connectionString = "DSN=RunTime;UID=HMI_User;PWD=12345;";
     let conn = null;
@@ -230,9 +248,9 @@ export async function Btn_OpenMotoHours_OnTapped(item, x, y, modifiers, trigger)
         }
 
         let columns = [
-            { "title": "Назва",    "field": "name",    "sorter": "alphanum", "width": 200 },
-            { "title": "Тип",      "field": "type",    "sorter": "alphanum", "width": 200 },
-            { "title": "Годин",    "field": "hours",   "sorter": "number",   "width": 200 },
+            { "title": "Назва",    "field": "name",    "sorter": "alphanum", "width": 100 },
+            { "title": "Тип",      "field": "type",    "sorter": "alphanum", "width": 100 },
+            { "title": "Годин",    "field": "hours",   "sorter": "number",   "width": 100 },
             { "title": "Вигрузка",  "field": "updated", "sorter": "string",   "width": 200 }
         ];
 
@@ -256,10 +274,13 @@ HMIRuntime.UI.SysFct.OpenScreenInPopup("Base", "MotorHours", true, "", 0, 0, fal
 
 
 
+
+
+
 //ЗАПИСЬ ВЫБРАННОГО МАРШРУТА ИЗ ТАБЛИЦЫ
 export async function Run_Route_OnTapped(item, x, y, modifiers, trigger) {
 
-const ROUTE_OK_RUNNING = 32768;
+    const ROUTE_OK_RUNNING = 32768;
     const RS_State_OK =4;
     let routeIdx = 0;
     for (let r = 1; r <= 4; r++) {
@@ -270,7 +291,6 @@ const ROUTE_OK_RUNNING = 32768;
             break;
         }
     }
-        }
         if (routeIdx === 0) {
             return;
         }
@@ -351,11 +371,9 @@ Tags("CurrentRouteColor").Write(routeColor);
                             case 7: startParam = 7; param = 6; break; //открыть
  
                             case 8:
-                            case 9:
                                 startParam = 0;
                                 param = 6;
-                                break;
- 
+                                break; 
                             default:
                                 startParam = 0;
                                 param = 0;
@@ -422,6 +440,12 @@ Tags("CurrentRouteColor").Write(routeColor);
 
     }
 }
+
+
+
+
+
+
 
 
 
@@ -495,7 +519,10 @@ Tags("CurrentRouteColor").Write(0);
 
 
 
-//Скидання кольору 
+
+
+
+//СКИДАНННЯ КОЛЬОРУ 
 export function Reset_Color_OnTapped(item, x, y, modifiers, trigger) {
  Tags("SelectedVariantId").Write(0);
     let routeId = Tags("RouteID").Read();
@@ -533,6 +560,12 @@ export function Reset_Color_OnTapped(item, x, y, modifiers, trigger) {
 }
 
 
+
+
+
+
+
+
 //Кнопка виклику вікна з кольорами маршрутів
 export function SelectRouteColor1_OnTapped(item, x, y, modifiers, trigger) {
 let routecolor = Tags("RouteColor1").Read();
@@ -551,11 +584,16 @@ let items = Screen.Items;
         let rc = Tags("ResultCode_Route1").Read();
         let rs = Tags("RS_State1").Read()
         if (rc !== ROUTE_OK_RUNNING&& rs !==RS_State_OK) {
-        Tags("RouteID").Write(1)
+        Tags("ColorID").Write(1)
         HMIRuntime.UI.SysFct.OpenScreenInPopup("Base", "Window_Color", true, "", 1000, 600, false, undefined);  
        
     }
 }
+
+
+
+
+
 
 //Скрипт скидання кольору маршруту при зміні статусу
 export function Status_Route1_ProcessValue_OnPropertyChanged(item, value) {
@@ -591,6 +629,13 @@ export function Select_MidPortId_OnTapped(item, x, y, modifiers, trigger) {
 Tags("SelectModeActive").Write(3);
 }
 
+
+
+
+
+
+
+
 //Вивід стартової, кінцевої та середньої точки маршруту в форматі імені 
 export function StartPortId_ProcessValue_Trigger(item) {
 let id = Tags("StartPortId").Read();
@@ -624,6 +669,12 @@ let id = Tags("StartPortId").Read();
 
 }
 
+
+
+
+
+
+
 //клік на механізм 
 export function M_312_OnClick_event(item) {
 if (Tags("SelectModeActive").Read() !== 0) {
@@ -635,9 +686,94 @@ Tags("Slot_ID").Write(312);
 Tags("Separator_ID").Write(1);
 }
 
+
+
+
+
+
 //Закраска механізмів 
 export function M_312_Properties_Basic_Trigger(item) {
  let Status = Tags("DB_Mechs_Mechs{312}_Status").Read();
     let ownerId = Tags("DB_Mechs_Mechs{312}_OwnerCurId").Read();
 return GetMechColor(Status,ownerId);
+}
+
+
+
+//Виклик вікна з виводомфорсування з SQL
+export async function Btn_OpenForceTable_OnTapped(item, x, y, modifiers, trigger) {
+    // Подключаемся к базе ForceLog (которую мы создали ранее)
+    let connectionString = "DSN=ForceLog;UID=HMI_User;PWD=12345;";
+    let conn = null;
+
+    try {
+        conn = await HMIRuntime.Database.CreateConnection(connectionString);
+
+        // Запрашиваем последние 500 записей (чтобы не перегружать таблицу)
+        // Сортируем по времени: самые свежие сверху
+        let queryResult = await conn.Execute("SELECT TOP 100 Timestamp, MechName, ForceName, State FROM ForceEventLog ORDER BY Timestamp DESC");
+
+        let firstResultSet = null;
+        for (let key in queryResult.Results) {
+            if (queryResult.Results[key] && queryResult.Results[key].Rows) {
+                firstResultSet = queryResult.Results[key];
+                break;
+            }
+        }
+
+        if (!firstResultSet) {
+            HMIRuntime.Trace("ForceLog: no result set");
+            return;
+        }
+
+        let rows = firstResultSet.Rows;
+        let tableRows = [];
+
+        for (let key in rows) {
+            let row = rows[key];
+            
+            // Форматируем дату из SQL в читаемый вид DD.MM.YYYY HH:mm:ss
+            let ts = new Date(row["Timestamp"]);
+            let formattedTime = String(ts.getDate()).padStart(2, "0") + "."
+                    + String(ts.getMonth() + 1).padStart(2, "0") + "."
+                    + ts.getFullYear() + " "
+                    + String(ts.getHours()).padStart(2, "0") + ":"
+                    + String(ts.getMinutes()).padStart(2, "0") + ":"
+                    + String(ts.getSeconds()).padStart(2, "0");
+
+            tableRows.push({
+                "time":    formattedTime,
+                "mech":    String(row["MechName"]  || ""),
+                "force":   String(row["ForceName"] || ""),
+                "state":   Number(row["State"]) ? "TRUE" : "FALSE" // Преобразуем BIT в текст
+            });
+        }
+
+        // Описание колонок для виджета таблицы
+        let columns = [
+            { "title": "Дата/Час",   "field": "time",  "sorter": "string",   "width": 200 },
+            { "title": "Механізм",   "field": "mech",  "sorter": "alphanum", "width": 120 },
+            { "title": "Форсування", "field": "force", "sorter": "alphanum", "width": 200 },
+            { "title": "Стан",       "field": "state", "sorter": "string",   "width": 100 }
+        ];
+
+        // Записываем JSON-строки в теги
+        Tags("Force_ColumnStyle").Write(JSON.stringify(columns));
+        Tags("Force_DataString").Write(JSON.stringify(tableRows));
+
+        HMIRuntime.Trace("ForceLog: OK, records sent=" + tableRows.length);
+
+    } catch (err) {
+        HMIRuntime.Trace("ForceLog READ ERROR: " + err);
+    } finally {
+        conn = null;
+    }
+
+
+}
+
+
+
+export function Btn_OpenForceTable_OnUp(item, x, y, modifiers, trigger) {
+HMIRuntime.UI.SysFct.OpenScreenInPopup("Base", "Force", true, "", 0, 0, false, undefined);
 }
