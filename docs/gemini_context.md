@@ -1,4 +1,4 @@
-# Gemini Project Map — Элеватор (TIA Portal v19)
+﻿# Gemini Project Map — Элеватор (TIA Portal v19)
 
 ## 🏗 Архитектура и Правила (Canon)
 ### Core & Control

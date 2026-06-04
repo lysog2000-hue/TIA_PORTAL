@@ -1,4 +1,4 @@
-# Elevator Automation System — контекст проекта
+﻿# Elevator Automation System — контекст проекта
 
 ## Общее
 - Платформа: Siemens TIA Portal v19

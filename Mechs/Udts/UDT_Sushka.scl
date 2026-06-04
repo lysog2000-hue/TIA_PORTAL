@@ -1,4 +1,4 @@
-TYPE "UDT_Sushka"
+﻿TYPE "UDT_Sushka"
 VERSION : 0.6 // Увеличиваем версию UDT из-за изменения UDT_Sushka_Burner
    STRUCT
       Fans : Array[0..6] of "UDT_Sushka_Fan";     // Вентилятори (FN)

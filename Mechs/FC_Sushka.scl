@@ -42,6 +42,8 @@ VERSION : 0.7
 
 BEGIN
 	    #stepTimeout := 3000; // 3 секунды между включениями компонентов
+	    #S.MaxTimeRun := 10000;  // 10 сек работы при 100%
+	    #S.MaxTimePause := 20000; // 20 сек паузы при 100%
 	    
 	    // 1. Сброс аварий (RESET)
 	    IF #B.Cmd = "CMD_RESET" THEN
@@ -114,9 +116,11 @@ BEGIN
 	        #isAlarmFlt := #S.Burners[#i].DI_Alarm AND ((#S.ForceCode AND SHL(IN := DW#16#1, N := INT_TO_UINT(20 + #i))) = 0);
 	        #isAutoFlt := NOT #S.Burners[#i].DI_Auto_OK AND ((#S.ForceCode AND SHL(IN := DW#16#1, N := INT_TO_UINT(22 + #i))) = 0);
 	        
-	        #isFbWait := (#B.Status = "STS_RUNNING") OR (#B.Status = "STS_STARTING" AND #S.Step > (8 + #i));
+	        // Фидбек контролируется когда горелка включена и уже прошёл шаг её запуска
+	        #isFbWait := #S.Burners[#i].DO_Run AND
+	                     (#B.Status = "STS_RUNNING" OR
+	                      (#B.Status = "STS_STARTING" AND #S.Step > (8 + #i)));
 	        
-	        // Контроль фидбека горелок (Бит 16..17)
 	        IF #S.Burners[#i].DO_Run AND (NOT #S.Burners[#i].DI_Feedback1_OK OR NOT #S.Burners[#i].DI_Feedback2_OK)
 	            AND #isFbWait AND ((#S.ForceCode AND SHL(IN := DW#16#1, N := INT_TO_UINT(16 + #i))) = 0) THEN
 	            IF #S.FbTck[#i + 8] = 0 THEN
@@ -133,21 +137,11 @@ BEGIN
 	        IF #isBreakerFlt OR #isTempFlt OR #isAlarmFlt OR #isFbFlt OR #isAutoFlt THEN
 	            #S.Burners[#i].Status := "STS_FAULT";
 	            #anyBurnerFault := TRUE;
-	            IF #isBreakerFlt THEN
-	                #S.FLTCode := #S.FLTCode OR SHL(IN := DW#16#1, N := INT_TO_UINT(14 + #i));
-	            END_IF;
-	            IF #isFbFlt THEN
-	                #S.FLTCode := #S.FLTCode OR SHL(IN := DW#16#1, N := INT_TO_UINT(16 + #i));
-	            END_IF;
-	            IF #isTempFlt THEN
-	                #S.FLTCode := #S.FLTCode OR SHL(IN := DW#16#1, N := INT_TO_UINT(18 + #i));
-	            END_IF;
-	            IF #isAlarmFlt THEN
-	                #S.FLTCode := #S.FLTCode OR SHL(IN := DW#16#1, N := INT_TO_UINT(20 + #i));
-	            END_IF;
-	            IF #isAutoFlt THEN
-	                #S.FLTCode := #S.FLTCode OR SHL(IN := DW#16#1, N := INT_TO_UINT(22 + #i));
-	            END_IF;
+	            IF #isBreakerFlt THEN #S.FLTCode := #S.FLTCode OR SHL(IN := DW#16#1, N := INT_TO_UINT(14 + #i)); END_IF;
+	            IF #isFbFlt     THEN #S.FLTCode := #S.FLTCode OR SHL(IN := DW#16#1, N := INT_TO_UINT(16 + #i)); END_IF;
+	            IF #isTempFlt   THEN #S.FLTCode := #S.FLTCode OR SHL(IN := DW#16#1, N := INT_TO_UINT(18 + #i)); END_IF;
+	            IF #isAlarmFlt  THEN #S.FLTCode := #S.FLTCode OR SHL(IN := DW#16#1, N := INT_TO_UINT(20 + #i)); END_IF;
+	            IF #isAutoFlt   THEN #S.FLTCode := #S.FLTCode OR SHL(IN := DW#16#1, N := INT_TO_UINT(22 + #i)); END_IF;
 	        ELSIF NOT #S.Burners[#i].DO_Run THEN
 	            IF #B.Status = "STS_STOPPING" AND #S.Step = (8 + #i) THEN
 	                #S.Burners[#i].Status := "STS_STOPPING";
@@ -155,6 +149,9 @@ BEGIN
 	                #S.Burners[#i].Status := "STS_IDLE";
 	            END_IF;
 	        ELSE
+	            // DO_Run=TRUE:
+	            // STARTING — шаг запуска этой горелки (Step = 8+i)
+	            // RUNNING  — Step ушёл дальше (Step > 8+i)
 	            IF #B.Status = "STS_STARTING" AND #S.Step = (8 + #i) THEN
 	                #S.Burners[#i].Status := "STS_STARTING";
 	            ELSE
@@ -225,7 +222,6 @@ BEGIN
 	                                                   NowTck => #nowTck);
 	                IF #timeElapsed THEN
 	                    IF #S.Step < 9 THEN
-	                        // Если следующий шаг — это вентилятор (шаги 2-7), проверяем его LastStopMs
 	                        IF (#S.Step + 1) <= 7 THEN
 	                            IF #S.Fans[#S.Step].LastStopMs = 0 OR "FC_TimeElapsedMs"(StartTck := #S.Fans[#S.Step].LastStopMs,
 	                                                                                             TimeoutMs := 5000,
@@ -235,13 +231,15 @@ BEGIN
 	                                #S.StepStartTck := TIME_TCK();
 	                            END_IF;
 	                        ELSE
-	                            // Для горелок (шаги 8-9) задержка только по stepTimeout
 	                            #S.Step := #S.Step + 1;
 	                            #S.StepStartTck := TIME_TCK();
 	                        END_IF;
+	                    ELSIF #S.Step = 9 THEN
+	                        // Шаг 10: все компоненты запущены, переходим на ожидание температуры
+	                        #S.Step := 10;
+	                        #S.StepStartTck := TIME_TCK();
 	                    ELSE
-	                        // Все компоненты запущены, ожидаем достижения номинальной температуры
-	                        // PT100: T(°C) = -200 + raw * 700 / 27648  =>  raw = (T + 200) * 27648 / 700
+	                        // Шаг 10: ждём номинальной температуры (проверяем каждый скан, без таймера)
 	                        #rawNominal := (INT_TO_DINT(#S.NominalTemp) + 200) * 27648 / 700;
 	                        IF INT_TO_DINT(#S.Temps[14]) >= #rawNominal THEN
 	                            #B.Status := "STS_RUNNING";
@@ -251,13 +249,14 @@ BEGIN
 	                
 	                IF #B.Cmd = "CMD_STOP" THEN
 	                    #B.Status := "STS_STOPPING";
+	                    #S.Step := 10;
 	                    #S.StepStartTck := TIME_TCK();
 	                END_IF;
 	                
 	            "STS_RUNNING":
 	                IF #B.Cmd = "CMD_STOP" THEN
 	                    #B.Status := "STS_STOPPING";
-	                    #S.Step := 9;
+	                    #S.Step := 10;
 	                    #S.StepStartTck := TIME_TCK();
 	                END_IF;
 	                
@@ -312,8 +311,6 @@ BEGIN
 
 	        // Управление горелками (Шаги 8-9)
 	        FOR #i := 0 TO 1 DO
-                // Масштабируем AI_Power (0-100) в AQ_Power (0-27648)
-                // Используем DINT чтобы избежать переполнения (100 * 27648 > 32767)
                 #scaledPower := #S.Burners[#i].AI_Power;
                 IF #scaledPower < 0 THEN #scaledPower := 0; END_IF;
                 IF #scaledPower > 100 THEN #scaledPower := 100; END_IF;
@@ -323,8 +320,8 @@ BEGIN
 	                #S.Burners[#i].DO_Run := TRUE;
 	            ELSIF #B.Status = "STS_STARTING" AND #S.Step >= (8 + #i) THEN
 	                #S.Burners[#i].DO_Run := TRUE;
-	            ELSIF #B.Status = "STS_STOPPING" AND #S.Step >= (8 + #i) THEN
-	                #S.Burners[#i].DO_Run := FALSE;
+	            ELSIF #B.Status = "STS_STOPPING" AND #S.Step > (8 + #i) THEN
+	                #S.Burners[#i].DO_Run := TRUE;
 	            ELSE
 	                #S.Burners[#i].DO_Run := FALSE;
 	                #S.Burners[#i].AQ_Power := 0;
@@ -334,7 +331,7 @@ BEGIN
 	        // Периодическое управление выгрузкой (PWM на базе процента)
 	        IF #B.Status = "STS_RUNNING" AND #S.DischargePercent > 0 THEN
 	            #runTimeMs := (INT_TO_DINT(#S.DischargePercent) * #S.MaxTimeRun) / 100;
-	            #totalCycleMs := #runTimeMs + #S.MaxTimePause;
+	            #totalCycleMs := #runTimeMs + (INT_TO_DINT(#S.DischargePercent) * #S.MaxTimePause) / 100;
 	            
 	            // Проверка прогресса текущего цикла
 	            #timeElapsed := "FC_TimeElapsedMs"(StartTck := #S.DischargeTimerTck, TimeoutMs := #totalCycleMs, ElapsedMs => #elapsedMs, NowTck => #nowTck);
