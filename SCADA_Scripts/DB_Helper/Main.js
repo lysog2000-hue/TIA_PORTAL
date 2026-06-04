@@ -777,3 +777,48 @@ export async function Btn_OpenForceTable_OnTapped(item, x, y, modifiers, trigger
 export function Btn_OpenForceTable_OnUp(item, x, y, modifiers, trigger) {
 HMIRuntime.UI.SysFct.OpenScreenInPopup("Base", "Force", true, "", 0, 0, false, undefined);
 }
+
+
+
+
+//Кнопка аварійної зупинки
+export async function Btn_EmergencyStop_OnTapped(item, x, y, modifiers, trigger) {
+HMIRuntime.Tags.SysFct.SetBitInTag("Emergency_Stop", 0);
+ let items = Screen.Items;
+    let conturColor = 0xFF000000;
+    for (let i = 0; i < items.Count; i++) {
+        let obj = items.Item(i);
+        if (obj.Name && obj.Name.startsWith("L_")) {
+                obj.LineColor = 0xFF000000;
+                obj.LineWidth = 1;
+        }
+        if (obj.Name && obj.Name.startsWith("M_")) {
+            try {obj.Properties.Contur = conturColor;} catch (e) {}
+            try {obj.Properties.CenterContur = conturColor;} catch (e) {}
+            try { obj.Properties.LeftContur = conturColor;} catch (e) {}
+            try { obj.Properties.RightContur = conturColor;} catch (e) {}
+        }
+    }
+}
+
+export async function Btn_EmergencyStop_OnUp(item, x, y, modifiers, trigger) {
+HMIRuntime.Tags.SysFct.ResetBitInTag("Emergency_Stop", 0);
+
+}
+
+
+
+
+
+// кнопка скидання аварії
+export async function Btn_Reset_OnTapped(item, x, y, modifiers, trigger) {
+HMIRuntime.Tags.SysFct.SetBitInTag("GlobalReset", 0);
+
+}
+
+export async function Btn_Reset_OnUp(item, x, y, modifiers, trigger) {
+HMIRuntime.Tags.SysFct.ResetBitInTag("GlobalReset", 0);
+
+}
+
+
