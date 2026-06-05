@@ -249,7 +249,7 @@ return variantList;
 
 export async function LogForceChange(slotId, forceCode) {
   // Используем созданный DSN и пользователя с правами db_owner
-    const connectionString = "DSN=ForceLog;UID=HMI_User;PWD=12345;";
+    const connectionString = "DSN=ForceLog;UID=HMI_User;PWD=12345;TrustServerCertificate=yes;";
     let conn = null;
 
     try {
@@ -270,6 +270,30 @@ export async function LogForceChange(slotId, forceCode) {
     }
 }
 
+/**
+ * Логирование действий оператора в БД OperatorLog
+ * @param {Number} slotId - ID механизма
+ * @param {String} actionText - Описание действия
+ */
+export async function LogOperatorAction(slotId, actionText) {
+    // Корректный способ получения имени пользователя в WinCC Unified
+    let user = HMIRuntime.Resources.UserName;
+    if (!user) user = "No User";
+
+    const connectionString = "DSN=OperatorLog;UID=HMI_User;PWD=12345;TrustServerCertificate=yes;";
+    let conn = null;
+
+    try {
+        conn = await HMIRuntime.Database.CreateConnection(connectionString);
+        // Вызываем хранимую процедуру sp_LogAction, созданную Python-скриптом
+        const sql = `EXEC [dbo].[sp_LogAction] @UserName='${user}', @SlotId=${slotId}, @ActionText='${actionText}'`;
+        await conn.Execute(sql);
+    } catch (err) {
+        HMIRuntime.Trace("Operator logging SQL error: " + err.message);
+    } finally {
+        conn = null;
+    }
+}
 
 
 
@@ -300,7 +324,7 @@ export function resetMechanism(obj) {
 }
 
 export async function RunQueryAndCache(startId, endId, midId) {
-let connectionString = "DSN=ElevatorRouting;UID=HMI_User;PWD=12345;";
+let connectionString = "DSN=ElevatorRouting;UID=HMI_User;PWD=12345;TrustServerCertificate=yes;";
 // Используем Number() напрямую, чтобы гарантировать числа на входе в SQL
 
     let sqlQuery = "EXEC dbo.FindRoute " + Number(startId) + ", " + Number(endId)+", " + Number(midId);

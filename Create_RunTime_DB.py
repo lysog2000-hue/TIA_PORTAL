@@ -20,8 +20,8 @@ JSON_FILE = Path(r"C:\Users\lysog\Desktop\REpository\tia_repo\graph.json")
 SERVER    = r"DESKTOP-4462UFF\SQLEXPRESS"
 DB_NAME   = "RunTime"
 
-MASTER_CONN = f"DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={SERVER};DATABASE=master;Trusted_Connection=yes;"
-DB_CONN     = f"DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={SERVER};DATABASE={DB_NAME};Trusted_Connection=yes;"
+MASTER_CONN = f"DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={SERVER};DATABASE=master;Trusted_Connection=yes;TrustServerCertificate=yes;"
+DB_CONN     = f"DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={SERVER};DATABASE={DB_NAME};Trusted_Connection=yes;TrustServerCertificate=yes;"
 
 RUNTIME_TYPES = {"Redler", "Noria", "Fan", "Separator", "Feeder"}
 

@@ -174,8 +174,8 @@ with pyodbc.connect(DB_CONN, autocommit=True) as conn:
                        m_id, m_name, m_type, m_desc)
 
         for p in dev.get("ports", []):
-            can_start = 1 if (m_type == "Silos" and p["direction"].upper() == "OUT") else 0
-            can_end = 1 if (m_type == "Silos" and p["direction"].upper() == "IN") else 0
+            can_start = 1 if (m_type in ["Silos", "ReceivingPit", "Sushka"] and p["direction"].upper() == "OUT") else 0
+            can_end = 1 if (m_type in ["Silos", "Sushka"] and p["direction"].upper() == "IN") else 0
             
             valve_pos = None
             if m_type == "Valve3P":

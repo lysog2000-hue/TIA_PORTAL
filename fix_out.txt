@@ -1,3 +1,0 @@
-NOT FOUND, searching...
-grainTypePit found at 17795
-'         END_FOR;\n\t            \n\t            IF #Fsm.RF_State = "ROUTE_STS_VALIDATING" THEN\n\t                // Перевірка GrainType: яма і силос повинні мати однаковий ненульовий тип\n\t                #grainTypePit := 0;\n\t                #grainTypeSilo := 0;\n\t                #forceGrainType := FALSE;\n\t                \n\t                FOR #Fsm.i := 1 TO #Fsm.stepCnt DO\n\t                    #Fsm.slot := #Cmd.RC_Steps[#Fsm.i].RS_Slot;\n\t                    IF #Fsm.slot <= "MECHS_COUNT" THEN\n\t                        IF #Mechs[#Fsm.slot].DeviceType = "TYPE_RECEIVING_PIT" THEN\n\t                            #grainTypePit := "DB_Mechs".ReceivingPit[#Mechs[#Fsm.slot].TypedIndex].GrainType;\n\t           '
