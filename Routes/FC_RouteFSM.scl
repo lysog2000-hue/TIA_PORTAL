@@ -1,13 +1,14 @@
 ﻿FUNCTION "FC_RouteFSM" : Void
 { S7_Optimized_Access := 'TRUE' }
-VERSION : 4.5
+VERSION : 4.6
 // ==============================================================================
 // FC_RouteFSM - Керування маршрутом (Mailbox Pattern v4.0)
 // ==============================================================================
-// Версія: 4.5.0
-// Дата: 2026-04-10
+// Версія: 4.6.0
+// Дата: 2026-05-15
 // ==============================================================================
-// ЗМІНИ v4.5.0:
+// ЗМІНИ v4.6.0:
+//   [FEAT] Реалізовано "Різкий останов" (Fast Stop) при аварії механізму.
 //   [FEAT] Додана детальна перевірка GrainType для ям та силосів.
 //   [FIX] Виключено перевірку типу для конкретних силосів (1,2,19,25,26,27).
 //   [FEAT] Додано очікування цільової позиції для засувок (Gate2P) та клапанів (Valve3P).
@@ -539,11 +540,23 @@ BEGIN
 	            #Fsm.RF_State := "ROUTE_STS_STOPPING";
 	            
 	        ELSIF #Fsm.anyFault THEN
-	            #Fsm.RF_AbortLatched := "ROUTE_ABRT_BY_FAULT";
-	            #Fsm.RF_ActiveStep := INT_TO_USINT(#Fsm.stepCnt);  // 1-based
-	            #Fsm.stepPause := FALSE;
-	            #Fsm.stepPauseTck := 0;
-	            #Fsm.RF_State := "ROUTE_STS_STOPPING";
+	            #Fsm.RF_ResultCode := "ROUTE_ABRT_BY_FAULT";
+	            
+	            // РЕЗКИЙ ОСТАНОВ: негайно зупинити всі механізми маршруту
+	            IF #Fsm.stepCnt > 0 THEN
+	                FOR #Fsm.i := 1 TO #Fsm.stepCnt DO
+	                    #Fsm.slot := #Cmd.RC_Steps[#Fsm.i].RS_Slot;
+	                    IF #Fsm.slot > 0 AND #Fsm.slot <= "MECHS_COUNT" THEN
+	                        #Fsm.dummyOk := "FC_ArbiterMech"(
+	                            OwnerReq := "OWNER_ROUTE",
+	                            OwnerReqId := USINT_TO_UINT(#RouteIdx),
+	                            ReqCmd := "CMD_STOP",
+	                            ReqParam1 := 0,
+	                            M := #Mechs[#Fsm.slot]);
+	                    END_IF;
+	                END_FOR;
+	            END_IF;
+	            #Fsm.RF_State := "ROUTE_STS_ABORTED";
 	            
 	        ELSE
 	            // --- Поточний крок ---
@@ -687,8 +700,23 @@ BEGIN
 	        // "НЕ зупинений": STS_STARTING / STS_RUNNING / STS_STOPPING
 	        // --------------------------------------------------------
 	    ELSIF #Fsm.RF_State = "ROUTE_STS_STOPPING" THEN
-	        
-	        IF #Fsm.stepCnt > 0 THEN
+	        // Якщо під час планової зупинки сталася аварія — переходимо на різкий останов
+	        IF #Fsm.anyFault THEN
+	            #Fsm.RF_ResultCode := "ROUTE_ABRT_BY_FAULT";
+	            FOR #Fsm.i := 1 TO #Fsm.stepCnt DO
+	                #Fsm.slot := #Cmd.RC_Steps[#Fsm.i].RS_Slot;
+	                IF #Fsm.slot > 0 AND #Fsm.slot <= "MECHS_COUNT" THEN
+	                    #Fsm.dummyOk := "FC_ArbiterMech"(
+	                        OwnerReq := "OWNER_ROUTE",
+	                        OwnerReqId := USINT_TO_UINT(#RouteIdx),
+	                        ReqCmd := "CMD_STOP",
+	                        ReqParam1 := 0,
+	                        M := #Mechs[#Fsm.slot]);
+	                END_IF;
+	            END_FOR;
+	            #Fsm.RF_State := "ROUTE_STS_ABORTED";
+	            
+	        ELSIF #Fsm.stepCnt > 0 THEN
 	            #Fsm.stepIdx := USINT_TO_INT(#Fsm.RF_ActiveStep);
 	            #Fsm.slot := #Cmd.RC_Steps[#Fsm.stepIdx].RS_Slot;
 	            

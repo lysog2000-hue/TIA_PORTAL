@@ -1,4 +1,4 @@
-﻿# Elevator Automation System — контекст проекта
+﻿﻿# Elevator Automation System — контекст проекта
 
 ## Общее
 - Платформа: Siemens TIA Portal v19
@@ -56,7 +56,7 @@ tia_repo/
 │   ├── FC_Sushka.scl         — базовый
 │   └── FC_Sushka_1B.scl      — v0.8 (сушилка с 1 горелкой, 7 вентиляторов, пошаговый запуск)
 ├── Routes/
-│   ├── FC_RouteFSM.scl       — v4.5
+│   ├── FC_RouteFSM.scl       — v4.6 (Fast Stop implementation)
 │   ├── FC_Route_Supervisor.scl — v3.2.2
 │   └── udt/
 ├── Manual/

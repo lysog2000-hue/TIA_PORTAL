@@ -228,8 +228,7 @@ export async function Btn_OpenMotoHours_OnTapped(item, x, y, modifiers, trigger)
 
         let d = new Date();
         let now = String(d.getDate()).padStart(2,"0") + "."
-                + String(d.getMonth()+1).padStart(2,"0") + "."
-                + d.getFullYear() + " "
+                + String(d.getMonth()+1).padStart(2,"0") + "/ "
                 + String(d.getHours()).padStart(2,"0") + ":"
                 + String(d.getMinutes()).padStart(2,"0") + ":"
                 + String(d.getSeconds()).padStart(2,"0");
@@ -732,11 +731,10 @@ export async function Btn_OpenForceTable_OnTapped(item, x, y, modifiers, trigger
         for (let key in rows) {
             let row = rows[key];
             
-            // Форматируем дату из SQL в читаемый вид DD.MM.YYYY HH:mm:ss
+            // Форматируем дату из SQL в читаемый вид DD.MM/ HH:mm:ss
             let ts = new Date(row["Timestamp"]);
             let formattedTime = String(ts.getDate()).padStart(2, "0") + "."
-                    + String(ts.getMonth() + 1).padStart(2, "0") + "."
-                    + ts.getFullYear() + " "
+                    + String(ts.getMonth() + 1).padStart(2, "0") + "/ "
                     + String(ts.getHours()).padStart(2, "0") + ":"
                     + String(ts.getMinutes()).padStart(2, "0") + ":"
                     + String(ts.getSeconds()).padStart(2, "0");
@@ -822,3 +820,128 @@ HMIRuntime.Tags.SysFct.ResetBitInTag("GlobalReset", 0);
 }
 
 
+
+// Функція для отримання текстового опису стану маршруту (для IO Field)
+export function GetRouteSummaryStatus(routeIdx) {
+    if (routeIdx < 1 || routeIdx > 12) return "Невірний ID";
+
+    let state = Tags("RS_State" + routeIdx).Read();
+    let result = Tags("ResultCode_Route" + routeIdx).Read();
+
+    // Словник базових станів
+    const stateNames = {
+        0: "Очікування",
+        1: "Перевірка...",
+        2: "Запуск...",
+        4: "В роботі",
+        5: "Зупинка...",
+        7: "ВІДХИЛЕНО",
+        8: "ПЕРЕРВАНО"
+    };
+
+    // 1. Спеціальні випадки для активних станів (State 4 та 5)
+    if (state === 4) {
+        if (result === 0) return "Запуск маршруту";
+        if (result & 32768) return "Маршрут активний";
+    }
+    
+    if (state === 5) {
+        return "Зупинка...";
+    }
+
+    // 2. Якщо є код помилки (навіть якщо State 0), розшифровуємо причину
+    if (result > 0 && result < 32768) {
+        if (result & 1)    return "Помилка: Безпека";
+        if (result & 2)    return "Помилка: Мех. зайнятий";
+        if (result & 4)    return "Помилка: Контракт";
+        if (result & 8)    return "Помилка: Не готовий";
+        if (result & 16)   return "Помилка: Дубль пуску";
+        if (result & 32)   return "Помилка: Культура не задана";
+        if (result & 64)   return "Помилка: Зерно не співпадає";
+        if (result & 128)  return "Помилка: Зерно силосів не співпадає";
+        
+        if (result & 256)  return "Зупинено оператором";
+        if (result & 512)  return "Прервано: Безпека";
+        if (result & 1024) return "Прервано: Місцеве упр.";
+        if (result & 2048) return "АВАРІЯ МЕХАНІЗМУ";
+        if (result & 4096) return "Прервано: Втрачено захват";
+        if (result & 8192) return "Помилка запуску";
+
+        return (stateNames[state] || "Статус " + state) + " (код " + result + ")";
+    }
+
+    // 3. Повертаємо назву стану за замовчуванням
+    return stateNames[state] || "Невідомо (" + state + ")";
+}
+
+
+
+//ВИклик таблиці логів дій оператора
+export async function Btn_OpenOperatorLogTable_OnTapped(item, x, y, modifiers, trigger) {
+    // Подключаемся к базе ForceLog (которую мы создали ранее)
+    let connectionString = "DSN=OperatorLog;UID=HMI_User;PWD=12345;";
+    let conn = null;
+
+    try {
+        conn = await HMIRuntime.Database.CreateConnection(connectionString);
+
+        // Запрашиваем последние 500 записей (чтобы не перегружать таблицу)
+        // Сортируем по времени: самые свежие сверху
+         let queryResult = await conn.Execute("SELECT TOP 500 Timestamp,UserName,MechName,ActionText FROM OperatorActionLog ORDER BY Timestamp DESC;");
+        let firstResultSet = null;
+        for (let key in queryResult.Results) {
+            if (queryResult.Results[key] && queryResult.Results[key].Rows) {
+                firstResultSet = queryResult.Results[key];
+                break;
+            }
+        }
+
+        if (!firstResultSet) {
+            HMIRuntime.Trace("OperatorLog: no result set");
+            return;
+        }
+
+        let rows = firstResultSet.Rows;
+        let tableRows = [];
+
+        for (let key in rows) {
+            let row = rows[key];
+            
+            // Форматируем дату из SQL в читаемый вид DD.MM/ HH:mm:ss
+            let ts = new Date(row["Timestamp"]);
+            let formattedTime = String(ts.getDate()).padStart(2, "0") + "."
+                    + String(ts.getMonth() + 1).padStart(2, "0") + "/ "
+                    + String(ts.getHours()).padStart(2, "0") + ":"
+                    + String(ts.getMinutes()).padStart(2, "0") + ":"
+                    + String(ts.getSeconds()).padStart(2, "0");
+
+            tableRows.push({
+                "time":    formattedTime,
+                "mech":    String(row["MechName"]  || ""),
+                "user":   String(row["UserName"] || ""),
+                "action":  String(row["ActionText"] || "") 
+            });
+        }
+
+        // Описание колонок для виджета таблицы
+        let columns = [
+            { "title": "Дата/Час",   "field": "time",  "sorter": "string",   "width": 180 },
+            { "title": "Кор.",   "field": "user",  "sorter": "alphanum", "width": 110 },
+            { "title": "Мех", "field": "mech", "sorter": "alphanum", "width": 100 },
+            { "title": "Дія", "field": "action", "sorter": "alphanum",   "width": 280 }
+        ];
+
+        // Записываем JSON-строки в теги
+        Tags("Main_ColumnStyle").Write(JSON.stringify(columns));
+        Tags("Main_TableDataString").Write(JSON.stringify(tableRows));
+
+        HMIRuntime.Trace("OperatorLog: OK, records sent=" + tableRows.length);
+
+    } catch (err) {
+        HMIRuntime.Trace("OperatorLog READ ERROR: " + err);
+    } finally {
+        conn = null;
+    }
+
+
+}

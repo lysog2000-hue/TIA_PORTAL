@@ -1,4 +1,4 @@
-﻿# Gemini Project Map — Элеватор (TIA Portal v19)
+﻿﻿# Gemini Project Map — Элеватор (TIA Portal v19)
 
 ## 🏗 Архитектура и Правила (Canon)
 ### Core & Control
@@ -8,12 +8,11 @@
 
 ### Мониторинг и Защита
 - **Faults**: Битовая маска `FLTCode` (WORD). Любой бит != 0 — это авария, приводящая к `ABORT` маршрута.
-- **Force_Code**: Игнорирование защит для наладки (BIT0-Breaker, BIT4-MoveTimeout, BIT8-Feedback).
+- **Faults Handling**: При аварии любого механизма в маршруте выполняется **немедленный (резкий) останов** всех участников через `FC_ArbiterMech(CMD_STOP)`.
 - **Restart**: Защита от частого пуска через `LastStopMs` (5с для вентиляторов, 3с для прочих).
 
 ### Система маршрутов (Routes)
-- **Mailbox**: Квитирование через `HDR_Commit` / `Ack_CommitApplied`. 12 параллельных маршрутов.
-- **FSM v4.5**: Состояния `IDLE` -> `VALIDATING` -> `STARTING` -> `RUNNING` -> `STOPPING`.
+- **FSM v4.6**: Состояния `IDLE` -> `VALIDATING` -> `STARTING` -> `RUNNING` -> `STOPPING`.
 - **Position Waiting**: Маршрут ожидает `Status_Param == Target` для Gate2P/Valve3P (если `RS_StopParam` или `RS_StartParam` заданы).
 - **GrainType Validation**: 
   - В `VALIDATING` проверяется совместимость зерна в яме и силосе.
