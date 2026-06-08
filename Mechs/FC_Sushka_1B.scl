@@ -15,6 +15,7 @@ VERSION : 0.8
    VAR_IN_OUT 
       B : "UDT_BaseMechanism";
       S : "UDT_Sushka";
+      R : "UDT_Sushka_Recipe";
    END_VAR
 
    VAR_TEMP 
@@ -37,13 +38,80 @@ VERSION : 0.8
       runTimeMs : DInt;    // Рассчитанное время включения
       scaledPower : Int;   // Для масштабирования AI_Power
       rawNominal : DInt;   // NominalTemp сконвертирован в raw (0-27648)
+      raw30Deg : DInt;     // 30 градусов в RAW (0-27648)
+      rawTdNom : DInt;     // Рецептная температура сушки в RAW
+      rawTpNom : DInt;     // Рецептная температура продукта в RAW
+      rawTgNom : DInt;     // Рецептная температура газа в RAW
+      rawPWNom : DInt;     // Рецептная температура PW в RAW
+      avgTdRaw : DInt;     // Среднее значение датчиков 10..11 в RAW
+      avgTpRaw : DInt;     // Значение датчика 14 в RAW
+      avgTgRaw : DInt;     // Среднее значение датчиков 6..7 в RAW
+      avgPWRaw : DInt;     // Значение датчика 15 в RAW
+      raw5Deg : DInt;      // 5 °C в RAW
+      isLowLevelActive : Bool;   // Флаг срабатывания нижнего уровня
+      isHighLevelActive : Bool;  // Флаг срабатывания верхнего уровня
+      isStoppingFault : Bool;   // Флаг критической аварии (требующей останова сушилки)
+      isRecipeTempsReady : Bool; // Все три рецептурные температуры достигнуты
+      isRecipeTdOver : Bool;  // Перегрев Td
+      isRecipeTpOver : Bool;  // Перегрев Tp
+      isRecipeTgOver : Bool;  // Перегрев Tg
+      isRecipePWOver : Bool;  // Перегрев PW
+      isTempOver : Bool;      // Общий признак перегрева для блокировки горелок/выгрузки
+      sensorSpan : DInt;      // Диапазон датчика (Max - Min)
+      highLevelHoldMs : DInt; // Время удержания уровня в мс
    END_VAR
 
 
 BEGIN
 	    #stepTimeout := 3000; // 3 секунды между включениями компонентов
-	    #S.MaxTimeRun := 10000;  // 10 сек работы при 100%
-	    #S.MaxTimePause := 20000; // 20 сек паузы при 100%
+	    
+	    // Расчет параметров масштабирования
+	    #sensorSpan := INT_TO_DINT(#R.SensorMax - #R.SensorMin);
+	    IF #sensorSpan <= 0 THEN #sensorSpan := 700; END_IF; // Защита от деления на 0
+	    
+	    #raw30Deg := (30 - INT_TO_DINT(#R.SensorMin)) * 27648 / #sensorSpan;
+	    #raw5Deg := (5 * 27648) / #sensorSpan; // 5 градусов в единицах RAW
+	    
+	    #rawTdNom := (INT_TO_DINT(#R.TdNom) - INT_TO_DINT(#R.SensorMin)) * 27648 / #sensorSpan;
+	    #rawTpNom := (INT_TO_DINT(#R.TpNom) - INT_TO_DINT(#R.SensorMin)) * 27648 / #sensorSpan;
+	    #rawTgNom := (INT_TO_DINT(#R.TgNom) - INT_TO_DINT(#R.SensorMin)) * 27648 / #sensorSpan;
+	    #rawPWNom := (INT_TO_DINT(#R.PWNom) - INT_TO_DINT(#R.SensorMin)) * 27648 / #sensorSpan;
+
+	    // Приводим время к миллисекундам один раз
+	    #highLevelHoldMs := #R.Time_High_Level * 1000;
+
+	    #avgTdRaw := (INT_TO_DINT(#S.Temps[10]) + INT_TO_DINT(#S.Temps[11])) / 2;
+	    #avgTpRaw := INT_TO_DINT(#S.Temps[14]);
+	    #avgTgRaw := (INT_TO_DINT(#S.Temps[6]) + INT_TO_DINT(#S.Temps[7])) / 2;
+	    #avgPWRaw := INT_TO_DINT(#S.Temps[15]);
+	    #isRecipeTempsReady := (#avgTdRaw >= #rawTdNom) AND (#avgTpRaw >= #rawTpNom) AND (#avgTgRaw >= #rawTgNom) AND (#avgPWRaw >= #rawPWNom);
+	    
+	    // Логика гистерезиса: включаем блокировку при Nom+5, выключаем только при спуске до Nom
+	    // Зона Td
+	    IF (#avgTdRaw > (#rawTdNom + #raw5Deg)) THEN #isRecipeTdOver := TRUE;
+	    ELSIF (#avgTdRaw <= #rawTdNom) THEN #isRecipeTdOver := FALSE;
+	    ELSE #isRecipeTdOver := (#S.FLTCode AND DW#16#8000000) <> 0; END_IF;
+	    #isRecipeTdOver := #isRecipeTdOver AND ((#S.ForceCode AND DW#16#8000000) = 0);
+
+	    // Зона Tp
+	    IF (#avgTpRaw > (#rawTpNom + #raw5Deg)) THEN #isRecipeTpOver := TRUE;
+	    ELSIF (#avgTpRaw <= #rawTpNom) THEN #isRecipeTpOver := FALSE;
+	    ELSE #isRecipeTpOver := (#S.FLTCode AND DW#16#10000000) <> 0; END_IF;
+	    #isRecipeTpOver := #isRecipeTpOver AND ((#S.ForceCode AND DW#16#10000000) = 0);
+
+	    // Зона Tg
+	    IF (#avgTgRaw > (#rawTgNom + #raw5Deg)) THEN #isRecipeTgOver := TRUE;
+	    ELSIF (#avgTgRaw <= #rawTgNom) THEN #isRecipeTgOver := FALSE;
+	    ELSE #isRecipeTgOver := (#S.FLTCode AND DW#16#20000000) <> 0; END_IF;
+	    #isRecipeTgOver := #isRecipeTgOver AND ((#S.ForceCode AND DW#16#20000000) = 0);
+
+	    // Зона PW
+	    IF (#avgPWRaw > (#rawPWNom + #raw5Deg)) THEN #isRecipePWOver := TRUE;
+	    ELSIF (#avgPWRaw <= #rawPWNom) THEN #isRecipePWOver := FALSE;
+	    ELSE #isRecipePWOver := (#S.FLTCode AND DW#16#40000000) <> 0; END_IF;
+	    #isRecipePWOver := #isRecipePWOver AND ((#S.ForceCode AND DW#16#40000000) = 0);
+
+	    #isTempOver := #isRecipeTdOver OR #isRecipeTpOver OR #isRecipeTgOver OR #isRecipePWOver;
 	    
 	    // 1. Сброс аварий (RESET)
 	    IF #B.Cmd = "CMD_RESET" THEN
@@ -169,11 +237,42 @@ BEGIN
 	        #S.FbTck[10] := 0;
 	    END_IF;
 	    
-	    IF NOT #S.Levels.High_OK AND ((#S.ForceCode AND DW#16#2000000) = 0) THEN
+	    // Логика удержания верхнего уровня (Minimum Hold Time)
+	    IF NOT #S.Levels.High_OK THEN
+	        #S.FbTck[11] := TIME_TCK(); // Запуск/обновление таймера при срабатывании датчика
+	    END_IF;
+	    
+	    IF #S.FbTck[11] <> 0 THEN
+	        #isHighLevelActive := TRUE;
+	        // Если время удержания вышло И физический датчик в норме — отпускаем логический уровень
+	        IF "FC_TimeElapsedMs"(StartTck := #S.FbTck[11], TimeoutMs := #highLevelHoldMs, ElapsedMs => #elapsedMs, NowTck => #nowTck) AND #S.Levels.High_OK THEN
+	            #S.FbTck[11] := 0;
+	            #isHighLevelActive := FALSE;
+	        END_IF;
+	    ELSE
+	        #isHighLevelActive := FALSE;
+	    END_IF;
+	    
+	    // Динамическое обновление битов уровней и перегревов (25-30)
+	    #S.FLTCode := #S.FLTCode AND DW#16#81FFFFFF;
+	    
+	    IF #isHighLevelActive AND ((#S.ForceCode AND DW#16#2000000) = 0) THEN
 	        #S.FLTCode := #S.FLTCode OR DW#16#2000000; // Бит 25
 	    END_IF;
 	    IF NOT #S.Levels.Low_OK AND ((#S.ForceCode AND DW#16#4000000) = 0) THEN
 	        #S.FLTCode := #S.FLTCode OR DW#16#4000000; // Бит 26
+	    END_IF;
+	    IF #isRecipeTdOver THEN
+	        #S.FLTCode := #S.FLTCode OR DW#16#8000000; // Бит 27
+	    END_IF;
+	    IF #isRecipeTpOver THEN
+	        #S.FLTCode := #S.FLTCode OR DW#16#10000000; // Бит 28
+	    END_IF;
+	    IF #isRecipeTgOver THEN
+	        #S.FLTCode := #S.FLTCode OR DW#16#20000000; // Бит 29
+	    END_IF;
+	    IF #isRecipePWOver THEN
+	        #S.FLTCode := #S.FLTCode OR DW#16#40000000; // Бит 30
 	    END_IF;
 	    
 	    // Связь с базовым механизмом: если есть хоть одна ошибка в S.FLTCode, 
@@ -238,17 +337,21 @@ BEGIN
 	                        #S.Step := 9;
 	                        #S.StepStartTck := TIME_TCK();
 	                    ELSE
-	                        // Шаг 9: ждём номинальной температуры
-	                        #rawNominal := (INT_TO_DINT(#S.NominalTemp) + 200) * 27648 / 700;
-	                        IF INT_TO_DINT(#S.Temps[14]) >= #rawNominal THEN
-	                            #B.Status := "STS_RUNNING";
+	                        // Шаг 9: ждём соответствия рецептурных температур
+	                        IF #isRecipeTempsReady THEN
+	                            IF #highLevelHoldMs <= 0 OR
+	                               "FC_TimeElapsedMs"(StartTck := #S.StepStartTck,
+	                                                   TimeoutMs := #highLevelHoldMs,
+	                                                   ElapsedMs => #elapsedMs,
+	                                                   NowTck => #nowTck) THEN
+	                                #B.Status := "STS_RUNNING";
+	                            END_IF;
 	                        END_IF;
 	                    END_IF;
 	                END_IF;
 	                
 	                IF #B.Cmd = "CMD_STOP" THEN
 	                    #B.Status := "STS_STOPPING";
-	                    #S.Step := 9;
 	                    #S.StepStartTck := TIME_TCK();
 	                END_IF;
 	                
@@ -314,15 +417,15 @@ BEGIN
             IF #scaledPower < 0 THEN #scaledPower := 0; END_IF;
             IF #scaledPower > 100 THEN #scaledPower := 100; END_IF;
                 #S.Burners[#i].AQ_Power := DINT_TO_INT((INT_TO_DINT(#scaledPower) * 27648) / 100);
-
-	            IF #B.Status = "STS_RUNNING" THEN
+            
+	            // Горелка работает только если нет перегрева
+	            IF (#B.Status = "STS_RUNNING" AND NOT #isTempOver) THEN
 	                #S.Burners[#i].DO_Run := TRUE;
-	            ELSIF #B.Status = "STS_STARTING" AND #S.Step >= 8 THEN
+	            ELSIF (#B.Status = "STS_STARTING" AND #S.Step >= 8 AND NOT #isTempOver) THEN
 	                #S.Burners[#i].DO_Run := TRUE;
 	            ELSIF #B.Status = "STS_STOPPING" AND #S.Step > 8 THEN
 	                #S.Burners[#i].DO_Run := TRUE;
 	            ELSE
-	                #S.Burners[#i].DO_Run := FALSE;
 	                #S.Burners[#i].AQ_Power := 0;
 	            END_IF;
 	        END_FOR;
@@ -332,9 +435,9 @@ BEGIN
 	        #S.Burners[1].AQ_Power := 0;
 	        
 	         // Периодическое управление выгрузкой (PWM на базе процента)
-	        IF #B.Status = "STS_RUNNING" AND #S.DischargePercent > 0 THEN
-	            #runTimeMs := (INT_TO_DINT(#S.DischargePercent) * #S.MaxTimeRun) / 100;
-	            #totalCycleMs := #runTimeMs + (INT_TO_DINT(#S.DischargePercent) * #S.MaxTimePause) / 100;
+	        IF #B.Status = "STS_RUNNING" AND #R.DischargePercent > 0 AND NOT #isTempOver THEN
+	            #runTimeMs := (INT_TO_DINT(#R.DischargePercent) * #R.MaxTimeRun) / 100;
+	            #totalCycleMs := #runTimeMs + (INT_TO_DINT(#R.DischargePercent) * #R.MaxTimePause) / 100;
 	            
 	            // Проверка прогресса текущего цикла
 	            #timeElapsed := "FC_TimeElapsedMs"(StartTck := #S.DischargeTimerTck, TimeoutMs := #totalCycleMs, ElapsedMs => #elapsedMs, NowTck => #nowTck);

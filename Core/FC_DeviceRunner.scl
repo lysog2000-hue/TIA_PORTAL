@@ -73,8 +73,8 @@ BEGIN
 	    FOR #slot := 305 TO 306 DO
 	        IF #Mechs[#slot].DeviceType = "TYPE_Receiving_PIT" THEN
 	            #idx := #Mechs[#slot].TypedIndex;
-	             "FC_ReceivingPit"(P := #ReceivingPit[#idx],
-	             B := #Mechs[#slot]);
+	            "FC_ReceivingPit"(P := #ReceivingPit[#idx],
+	                              B := #Mechs[#slot]);
 	        END_IF;
 	    END_FOR;
 	    
@@ -91,7 +91,7 @@ BEGIN
 	    FOR #slot := 201 TO 230 DO
 	        IF #Mechs[#slot].DeviceType = "TYPE_VALVE3P" THEN
 	            #idx := #Mechs[#slot].TypedIndex;
-	            "FC_Valve3P"(F := #Valve3P[#idx],
+	            "FC_Valve3P"(V := #Valve3P[#idx],
 	                         B := #Mechs[#slot]);
 	        END_IF;
 	    END_FOR;
@@ -101,7 +101,7 @@ BEGIN
 	        IF #Mechs[#slot].DeviceType = "TYPE_SILOS" THEN
 	            #idx := #Mechs[#slot].TypedIndex;
 	            "FC_Silos"(S := #Silos[#idx],
-	            B := #Mechs[#slot]);
+	                       B := #Mechs[#slot]);
 	        END_IF;
 	    END_FOR;
 	    
@@ -109,17 +109,18 @@ BEGIN
 	    FOR #slot := 301 TO 303 DO
 	        IF #Mechs[#slot].DeviceType = "TYPE_SUSHKA" THEN
 	            #idx := #Mechs[#slot].TypedIndex;
-                   "FC_Sushka"(S := #Sushka[#idx],
-                         B := #Mechs[#slot],
-                         Index := #slot);
+	            "FC_Sushka"(S := #Sushka[#idx],
+	                        B := #Mechs[#slot],
+	                        Index := #slot,
+	                        R:="DB_Recipe".Recipe[#idx]);
 	        END_IF;
 	    END_FOR;
-		 FOR #slot := 304 TO 304 DO
+	    FOR #slot := 304 TO 304 DO
 	        IF #Mechs[#slot].DeviceType = "TYPE_SUSHKA" THEN
 	            #idx := #Mechs[#slot].TypedIndex;
-                   "FC_Sushka_1B"(S := #Sushka[#idx],
-                         B := #Mechs[#slot],
-                         Index := #slot);
+	            "FC_Sushka_1B"(S := #Sushka[#idx],
+	                           B := #Mechs[#slot],
+	                           Index := #slot);
 	        END_IF;
 	    END_FOR;
 	    

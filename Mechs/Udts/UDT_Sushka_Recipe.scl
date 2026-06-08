@@ -1,0 +1,16 @@
+﻿TYPE "UDT_Sushka_Recipe"
+VERSION : 0.3
+   STRUCT
+      TdNom : INT;  // Температура нижньої зони
+      TgNom : INT;  // Температура середньої зони
+      TpNom : INT;  // Температура верхньої зони
+      PWNom : INT;  // Температура повітря на виході
+      SensorMin : INT; // Мин. значение датчика (соотв. 0 RAW)
+      SensorMax : INT; // Макс. значение датчика (соотв. 27648 RAW)
+      Time_High_Level : DINT; // Час утримання аварії HighLevel
+      DischargePercent : Int;    // Задання вигрузки (0..100%)
+      MaxTimeRun : DInt;         // Час роботи при 100% (мс)
+      MaxTimePause : DInt;       // Час паузи при 100% (мс)
+   END_STRUCT;
+
+END_TYPE
