@@ -211,6 +211,11 @@ BEGIN
 	        #Redler[37].DI_Speed_OK := "RD38_DI_Speed_OK"; // Датчик руху RD38
 	        #Redler[37].DI_Overflow_OK := "RD38_DI_Overflow_OK"; // Датчик переповнення RD38
 	    END_REGION
+	    REGION RD38
+	        //#Redler[38].DI_Breaker_OK := "RD39_DI_Breaker_OK"; // Автоматичний вимикач RD38
+	        //#Redler[38].DI_Speed_OK := "RD39_DI_Speed_OK"; // Датчик руху RD38
+	        //#Redler[38].DI_Overflow_OK := "RD39_DI_Overflow_OK"; // Датчик переповнення RD38
+	    END_REGION
 	END_REGION
 	REGION NORIAS
 	    REGION NR1
@@ -267,6 +272,11 @@ BEGIN
 	        #Noria[10].DI_Breaker_OK := "NR11_DI_Breaker_OK"; // Автоматичний вимикач NR11
 	        #Noria[10].DI_Speed_OK := "NR11_DI_Speed_OK"; // Датчик руху NR11
 	        #Noria[10].DI_Alignment_OK := "NR11_DI_Alignment_OK"; // Схід стрічки NR11
+	    END_REGION
+	    REGION NR12
+	       //#Noria[11].DI_Breaker_OK := "NR12_DI_Breaker_OK"; // Автоматичний вимикач NR11
+	       // #Noria[11].DI_Speed_OK := "NR12_DI_Speed_OK"; // Датчик руху NR11
+	       // #Noria[11].DI_Alignment_OK := "NR12_DI_Alignment_OK"; // Схід стрічки NR11
 	    END_REGION
 	END_REGION
 	REGION FEEDERS_SEPARATORS_FANS    
@@ -853,6 +863,11 @@ BEGIN
 	        #Valve3P[28].DI_Breaker_OK := "VL29_DI_Breaker_OK"; // Автоматичний вимикач VL29
 	        #Valve3P[28].DI_Pos0_OK := "VL29_DI_Pos0_OK"; // Датчик положення (ліво) VL29
 	        #Valve3P[28].DI_Pos1_OK := "VL29_DI_Pos1_OK"; // Датчик положення (право) VL29
+	    END_REGION
+	    REGION VL30
+	      //  #Valve3P[29].DI_Breaker_OK := "VL30_DI_Breaker_OK"; // Автоматичний вимикач VL29
+	       // #Valve3P[29].DI_Pos0_OK := "VL30_DI_Pos0_OK"; // Датчик положення (ліво) VL29
+	       //#Valve3P[29].DI_Pos1_OK := "VL30_DI_Pos1_OK"; // Датчик положення (право) VL29
 	    END_REGION
 	END_REGION
 	REGION DRYERS_AND_SILOS_LEVELS
