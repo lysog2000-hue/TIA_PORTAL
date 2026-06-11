@@ -1,4 +1,4 @@
-﻿TYPE "UDT_Sushka_Fan"
+﻿TYPE "UDT_Dryer_Fan"
 VERSION : 0.2
    STRUCT
       DI_Breaker_OK : Bool;   // Автомат защиты двигателя

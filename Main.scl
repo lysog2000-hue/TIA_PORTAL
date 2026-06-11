@@ -74,9 +74,9 @@ BEGIN
 	        END_FOR;
 	        
 	        // Симуляція сушарок
-	        FOR #i := 0 TO "SUSHKAS_COUNT" DO
+	        FOR #i := 0 TO "DRYER_COUNT" DO
 	            IF "DB_SimConfig".Sushka[#i].Enable THEN
-	                "FC_SimSushka"(
+	                "FC_SimDryer"(
 	                               SushkaIdx := #i,
 	                               StartupTime_ms := "DB_SimConfig".Sushka[#i].StartupTime_ms,
 	                               StopTime_ms := "DB_SimConfig".Sushka[#i].StopTime_ms,
@@ -142,7 +142,7 @@ BEGIN
 	    // ===================================================================
 	    
 	    // Логіка аварійної зупинки (Emergency Stop)
-	    IF "Emergency_Stop" THEN
+	    IF "Emergency_Stop" OR NOT "Main_DI_E_Stop_OK" THEN
 	        "GlobalSafetyStop" := TRUE; // Активуємо латч безпеки
 	    END_IF;
 	    

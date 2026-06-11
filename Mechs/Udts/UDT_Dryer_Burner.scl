@@ -1,4 +1,4 @@
-﻿TYPE "UDT_Sushka_Burner"
+﻿TYPE "UDT_Dryer_Burner"
 VERSION : 0.1
    STRUCT
       DI_Breaker_OK : Bool;

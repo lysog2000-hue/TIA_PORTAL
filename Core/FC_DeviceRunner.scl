@@ -22,7 +22,7 @@ VERSION : 3.0
       Separator : Array[*] of "UDT_Separator";
       Valve3P : Array[*] of "UDT_Valve3P";
       Silos : Array[*] of "UDT_Silos";
-      Sushka : Array[*] of "UDT_Sushka";
+      Dryer : Array[*] of "UDT_Dryer";
       Feeder : Array[*] of "UDT_Feeder";
    END_VAR
 
@@ -107,20 +107,21 @@ BEGIN
 	    
 	    // === SUSHKA (slot 301..304) ===
 	    FOR #slot := 301 TO 303 DO
-	        IF #Mechs[#slot].DeviceType = "TYPE_SUSHKA" THEN
+	        IF #Mechs[#slot].DeviceType = "TYPE_DRYER" THEN
 	            #idx := #Mechs[#slot].TypedIndex;
-	            "FC_Sushka"(S := #Sushka[#idx],
+	            "FC_Dryer"(D := #Dryer[#idx],
 	                        B := #Mechs[#slot],
 	                        Index := #slot,
 	                        R:="DB_Recipe".Recipe[#idx]);
 	        END_IF;
 	    END_FOR;
 	    FOR #slot := 304 TO 304 DO
-	        IF #Mechs[#slot].DeviceType = "TYPE_SUSHKA" THEN
+	        IF #Mechs[#slot].DeviceType = "TYPE_DRYER" THEN
 	            #idx := #Mechs[#slot].TypedIndex;
-	            "FC_Sushka_1B"(S := #Sushka[#idx],
+	            "FC_Dryer_1B"(D := #Dryer[#idx],
 	                           B := #Mechs[#slot],
-	                           Index := #slot);
+	                           Index := #slot,
+	                           R:="DB_Recipe".Recipe[#idx]);
 	        END_IF;
 	    END_FOR;
 	    
@@ -134,4 +135,3 @@ BEGIN
 	    END_FOR;
 	    
 END_FUNCTION
-

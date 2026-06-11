@@ -1,4 +1,4 @@
-﻿TYPE "UDT_Sushka_Recipe"
+﻿TYPE "UDT_Dryer_Recipe"
 VERSION : 0.3
    STRUCT
       TdNom : INT;  // Температура нижньої зони
