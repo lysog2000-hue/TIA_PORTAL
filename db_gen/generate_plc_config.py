@@ -34,7 +34,7 @@ class PLCCodeGenerator:
         self.separators = []
         self.valves3p = []
         self.silos = []
-        self.sushkas = []
+        self.dryers = []
         self.tags = []  # Список тегів для таблиці
 
     def load_excel(self):
@@ -77,9 +77,9 @@ class PLCCodeGenerator:
             self.silos = pd.read_excel(xls, 'SILOS').fillna('').to_dict('records')
             self.silos = [r for r in self.silos if r.get('Enabled') == True]
 
-        if 'SUSHKAS' in sheet_names:
-            self.sushkas = pd.read_excel(xls, 'SUSHKAS').fillna('').to_dict('records')
-            self.sushkas = [r for r in self.sushkas if r.get('Enabled') == True]
+        if 'DRYERS' in sheet_names:
+            self.dryers = pd.read_excel(xls, 'DRYERS').fillna('').to_dict('records')
+            self.dryers = [r for r in self.dryers if r.get('Enabled') == True]
 
         print(f"✅ Завантажено:")
         print(f"   - Редлерів: {len(self.redlers)}")
@@ -90,7 +90,7 @@ class PLCCodeGenerator:
         print(f"   - Сепараторів: {len(self.separators)}")
         print(f"   - Клапанів 3П: {len(self.valves3p)}")
         print(f"   - Силосів: {len(self.silos)}")
-        print(f"   - Сушарок: {len(self.sushkas)}")
+        print(f"   - Сушарок: {len(self.dryers)}")
 
     def validate_excel(self):
         """Валідація конфігурації"""
@@ -100,7 +100,7 @@ class PLCCodeGenerator:
         # Перевірка унікальності slot
         all_mechs = (self.redlers + self.norias + self.gates + self.fans +
                      self.receiving_pits + self.separators + self.valves3p +
-                     self.silos + self.sushkas)
+                     self.silos + self.dryers)
         slots = [m['Slot'] for m in all_mechs]
 
         if len(slots) != len(set(slots)):
@@ -117,7 +117,7 @@ class PLCCodeGenerator:
                                   ('Сепаратори', self.separators),
                                   ('Клапани 3П', self.valves3p),
                                   ('Силоси', self.silos),
-                                  ('Сушарки', self.sushkas)]:
+                                  ('Сушарки', self.dryers)]:
             if mechs:
                 typed_idxs = [m['TypedIdx'] for m in mechs]
                 if len(typed_idxs) != len(set(typed_idxs)):
@@ -322,6 +322,7 @@ class PLCCodeGenerator:
 
         # Силоси
         for s in sorted(self.silos, key=lambda x: x['TypedIdx']):
+        for s in sorted(self.silos, key=lambda x: x['TypedIdx']): # Silos are not renamed
             idx = s['TypedIdx']
 
             if s.get('DI_LevelHigh'):
@@ -334,18 +335,22 @@ class PLCCodeGenerator:
 
         # Сушарки
         for s in sorted(self.sushkas, key=lambda x: x['TypedIdx']):
+        for s in sorted(self.dryers, key=lambda x: x['TypedIdx']): # Renamed from sushkas to dryers
             idx = s['TypedIdx']
 
             if s.get('DI_Breaker'):
                 self._add_tag(self._create_tag_name('Sushka', idx, 'DI_Breaker'),
+                self._add_tag(self._create_tag_name('Dryer', idx, 'DI_Breaker'), # Renamed from Sushka to Dryer
                               s['DI_Breaker'], f"{s['Name']} - Автомат захисту ({s['Location']})")
 
             if s.get('DI_Feedback'):
                 self._add_tag(self._create_tag_name('Sushka', idx, 'DI_Feedback'),
+                self._add_tag(self._create_tag_name('Dryer', idx, 'DI_Feedback'), # Renamed from Sushka to Dryer
                               s['DI_Feedback'], f"{s['Name']} - Зворотний зв'язок ({s['Location']})")
 
             if s.get('DO_Run'):
                 self._add_tag(self._create_tag_name('Sushka', idx, 'DO_Run'),
+                self._add_tag(self._create_tag_name('Dryer', idx, 'DO_Run'), # Renamed from Sushka to Dryer
                               s['DO_Run'], f"{s['Name']} - Пуск ({s['Location']})")
 
         print(f"✅ Створено {len(self.tags)} тегів для таблиці PLC Tags")
@@ -373,7 +378,7 @@ class PLCCodeGenerator:
         max_separators   = max([s['TypedIdx'] for s in self.separators],    default=-1) + 1 if self.separators    else 0
         max_valves3p     = max([v['TypedIdx'] for v in self.valves3p],      default=-1) + 1 if self.valves3p      else 0
         max_silos        = max([s['TypedIdx'] for s in self.silos],         default=-1) + 1 if self.silos         else 0
-        max_sushkas      = max([s['TypedIdx'] for s in self.sushkas],       default=-1) + 1 if self.sushkas       else 0
+        max_dryers       = max([s['TypedIdx'] for s in self.dryers],        default=-1) + 1 if self.dryers        else 0
 
         # Найбільший SlotId серед усіх механізмів
         all_slots = ([r['Slot'] for r in self.redlers] +
@@ -384,7 +389,7 @@ class PLCCodeGenerator:
                      [s['Slot'] for s in self.separators] +
                      [v['Slot'] for v in self.valves3p] +
                      [s['Slot'] for s in self.silos] +
-                     [s['Slot'] for s in self.sushkas])
+                     [s['Slot'] for s in self.dryers])
         max_slot_id = max(all_slots) if all_slots else 255
 
         code = self._get_header("DB_Mechs - Масиви механізмів")
@@ -449,9 +454,9 @@ VAR
 
 '''
 
-        if max_sushkas > 0:
-            code += f'''    // Сушарки: {len(self.sushkas)} шт, масив [0..{max_sushkas-1}]
-    Sushka : ARRAY [0..{max_sushkas-1}] OF "UDT_Sushka";
+        if max_dryers > 0:
+            code += f'''    // Сушарки: {len(self.dryers)} шт, масив [0..{max_dryers-1}]
+    Dryer : ARRAY [0..{max_dryers-1}] OF "UDT_Dryer";
 
 '''
 
@@ -530,10 +535,10 @@ BEGIN
                 code += f'    "DB_Mechs".Mechs[{s["Slot"]}].DeviceType := "DB_Const".TYPE_SILOS;\n'
                 code += f'    "DB_Mechs".Mechs[{s["Slot"]}].TypedIndex := {s["TypedIdx"]};\n\n'
 
-        if self.sushkas:
-            code += "    // === SUSHKAS ===\n"
-            for s in self.sushkas:
-                code += f'    "DB_Mechs".Mechs[{s["Slot"]}].DeviceType := "DB_Const".TYPE_SUSHKA;\n'
+        if self.dryers:
+            code += "    // === DRYERS ===\n"
+            for s in self.dryers:
+                code += f'    "DB_Mechs".Mechs[{s["Slot"]}].DeviceType := "DB_Const".TYPE_DRYER;\n'
                 code += f'    "DB_Mechs".Mechs[{s["Slot"]}].TypedIndex := {s["TypedIdx"]};\n\n'
 
         code += '''END_FUNCTION
@@ -570,6 +575,8 @@ VAR_IN_OUT
             code += '    Silos       : ARRAY[*] OF "UDT_Silos";\n'
         if self.sushkas:
             code += '    Sushka      : ARRAY[*] OF "UDT_Sushka";\n'
+        if self.dryers: # Renamed from sushkas
+            code += '    Dryer      : ARRAY[*] OF "UDT_Dryer";\n' # Renamed from Sushka to Dryer
 
         code += '''END_VAR
 
@@ -689,6 +696,10 @@ BEGIN
             min_slot = min([s['Slot'] for s in self.sushkas])
             max_slot = max([s['Slot'] for s in self.sushkas])
             code += f'''    // === SUSHKAS (slot {min_slot}..{max_slot}) ===
+        if self.dryers: # Renamed from sushkas
+            min_slot = min([s['Slot'] for s in self.dryers]) # Renamed from sushkas
+            max_slot = max([s['Slot'] for s in self.dryers]) # Renamed from sushkas
+            code += f'''    // === DRYERS (slot {min_slot}..{max_slot}) === # Renamed from SUSHKAS
     FOR slot := {min_slot} TO {max_slot} DO
         IF Mechs[slot].DeviceType = "DB_Const".TYPE_SUSHKA THEN
             idx := Mechs[slot].TypedIndex;
@@ -731,6 +742,8 @@ VAR_IN_OUT
             code += '    Silos        : ARRAY[*] OF "UDT_Silos";\n'
         if self.sushkas:
             code += '    Sushka       : ARRAY[*] OF "UDT_Sushka";\n'
+        if self.dryers: # Renamed from sushkas
+            code += '    Dryer       : ARRAY[*] OF "UDT_Dryer";\n' # Renamed from Sushka to Dryer
 
         code += '''END_VAR
 
@@ -739,13 +752,10 @@ BEGIN
 
         # === REDLERS ===
         if self.redlers:
-            code += '    // ===================================================================\n'
-            code += '    // REDLERS\n'
-            code += '    // ===================================================================\n'
-
+            code += '    REGION "Redlers"\n'
             for r in sorted(self.redlers, key=lambda x: x['TypedIdx']):
                 idx = r['TypedIdx']
-                code += f'    // {r["Name"]} (Slot {r["Slot"]}, {r["Location"]})\n'
+                code += f'    REGION "{r["Name"]} (Slot {r["Slot"]})"\n'
 
                 if r.get('DI_Speed'):
                     code += f'    Redler[{idx}].DI_Speed_OK    := "{self._create_tag_name("Redler", idx, "DI_Speed")}";\n'
@@ -756,17 +766,15 @@ BEGIN
                 if r.get('DI_Overflow'):
                     code += f'    Redler[{idx}].DI_Overflow_OK := "{self._create_tag_name("Redler", idx, "DI_Overflow")}";\n'
 
-                code += '\n'
+                code += '    END_REGION\n'
+            code += '    END_REGION\n\n'
 
         # === NORIAS ===
         if self.norias:
-            code += '    // ===================================================================\n'
-            code += '    // NORIAS\n'
-            code += '    // ===================================================================\n'
-
+            code += '    REGION "Norias"\n'
             for n in sorted(self.norias, key=lambda x: x['TypedIdx']):
                 idx = n['TypedIdx']
-                code += f'    // {n["Name"]} (Slot {n["Slot"]}, {n["Location"]})\n'
+                code += f'    REGION "{n["Name"]} (Slot {n["Slot"]})"\n'
 
                 if n.get('DI_Speed'):
                     code += f'    Noria[{idx}].DI_Speed_OK      := "{self._create_tag_name("Noria", idx, "DI_Speed")}";\n'
@@ -780,17 +788,15 @@ BEGIN
                 if n.get('DI_LowerLevel'):
                     code += f'    Noria[{idx}].DI_LowerLevel_OK := "{self._create_tag_name("Noria", idx, "DI_LowerLevel")}";\n'
 
-                code += '\n'
+                code += '    END_REGION\n'
+            code += '    END_REGION\n\n'
 
         # === GATES ===
         if self.gates:
-            code += '    // ===================================================================\n'
-            code += '    // GATES\n'
-            code += '    // ===================================================================\n'
-
+            code += '    REGION "Gates"\n'
             for g in sorted(self.gates, key=lambda x: x['TypedIdx']):
                 idx = g['TypedIdx']
-                code += f'    // {g["Name"]} (Slot {g["Slot"]}, {g["Location"]})\n'
+                code += f'    REGION "{g["Name"]} (Slot {g["Slot"]})"\n'
 
                 if g.get('DI_Opened'):
                     code += f'    Gate[{idx}].DI_Opened_OK := "{self._create_tag_name("Gate", idx, "DI_Opened")}";\n'
@@ -798,32 +804,28 @@ BEGIN
                 if g.get('DI_Closed'):
                     code += f'    Gate[{idx}].DI_Closed_OK := "{self._create_tag_name("Gate", idx, "DI_Closed")}";\n'
 
-                code += '\n'
+                code += '    END_REGION\n'
+            code += '    END_REGION\n\n'
 
         # === FANS ===
         if self.fans:
-            code += '    // ===================================================================\n'
-            code += '    // FANS\n'
-            code += '    // ===================================================================\n'
-
+            code += '    REGION "Fans"\n'
             for f in sorted(self.fans, key=lambda x: x['TypedIdx']):
                 idx = f['TypedIdx']
-                code += f'    // {f["Name"]} (Slot {f["Slot"]}, {f["Location"]})\n'
+                code += f'    REGION "{f["Name"]} (Slot {f["Slot"]})"\n'
 
                 if f.get('DI_Breaker'):
                     code += f'    Fan[{idx}].DI_Breaker_OK := "{self._create_tag_name("Fan", idx, "DI_Breaker")}";\n'
 
-                code += '\n'
+                code += '    END_REGION\n'
+            code += '    END_REGION\n\n'
 
         # === RECEIVING PITS ===
         if self.receiving_pits:
-            code += '    // ===================================================================\n'
-            code += '    // RECEIVING PITS\n'
-            code += '    // ===================================================================\n'
-
+            code += '    REGION "ReceivingPits"\n'
             for r in sorted(self.receiving_pits, key=lambda x: x['TypedIdx']):
                 idx = r['TypedIdx']
-                code += f'    // {r["Name"]} (Slot {r["Slot"]}, {r["Location"]})\n'
+                code += f'    REGION "{r["Name"]} (Slot {r["Slot"]})"\n'
 
                 if r.get('DI_Breaker'):
                     code += f'    ReceivingPit[{idx}].DI_Breaker_OK  := "{self._create_tag_name("ReceivingPit", idx, "DI_Breaker")}";\n'
@@ -831,17 +833,15 @@ BEGIN
                 if r.get('DI_Feedback'):
                     code += f'    ReceivingPit[{idx}].DI_Feedback_OK := "{self._create_tag_name("ReceivingPit", idx, "DI_Feedback")}";\n'
 
-                code += '\n'
+                code += '    END_REGION\n'
+            code += '    END_REGION\n\n'
 
         # === SEPARATORS ===
         if self.separators:
-            code += '    // ===================================================================\n'
-            code += '    // SEPARATORS\n'
-            code += '    // ===================================================================\n'
-
+            code += '    REGION "Separators"\n'
             for s in sorted(self.separators, key=lambda x: x['TypedIdx']):
                 idx = s['TypedIdx']
-                code += f'    // {s["Name"]} (Slot {s["Slot"]}, {s["Location"]})\n'
+                code += f'    REGION "{s["Name"]} (Slot {s["Slot"]})"\n'
 
                 if s.get('DI_Breaker'):
                     code += f'    Separator[{idx}].DI_Breaker_OK  := "{self._create_tag_name("Separator", idx, "DI_Breaker")}";\n'
@@ -849,17 +849,15 @@ BEGIN
                 if s.get('DI_Feedback'):
                     code += f'    Separator[{idx}].DI_Feedback_OK := "{self._create_tag_name("Separator", idx, "DI_Feedback")}";\n'
 
-                code += '\n'
+                code += '    END_REGION\n'
+            code += '    END_REGION\n\n'
 
         # === VALVES 3P ===
         if self.valves3p:
-            code += '    // ===================================================================\n'
-            code += '    // VALVES 3P\n'
-            code += '    // ===================================================================\n'
-
+            code += '    REGION "Valves3P"\n'
             for v in sorted(self.valves3p, key=lambda x: x['TypedIdx']):
                 idx = v['TypedIdx']
-                code += f'    // {v["Name"]} (Slot {v["Slot"]}, {v["Location"]})\n'
+                code += f'    REGION "{v["Name"]} (Slot {v["Slot"]})"\n'
 
                 if v.get('DI_Breaker'):
                     code += f'    Valve3P[{idx}].DI_Breaker_OK := "{self._create_tag_name("Valve3P", idx, "DI_Breaker")}";\n'
@@ -873,17 +871,15 @@ BEGIN
                 if v.get('DI_Pos2'):
                     code += f'    Valve3P[{idx}].DI_Pos2_OK    := "{self._create_tag_name("Valve3P", idx, "DI_Pos2")}";\n'
 
-                code += '\n'
+                code += '    END_REGION\n'
+            code += '    END_REGION\n\n'
 
         # === SILOS ===
         if self.silos:
-            code += '    // ===================================================================\n'
-            code += '    // SILOS\n'
-            code += '    // ===================================================================\n'
-
+            code += '    REGION "Silos"\n'
             for s in sorted(self.silos, key=lambda x: x['TypedIdx']):
                 idx = s['TypedIdx']
-                code += f'    // {s["Name"]} (Slot {s["Slot"]}, {s["Location"]})\n'
+                code += f'    REGION "{s["Name"]} (Slot {s["Slot"]})"\n'
 
                 if s.get('DI_LevelHigh'):
                     code += f'    Silos[{idx}].DI_LevelHigh := "{self._create_tag_name("Silos", idx, "DI_LevelHigh")}";\n'
@@ -891,25 +887,30 @@ BEGIN
                 if s.get('DI_LevelLow'):
                     code += f'    Silos[{idx}].DI_LevelLow  := "{self._create_tag_name("Silos", idx, "DI_LevelLow")}";\n'
 
-                code += '\n'
+                code += '    END_REGION\n'
+            code += '    END_REGION\n\n'
 
         # === SUSHKAS ===
         if self.sushkas:
-            code += '    // ===================================================================\n'
-            code += '    // SUSHKAS\n'
-            code += '    // ===================================================================\n'
-
+            code += '    REGION "Sushkas"\n'
             for s in sorted(self.sushkas, key=lambda x: x['TypedIdx']):
+        # === DRYERS === # Renamed from SUSHKAS
+        if self.dryers: # Renamed from sushkas
+            code += '    REGION "Dryers"\n' # Renamed from Sushkas
+            for s in sorted(self.dryers, key=lambda x: x['TypedIdx']): # Renamed from sushkas
                 idx = s['TypedIdx']
-                code += f'    // {s["Name"]} (Slot {s["Slot"]}, {s["Location"]})\n'
+                code += f'    REGION "{s["Name"]} (Slot {s["Slot"]})"\n'
 
                 if s.get('DI_Breaker'):
                     code += f'    Sushka[{idx}].DI_Breaker_OK  := "{self._create_tag_name("Sushka", idx, "DI_Breaker")}";\n'
+                    code += f'    Dryer[{idx}].DI_Breaker_OK  := "{self._create_tag_name("Dryer", idx, "DI_Breaker")}";\n' # Renamed from Sushka to Dryer
 
                 if s.get('DI_Feedback'):
                     code += f'    Sushka[{idx}].DI_Feedback_OK := "{self._create_tag_name("Sushka", idx, "DI_Feedback")}";\n'
+                    code += f'    Dryer[{idx}].DI_Feedback_OK := "{self._create_tag_name("Dryer", idx, "DI_Feedback")}";\n' # Renamed from Sushka to Dryer
 
-                code += '\n'
+                code += '    END_REGION\n'
+            code += '    END_REGION\n\n'
 
         code += '''END_FUNCTION
 '''
@@ -943,6 +944,8 @@ VAR_IN_OUT
         # Silos — no DO outputs, excluded from HAL_Write
         if self.sushkas:
             code += '    Sushka       : ARRAY[*] OF "UDT_Sushka";\n'
+        if self.dryers: # Renamed from sushkas
+            code += '    Dryer       : ARRAY[*] OF "UDT_Dryer";\n' # Renamed from Sushka to Dryer
 
         code += '''END_VAR
 
@@ -951,43 +954,36 @@ BEGIN
 
         # === REDLERS ===
         if self.redlers:
-            code += '    // ===================================================================\n'
-            code += '    // REDLERS\n'
-            code += '    // ===================================================================\n'
-
+            code += '    REGION "Redlers"\n'
             for r in sorted(self.redlers, key=lambda x: x['TypedIdx']):
                 idx = r['TypedIdx']
-                code += f'    // {r["Name"]} (Slot {r["Slot"]}, {r["Location"]})\n'
+                code += f'    REGION "{r["Name"]} (Slot {r["Slot"]})"\n'
 
                 if r.get('DO_Run'):
                     code += f'    "{self._create_tag_name("Redler", idx, "DO_Run")}" := Redler[{idx}].DO_Run;\n'
 
-                code += '\n'
+                code += '    END_REGION\n'
+            code += '    END_REGION\n\n'
 
         # === NORIAS ===
         if self.norias:
-            code += '    // ===================================================================\n'
-            code += '    // NORIAS\n'
-            code += '    // ===================================================================\n'
-
+            code += '    REGION "Norias"\n'
             for n in sorted(self.norias, key=lambda x: x['TypedIdx']):
                 idx = n['TypedIdx']
-                code += f'    // {n["Name"]} (Slot {n["Slot"]}, {n["Location"]})\n'
+                code += f'    REGION "{n["Name"]} (Slot {n["Slot"]})"\n'
 
                 if n.get('DO_Run'):
                     code += f'    "{self._create_tag_name("Noria", idx, "DO_Run")}" := Noria[{idx}].DO_Run;\n'
 
-                code += '\n'
+                code += '    END_REGION\n'
+            code += '    END_REGION\n\n'
 
         # === GATES ===
         if self.gates:
-            code += '    // ===================================================================\n'
-            code += '    // GATES\n'
-            code += '    // ===================================================================\n'
-
+            code += '    REGION "Gates"\n'
             for g in sorted(self.gates, key=lambda x: x['TypedIdx']):
                 idx = g['TypedIdx']
-                code += f'    // {g["Name"]} (Slot {g["Slot"]}, {g["Location"]})\n'
+                code += f'    REGION "{g["Name"]} (Slot {g["Slot"]})"\n'
 
                 if g.get('DO_Open'):
                     code += f'    "{self._create_tag_name("Gate", idx, "DO_Open")}"  := Gate[{idx}].DO_Open;\n'
@@ -995,62 +991,54 @@ BEGIN
                 if g.get('DO_Close'):
                     code += f'    "{self._create_tag_name("Gate", idx, "DO_Close")}" := Gate[{idx}].DO_Close;\n'
 
-                code += '\n'
+                code += '    END_REGION\n'
+            code += '    END_REGION\n\n'
 
         # === FANS ===
         if self.fans:
-            code += '    // ===================================================================\n'
-            code += '    // FANS\n'
-            code += '    // ===================================================================\n'
-
+            code += '    REGION "Fans"\n'
             for f in sorted(self.fans, key=lambda x: x['TypedIdx']):
                 idx = f['TypedIdx']
-                code += f'    // {f["Name"]} (Slot {f["Slot"]}, {f["Location"]})\n'
+                code += f'    REGION "{f["Name"]} (Slot {f["Slot"]})"\n'
 
                 if f.get('DO_Run'):
                     code += f'    "{self._create_tag_name("Fan", idx, "DO_Run")}" := Fan[{idx}].DO_Run;\n'
 
-                code += '\n'
+                code += '    END_REGION\n'
+            code += '    END_REGION\n\n'
 
         # === RECEIVING PITS ===
         if self.receiving_pits:
-            code += '    // ===================================================================\n'
-            code += '    // RECEIVING PITS\n'
-            code += '    // ===================================================================\n'
-
+            code += '    REGION "ReceivingPits"\n'
             for r in sorted(self.receiving_pits, key=lambda x: x['TypedIdx']):
                 idx = r['TypedIdx']
-                code += f'    // {r["Name"]} (Slot {r["Slot"]}, {r["Location"]})\n'
+                code += f'    REGION "{r["Name"]} (Slot {r["Slot"]})"\n'
 
                 if r.get('DO_Run'):
                     code += f'    "{self._create_tag_name("ReceivingPit", idx, "DO_Run")}" := ReceivingPit[{idx}].DO_Run;\n'
 
-                code += '\n'
+                code += '    END_REGION\n'
+            code += '    END_REGION\n\n'
 
         # === SEPARATORS ===
         if self.separators:
-            code += '    // ===================================================================\n'
-            code += '    // SEPARATORS\n'
-            code += '    // ===================================================================\n'
-
+            code += '    REGION "Separators"\n'
             for s in sorted(self.separators, key=lambda x: x['TypedIdx']):
                 idx = s['TypedIdx']
-                code += f'    // {s["Name"]} (Slot {s["Slot"]}, {s["Location"]})\n'
+                code += f'    REGION "{s["Name"]} (Slot {s["Slot"]})"\n'
 
                 if s.get('DO_Run'):
                     code += f'    "{self._create_tag_name("Separator", idx, "DO_Run")}" := Separator[{idx}].DO_Run;\n'
 
-                code += '\n'
+                code += '    END_REGION\n'
+            code += '    END_REGION\n\n'
 
         # === VALVES 3P ===
         if self.valves3p:
-            code += '    // ===================================================================\n'
-            code += '    // VALVES 3P\n'
-            code += '    // ===================================================================\n'
-
+            code += '    REGION "Valves3P"\n'
             for v in sorted(self.valves3p, key=lambda x: x['TypedIdx']):
                 idx = v['TypedIdx']
-                code += f'    // {v["Name"]} (Slot {v["Slot"]}, {v["Location"]})\n'
+                code += f'    REGION "{v["Name"]} (Slot {v["Slot"]})"\n'
 
                 if v.get('DO_Pos0'):
                     code += f'    "{self._create_tag_name("Valve3P", idx, "DO_Pos0")}" := Valve3P[{idx}].DO_Pos0;\n'
@@ -1061,24 +1049,27 @@ BEGIN
                 if v.get('DO_Pos2'):
                     code += f'    "{self._create_tag_name("Valve3P", idx, "DO_Pos2")}" := Valve3P[{idx}].DO_Pos2;\n'
 
-                code += '\n'
+                code += '    END_REGION\n'
+            code += '    END_REGION\n\n'
 
         # Silos — no DO outputs
 
         # === SUSHKAS ===
         if self.sushkas:
-            code += '    // ===================================================================\n'
-            code += '    // SUSHKAS\n'
-            code += '    // ===================================================================\n'
-
+            code += '    REGION "Sushkas"\n'
             for s in sorted(self.sushkas, key=lambda x: x['TypedIdx']):
+        # === DRYERS === # Renamed from SUSHKAS
+        if self.dryers: # Renamed from sushkas
+            code += '    REGION "Dryers"\n' # Renamed from Sushkas
+            for s in sorted(self.dryers, key=lambda x: x['TypedIdx']): # Renamed from sushkas
                 idx = s['TypedIdx']
-                code += f'    // {s["Name"]} (Slot {s["Slot"]}, {s["Location"]})\n'
+                code += f'    REGION "{s["Name"]} (Slot {s["Slot"]})"\n'
 
                 if s.get('DO_Run'):
                     code += f'    "{self._create_tag_name("Sushka", idx, "DO_Run")}" := Sushka[{idx}].DO_Run;\n'
-
-                code += '\n'
+                    code += f'    "{self._create_tag_name("Dryer", idx, "DO_Run")}" := Dryer[{idx}].DO_Run;\n' # Renamed from Sushka to Dryer
+                code += '    END_REGION\n'
+            code += '    END_REGION\n\n'
 
         code += '''END_FUNCTION
 '''

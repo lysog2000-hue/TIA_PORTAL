@@ -39,11 +39,11 @@ tia_repo/
 │   │   ├── UDT_Gate2P.scl
 │   │   ├── UDT_Valve3P.scl
 │   │   ├── UDT_Silos.scl         — DI_LevelHigh_OK, DI_LevelLow_OK, AI_Level, GrainType
-│   │   ├── UDT_ReceivingPit.scl  — GrainType : INT
-│   │   ├── UDT_Sushka.scl        — v0.6 (Fans[1..7], Burners[1..2], Discharge, FLTCode:DWord)
-│   │   ├── UDT_Sushka_Fan.scl    — DI_Breaker_OK, DI_Feedback_OK, DO_Run, Status, LastStopMs
-│   │   ├── UDT_Sushka_Burner.scl — DI_Breaker_OK, DI_Temp_OK, DI_Alarm, DI_Auto_OK, AQ_Power, AI_Power
-│   │   └── UDT_Sushka.scl
+│   │   ├── UDT_ReceivingPit.scl  — GrainType : INT 
+│   │   ├── UDT_Dryer.scl        — v0.6 (Fans[1..7], Burners[1..2], Discharge, FLTCode:DWord)
+│   │   ├── UDT_Dryer_Fan.scl    — DI_Breaker_OK, DI_Feedback_OK, DO_Run, Status, LastStopMs
+│   │   ├── UDT_Dryer_Burner.scl — DI_Breaker_OK, DI_Temp_OK, DI_Alarm, DI_Auto_OK, AQ_Power, AI_Power
+│   │   └── UDT_Dryer.scl
 │   ├── DB_Mechs.scl          — VAR обычные + VAR RETAIN (Redler/Noria/Fan/Sep/Feeder/Silos/ReceivingPit)
 │   ├── FC_Redler.scl         — v0.6
 │   ├── FC_Noria.scl          — v0.5
@@ -53,8 +53,8 @@ tia_repo/
 │   ├── FC_Separator.scl      — v0.3
 │   ├── FC_Feeder.scl         — v0.3
 │   ├── FC_Silos.scl          — v0.2 (FLT_HIGH_LEVEL, forceHighLevel BIT9)
-│   ├── FC_Sushka.scl         — базовый
-│   └── FC_Sushka_1B.scl      — v0.8 (сушилка с 1 горелкой, 7 вентиляторов, пошаговый запуск)
+│   ├── FC_Dryer.scl         — базовый
+│   └── FC_Dryer_1B.scl      — v0.8 (сушилка с 1 горелкой, 7 вентиляторов, пошаговый запуск)
 ├── Routes/
 │   ├── FC_RouteFSM.scl       — v4.6 (Fast Stop implementation)
 │   ├── FC_Route_Supervisor.scl — v3.2.2
@@ -84,7 +84,7 @@ tia_repo/
 | Gate2P | 116–182 | TYPE_GATE2P = 3 | 62 |
 | Valve3P | 201–229 | TYPE_VALVE3P = 5 | 30 |
 | Silos | 251–278 | TYPE_SILOS = 8 | 28 |
-| Sushka | 281–284 | TYPE_SUSHKA = 9 | 4 |
+| Dryer | 281–284 | TYPE_DRYER = 9 | 4 |
 | ReceivingPit | 305–306 | TYPE_RECEIVING_PIT = 6 | 2 |
 | Separator | 311–313 | TYPE_SEPARATOR = 7 | 3 |
 | Feeder | 314–316 | TYPE_FEEDER = 10 | 3 |
