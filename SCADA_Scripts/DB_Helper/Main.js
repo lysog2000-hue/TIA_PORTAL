@@ -699,9 +699,9 @@ return GetMechColor(Status,ownerId);
 
 
 
-//Виклик вікна з виводомфорсування з SQL
+//Виклик вікна з виводом форсування з SQL
 export async function Btn_OpenForceTable_OnTapped(item, x, y, modifiers, trigger) {
-    // Подключаемся к базе ForceLog (которую мы создали ранее)
+      // Подключаемся к базе ForceLog (которую мы создали ранее)
     let connectionString = "DSN=ForceLog;UID=HMI_User;PWD=12345;";
     let conn = null;
 
@@ -710,7 +710,7 @@ export async function Btn_OpenForceTable_OnTapped(item, x, y, modifiers, trigger
 
         // Запрашиваем последние 500 записей (чтобы не перегружать таблицу)
         // Сортируем по времени: самые свежие сверху
-        let queryResult = await conn.Execute("SELECT TOP 100 Timestamp, MechName, ForceName, State FROM ForceEventLog ORDER BY Timestamp DESC");
+        let queryResult = await conn.Execute("SELECT TOP 100 Timestamp, UserName, MechName, ForceName, State FROM ForceEventLog ORDER BY Timestamp DESC");
 
         let firstResultSet = null;
         for (let key in queryResult.Results) {
@@ -731,16 +731,17 @@ export async function Btn_OpenForceTable_OnTapped(item, x, y, modifiers, trigger
         for (let key in rows) {
             let row = rows[key];
             
-            // Форматируем дату из SQL в читаемый вид DD.MM/ HH:mm:ss
+            // Форматируем дату из SQL в читаемый вид DD.MM.YYYY HH:mm:ss
             let ts = new Date(row["Timestamp"]);
             let formattedTime = String(ts.getDate()).padStart(2, "0") + "."
-                    + String(ts.getMonth() + 1).padStart(2, "0") + "/ "
+                    + String(ts.getMonth() + 1).padStart(2, "0") + "/"
                     + String(ts.getHours()).padStart(2, "0") + ":"
                     + String(ts.getMinutes()).padStart(2, "0") + ":"
                     + String(ts.getSeconds()).padStart(2, "0");
 
             tableRows.push({
                 "time":    formattedTime,
+                "user":    String(row["UserName"]  || "System"),
                 "mech":    String(row["MechName"]  || ""),
                 "force":   String(row["ForceName"] || ""),
                 "state":   Number(row["State"]) ? "TRUE" : "FALSE" // Преобразуем BIT в текст
@@ -749,15 +750,16 @@ export async function Btn_OpenForceTable_OnTapped(item, x, y, modifiers, trigger
 
         // Описание колонок для виджета таблицы
         let columns = [
-            { "title": "Дата/Час",   "field": "time",  "sorter": "string",   "width": 200 },
-            { "title": "Механізм",   "field": "mech",  "sorter": "alphanum", "width": 120 },
-            { "title": "Форсування", "field": "force", "sorter": "alphanum", "width": 200 },
-            { "title": "Стан",       "field": "state", "sorter": "string",   "width": 100 }
+            { "title": "Дата/Час",   "field": "time",  "sorter": "string",   "width": 130 },
+            { "title": "Кор.", "field": "user",  "sorter": "alphanum", "width": 110 },
+            { "title": "Мех",   "field": "mech",  "sorter": "alphanum", "width": 75 },
+            { "title": "Форсування", "field": "force", "sorter": "alphanum", "width": 235 },
+            { "title": "Стан",       "field": "state", "sorter": "string",   "width": 700 }
         ];
 
         // Записываем JSON-строки в теги
-        Tags("Force_ColumnStyle").Write(JSON.stringify(columns));
-        Tags("Force_DataString").Write(JSON.stringify(tableRows));
+        Tags("Main_ColumnStyle").Write(JSON.stringify(columns));
+        Tags("Main_TableDataString").Write(JSON.stringify(tableRows));
 
         HMIRuntime.Trace("ForceLog: OK, records sent=" + tableRows.length);
 
@@ -766,7 +768,6 @@ export async function Btn_OpenForceTable_OnTapped(item, x, y, modifiers, trigger
     } finally {
         conn = null;
     }
-
 
 }
 

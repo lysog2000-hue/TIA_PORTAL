@@ -248,6 +248,10 @@ return variantList;
 
 
 export async function LogForceChange(slotId, forceCode) {
+    // Получаем текущего пользователя
+    let userValue = Tags("@UserName").Read();
+    let user = (userValue !== undefined && userValue !== "") ? userValue : "System/Task";
+
   // Используем созданный DSN и пользователя с правами db_owner
     const connectionString = "DSN=ForceLog;UID=HMI_User;PWD=12345;TrustServerCertificate=yes;";
     let conn = null;
@@ -257,8 +261,8 @@ export async function LogForceChange(slotId, forceCode) {
         conn = await HMIRuntime.Database.CreateConnection(connectionString);
         
         // Формируем вызов хранимой процедуры sp_LogForceChange
-        // Процедура сама разберет, какие биты изменились, и сопоставит имена из MechDefinitions
-        const sql = `EXEC [dbo].[sp_LogForceChange] @SlotId=${slotId}, @NewForceCode=${forceCode}`;
+        // Теперь передаем UserName в процедуру
+        const sql = `EXEC [dbo].[sp_LogForceChange] @UserName='${user}', @SlotId=${slotId}, @NewForceCode=${forceCode}`;
         HMIRuntime.Trace(sql);
         await conn.Execute(sql);
         
@@ -275,10 +279,10 @@ export async function LogForceChange(slotId, forceCode) {
  * @param {Number} slotId - ID механизма
  * @param {String} actionText - Описание действия
  */
-export async function LogOperatorAction(slotId, actionText) {
-    // Корректный способ получения имени пользователя в WinCC Unified
-    let user = HMIRuntime.Resources.UserName;
-    if (!user) user = "No User";
+export async function LogOperator(SlotId, Message) {
+// Корректный способ получения имени пользователя в WinCC Unified
+    let userValue = Tags("@UserName").Read();
+    let user = (userValue !== undefined && userValue !== "") ? userValue : "System/Task";
 
     const connectionString = "DSN=OperatorLog;UID=HMI_User;PWD=12345;TrustServerCertificate=yes;";
     let conn = null;
@@ -286,7 +290,7 @@ export async function LogOperatorAction(slotId, actionText) {
     try {
         conn = await HMIRuntime.Database.CreateConnection(connectionString);
         // Вызываем хранимую процедуру sp_LogAction, созданную Python-скриптом
-        const sql = `EXEC [dbo].[sp_LogAction] @UserName='${user}', @SlotId=${slotId}, @ActionText='${actionText}'`;
+        const sql = `EXEC [dbo].[sp_LogAction] @UserName='${user}', @SlotId=${SlotId}, @ActionText='${Message}'`;
         await conn.Execute(sql);
     } catch (err) {
         HMIRuntime.Trace("Operator logging SQL error: " + err.message);

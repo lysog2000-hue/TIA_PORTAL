@@ -88,6 +88,7 @@ def run_initialization():
         CREATE TABLE ForceEventLog (
             [Id] INT IDENTITY(1,1) PRIMARY KEY,
             [Timestamp] DATETIME DEFAULT GETDATE(),
+            [UserName] NVARCHAR(100),
             [MechName] NVARCHAR(50),
             [ForceName] NVARCHAR(100),
             [State] BIT
@@ -100,6 +101,7 @@ def run_initialization():
     
     sp_sql = """
     CREATE PROCEDURE [dbo].[sp_LogForceChange]
+        @UserName NVARCHAR(100),
         @SlotId INT,
         @NewForceCode BIGINT -- Используем BIGINT для DWORD
     AS
@@ -141,9 +143,9 @@ def run_initialization():
 
                     IF @ForceDesc IS NOT NULL
                     BEGIN
-                        INSERT INTO ForceEventLog (MechName, ForceName, [State])
+                        INSERT INTO ForceEventLog (UserName, MechName, ForceName, [State])
                         -- Явно вычисляем состояние: если бит в новом коде есть -> 1, если нет -> 0
-                        VALUES (@MechName, @ForceDesc, CASE WHEN (@NewForceCode & @mask) = @mask THEN 1 ELSE 0 END);
+                        VALUES (@UserName, @MechName, @ForceDesc, CASE WHEN (@NewForceCode & @mask) = @mask THEN 1 ELSE 0 END);
                     END
                 END
                 SET @bit = @bit + 1;
@@ -172,7 +174,7 @@ def run_initialization():
         (10, 'Force_IgnoreGrainType')
     ]
     
-    # Сушилка (согласно структуре из 27 бит)
+    # Сушилка (согласно структуре из 30 бит)
     dry_forces = []
     for i in range(1, 8):
         dry_forces.append((i-1, f'Force_Fan{i}_Breaker'))
@@ -184,7 +186,11 @@ def run_initialization():
         (18, 'Force_Burner1_Temp'), (19, 'Force_Burner2_Temp'),
         (20, 'Force_Burner1_Alarm'), (21, 'Force_Burner2_Alarm'),
         (22, 'Force_Burner1_Auto'), (23, 'Force_Burner2_Auto'),
-        (24, 'Force_Discharge_Feedback'), (25, 'Force_LevelHigh'), (26, 'Force_LevelLow')
+        (24, 'Force_Discharge_Feedback'), (25, 'Force_LevelHigh'), (26, 'Force_LevelLow'),
+        (27, 'Force_Temp_Td'),
+        (28, 'Force_Temp_Tp'),
+        (29, 'Force_Temp_Tg'),
+        (30, 'Force_Temp_PW')
     ]
 
     # Очистка и вставка (для обновления если скрипт запущен повторно)

@@ -6,7 +6,7 @@ from pathlib import Path
 # =========================================
 # НАСТРОЙКИ
 # =========================================
-JSON_FILE = Path(r"C:\Users\lysog\Desktop\PythonProject\graph.json")
+JSON_FILE = Path(r"C:\Users\lysog\Desktop\REpository\tia_repo\graph.json")
 SERVER = r"DESKTOP-4462UFF\SQLEXPRESS"
 DB_NAME = "ElevatorRouting"
 

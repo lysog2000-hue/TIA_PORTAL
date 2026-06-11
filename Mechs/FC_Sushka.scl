@@ -49,7 +49,7 @@ VERSION : 1.0
       avgTpRaw : DInt;     // Значение датчика 14 в RAW
       avgTgRaw : DInt;     // Среднее значение датчиков 6..7 в RAW
       avgPWRaw : DInt;     // Значение датчика 15 в RAW
-      raw5Deg : DInt;      // 5 °C в RAW
+      rawHysDeg : DInt;      // Hysteresis в RAW
       isRecipeTempsReady : Bool; // Все три рецептурные температуры достигнуты
       isRecipeTdOver : Bool;  // Перегрев Td
       isRecipeTpOver : Bool;  // Перегрев Tp
@@ -64,13 +64,15 @@ VERSION : 1.0
 BEGIN
 	    #stepTimeout := 3000; // 3 секунды между включениями компонентов
 	    
-	    // Расчет параметров масштабирования
+	    // Расчет параметров масштабирования (оптимизировано)
 	    #sensorSpan := INT_TO_DINT(#R.SensorMax - #R.SensorMin);
 	    IF #sensorSpan <= 0 THEN #sensorSpan := 700; END_IF; // Защита от деления на 0
 	    
-	    #raw30Deg := (30 - INT_TO_DINT(#R.SensorMin)) * 27648 / #sensorSpan;
-	    #raw5Deg := (5 * 27648) / #sensorSpan; // 5 градусов в единицах RAW
+	    // Коэффициент пересчета Градус -> RAW
+	    // (Value - Min) * 27648 / Span
+	    #rawHysDeg := (#R.Hysteresis_Temp * 27648) / #sensorSpan; 
 	    
+	    #raw30Deg := (30 - INT_TO_DINT(#R.SensorMin)) * 27648 / #sensorSpan;
 	    #rawTdNom := (INT_TO_DINT(#R.TdNom) - INT_TO_DINT(#R.SensorMin)) * 27648 / #sensorSpan;
 	    #rawTpNom := (INT_TO_DINT(#R.TpNom) - INT_TO_DINT(#R.SensorMin)) * 27648 / #sensorSpan;
 	    #rawTgNom := (INT_TO_DINT(#R.TgNom) - INT_TO_DINT(#R.SensorMin)) * 27648 / #sensorSpan;
@@ -87,26 +89,30 @@ BEGIN
 	    
 	    // Логика гистерезиса: блокировка при перегреве +5, снятие при возврате к номиналу
 	    // Td
-	    IF (#avgTdRaw > (#rawTdNom + #raw5Deg)) THEN #isRecipeTdOver := TRUE;
-	    ELSIF (#avgTdRaw <= #rawTdNom) THEN #isRecipeTdOver := FALSE;
-	    ELSE #isRecipeTdOver := (#S.FLTCode AND DW#16#8000000) <> 0; END_IF;
-	    #isRecipeTdOver := #isRecipeTdOver AND ((#S.ForceCode AND DW#16#8000000) = 0);
+	    IF (#avgTdRaw > (#rawTdNom + #rawHysDeg)) THEN 
+	        #isRecipeTdOver := TRUE;
+	    ELSIF (#avgTdRaw <= #rawTdNom ) THEN 
+	        #isRecipeTdOver := FALSE;
+	    ELSE 
+	        #isRecipeTdOver := (#S.FLTCode AND DW#16#08000000) <> 0; 
+	    END_IF;
+	    #isRecipeTdOver := #isRecipeTdOver AND ((#S.ForceCode AND DW#16#08000000) = 0);
 
 	    // Tp
-	    IF (#avgTpRaw > (#rawTpNom + #raw5Deg)) THEN #isRecipeTpOver := TRUE;
-	    ELSIF (#avgTpRaw <= #rawTpNom) THEN #isRecipeTpOver := FALSE;
+	    IF (#avgTpRaw > (#rawTpNom + #rawHysDeg)) THEN #isRecipeTpOver := TRUE;
+	    ELSIF (#avgTpRaw <= (#rawTpNom - #rawHysDeg)) THEN #isRecipeTpOver := FALSE;
 	    ELSE #isRecipeTpOver := (#S.FLTCode AND DW#16#10000000) <> 0; END_IF;
 	    #isRecipeTpOver := #isRecipeTpOver AND ((#S.ForceCode AND DW#16#10000000) = 0);
 
 	    // Tg
-	    IF (#avgTgRaw > (#rawTgNom + #raw5Deg)) THEN #isRecipeTgOver := TRUE;
-	    ELSIF (#avgTgRaw <= #rawTgNom) THEN #isRecipeTgOver := FALSE;
+	    IF (#avgTgRaw > (#rawTgNom + #rawHysDeg)) THEN #isRecipeTgOver := TRUE;
+	    ELSIF (#avgTgRaw <= #rawTgNom ) THEN #isRecipeTgOver := FALSE;
 	    ELSE #isRecipeTgOver := (#S.FLTCode AND DW#16#20000000) <> 0; END_IF;
 	    #isRecipeTgOver := #isRecipeTgOver AND ((#S.ForceCode AND DW#16#20000000) = 0);
 
 	    // PW
-	    IF (#avgPWRaw > (#rawPWNom + #raw5Deg)) THEN #isRecipePWOver := TRUE;
-	    ELSIF (#avgPWRaw <= #rawPWNom) THEN #isRecipePWOver := FALSE;
+	    IF (#avgPWRaw > (#rawPWNom + #rawHysDeg)) THEN #isRecipePWOver := TRUE;
+	    ELSIF (#avgPWRaw <= #rawPWNom ) THEN #isRecipePWOver := FALSE;
 	    ELSE #isRecipePWOver := (#S.FLTCode AND DW#16#40000000) <> 0; END_IF;
 	    #isRecipePWOver := #isRecipePWOver AND ((#S.ForceCode AND DW#16#40000000) = 0);
 
@@ -466,7 +472,7 @@ BEGIN
 	        END_FOR;
 	        
 	        // Периодическое управление выгрузкой (PWM на базе процента)
-	        IF #B.Status = "STS_RUNNING" AND #R.DischargePercent > 0 AND NOT #isLowLevelActive AND NOT #isTempOver THEN
+	        IF #B.Status = "STS_RUNNING" AND #R.DischargePercent > 0 AND NOT #isLowLevelActive THEN
 	            #runTimeMs := (INT_TO_DINT(#R.DischargePercent) * #R.MaxTimeRun) / 100;
 	            #totalCycleMs := #runTimeMs + (INT_TO_DINT(#R.DischargePercent) * #R.MaxTimePause) / 100;
 	            
