@@ -1,649 +1,1027 @@
 ﻿FUNCTION "FC_HAL_Read" : Void
 { S7_Optimized_Access := 'TRUE' }
 VERSION : 0.1
-   VAR_TEMP 
-      
+   VAR_IN_OUT 
+      Redler : Array[*] of "UDT_Redler";
+      Noria : Array[*] of "UDT_Noria";
+      Gate2P : Array[*] of "UDT_Gate2P";
+      Fan : Array[*] of "UDT_Fan";
+      ReceivingPit : Array[*] of "UDT_ReceivingPit";
+      Separator : Array[*] of "UDT_Separator";
+      Valve3P : Array[*] of "UDT_Valve3P";
+      Dryer : Array[*] of "UDT_Dryer";
+      Feeder : Array[*] of "UDT_Feeder";
+      Silos : Array[*] of "UDT_Silos";
    END_VAR
 
 
 BEGIN
-// ===================================================================
-// FC_HAL_Read: Чтение физических входов в структуры DB_Mechs
-// Сгенерировано автоматически на основе PLCTags.csv и graph.json
-// ===================================================================
-
-  "DB_Mechs".Redler[0].DI_Breaker_OK := "RD1_DI_Breaker_OK"; // Автоматичний вимикач RD1
-  Redler[0].DI_Speed_OK := "RD1_DI_Speed_OK"; // Датчик руху RD1
-  Redler[0].DI_Overflow_OK := "RD1_DI_Overflow_OK"; // Датчик переповнення RD1
-  Redler[1].DI_Breaker_OK := "RD2_DI_Breaker_OK"; // Автоматичний вимикач RD2
-  Redler[1].DI_Speed_OK := "RD2_DI_Speed_OK"; // Датчик руху RD2
-  Redler[1].DI_Overflow_OK := "RD2_DI_Overflow_OK"; // Датчик переповнення RD2
-  Redler[2].DI_Breaker_OK := "RD3_DI_Breaker_OK"; // Автоматичний вимикач RD3
-  Redler[2].DI_Speed_OK := "RD3_DI_Speed_OK"; // Датчик руху RD3
-  Redler[2].DI_Overflow_OK := "RD3_DI_Overflow_OK"; // Датчик переповнення RD3
-  Redler[3].DI_Breaker_OK := "RD4_DI_Breaker_OK"; // Автоматичний вимикач RD4
-  Redler[3].DI_Speed_OK := "RD4_DI_Speed_OK"; // Датчик руху RD4
-  Redler[3].DI_Overflow_OK := "RD4_DI_Overflow_OK"; // Датчик переповнення RD4
-  Redler[4].DI_Breaker_OK := "RD5_DI_Breaker_OK"; // Автоматичний вимикач RD5
-  Redler[4].DI_Speed_OK := "RD5_DI_Speed_OK"; // Датчик руху RD5
-  Redler[4].DI_Overflow_OK := "RD5_DI_Overflow_OK"; // Датчик переповнення RD5
-  Redler[5].DI_Breaker_OK := "RD6_DI_Breaker_OK"; // Автоматичний вимикач RD6
-  Redler[5].DI_Speed_OK := "RD6_DI_Speed_OK"; // Датчик руху RD6
-  Redler[5].DI_Overflow_OK := "RD6_DI_Overflow_OK"; // Датчик переповнення RD6
-  Redler[6].DI_Breaker_OK := "RD7_DI_Breaker_OK"; // Автоматичний вимикач RD7
-  Redler[6].DI_Speed_OK := "RD7_DI_Speed_OK"; // Датчик руху RD7
-  Redler[6].DI_Overflow_OK := "RD7_DI_Overflow_OK"; // Датчик переповнення RD7
-  Redler[7].DI_Breaker_OK := "RD8_DI_Breaker_OK"; // Автоматичний вимикач RD8
-  Redler[7].DI_Speed_OK := "RD8_DI_Speed_OK"; // Датчик руху RD8
-  Redler[7].DI_Overflow_OK := "RD8_DI_Overflow_OK"; // Датчик переповнення RD8
-  Redler[8].DI_Breaker_OK := "RD9_DI_Breaker_OK"; // Автоматичний вимикач RD9
-  Redler[8].DI_Speed_OK := "RD9_DI_Speed_OK"; // Датчик руху RD9
-  Redler[8].DI_Overflow_OK := "RD9_DI_Overflow_OK"; // Датчик переповнення RD9
-  Redler[9].DI_Breaker_OK := "RD10_DI_Breaker_OK"; // Автоматичний вимикач RD10
-  Redler[9].DI_Speed_OK := "RD10_DI_Speed_OK"; // Датчик руху RD10
-  Redler[9].DI_Overflow_OK := "RD10_DI_Overflow_OK"; // Датчик переповнення RD10
-  Redler[10].DI_Breaker_OK := "RD11_DI_Breaker_OK"; // Автоматичний вимикач RD11
-  Redler[10].DI_Speed_OK := "RD11_DI_Speed_OK"; // Датчик руху RD11
-  Redler[10].DI_Overflow_OK := "RD11_DI_Overflow_OK"; // Датчик переповнення RD11
-  Redler[11].DI_Breaker_OK := "RD12_DI_Breaker_OK"; // Автоматичний вимикач RD12
-  Redler[11].DI_Speed_OK := "RD12_DI_Speed_OK"; // Датчик руху RD12
-  Redler[11].DI_Overflow_OK := "RD12_DI_Overflow_OK"; // Датчик переповнення RD12
-  Redler[12].DI_Breaker_OK := "RD13_DI_Breaker_OK"; // Автоматичний вимикач RD13
-  Redler[12].DI_Speed_OK := "RD13_DI_Speed_OK"; // Датчик руху RD13
-  Redler[12].DI_Overflow_OK := "RD13_DI_Overflow_OK"; // Датчик переповнення RD13
-  Redler[13].DI_Breaker_OK := "RD14_DI_Breaker_OK"; // Автоматичний вимикач RD14
-  Redler[13].DI_Speed_OK := "RD14_DI_Speed_OK"; // Датчик руху RD14
-  Redler[13].DI_Overflow_OK := "RD14_DI_Overflow_OK"; // Датчик переповнення RD14
-  Redler[14].DI_Breaker_OK := "RD15_DI_Breaker_OK"; // Автоматичний вимикач RD15
-  Redler[14].DI_Speed_OK := "RD15_DI_Speed_OK"; // Датчик руху RD15
-  Redler[14].DI_Overflow_OK := "RD15_DI_Overflow_OK"; // Датчик переповнення RD15
-  Redler[15].DI_Breaker_OK := "RD16_DI_Breaker_OK"; // Автоматичний вимикач RD16
-  Redler[15].DI_Speed_OK := "RD16_DI_Speed_OK"; // Датчик руху RD16
-  Redler[15].DI_Overflow_OK := "RD16_DI_Overflow_OK"; // Датчик переповнення RD16
-  Redler[16].DI_Breaker_OK := "RD17_DI_Breaker_OK"; // Автоматичний вимикач RD17
-  Redler[16].DI_Speed_OK := "RD17_DI_Speed_OK"; // Датчик руху RD17
-  Redler[16].DI_Overflow_OK := "RD17_DI_Overflow_OK"; // Датчик переповнення RD17
-  Redler[17].DI_Breaker_OK := "RD18_DI_Breaker_OK"; // Автоматичний вимикач RD18
-  Redler[17].DI_Speed_OK := "RD18_DI_Speed_OK"; // Датчик руху RD18
-  Redler[17].DI_Overflow_OK := "RD18_DI_Overflow_OK"; // Датчик переповнення RD18
-  Redler[18].DI_Breaker_OK := "RD19_DI_Breaker_OK"; // Автоматичний вимикач RD19
-  Redler[18].DI_Speed_OK := "RD19_DI_Speed_OK"; // Датчик руху RD19
-  Redler[18].DI_Overflow_OK := "RD19_DI_Overflow_OK"; // Датчик переповнення RD19
-  Redler[19].DI_Breaker_OK := "RD20_DI_Breaker_OK"; // Автоматичний вимикач RD20
-  Redler[19].DI_Speed_OK := "RD20_DI_Speed_OK"; // Датчик руху RD20
-  Redler[19].DI_Overflow_OK := "RD20_DI_Overflow_OK"; // Датчик переповнення RD20
-  Redler[20].DI_Breaker_OK := "RD21_DI_Breaker_OK"; // Автоматичний вимикач RD21
-  Redler[20].DI_Speed_OK := "RD21_DI_Speed_OK"; // Датчик руху RD21
-  Redler[20].DI_Overflow_OK := "RD21_DI_Overflow_OK"; // Датчик переповнення RD21
-  Redler[21].DI_Breaker_OK := "RD22_DI_Breaker_OK"; // Автоматичний вимикач RD22
-  Redler[21].DI_Speed_OK := "RD22_DI_Speed_OK"; // Датчик руху RD22
-  Redler[21].DI_Overflow_OK := "RD22_DI_Overflow_OK"; // Датчик переповнення RD22
-  Redler[22].DI_Breaker_OK := "RD23_DI_Breaker_OK"; // Автоматичний вимикач RD23
-  Redler[22].DI_Speed_OK := "RD23_DI_Speed_OK"; // Датчик руху RD23
-  Redler[22].DI_Overflow_OK := "RD23_DI_Overflow_OK"; // Датчик переповнення RD23
-  Redler[23].DI_Breaker_OK := "RD24_DI_Breaker_OK"; // Автоматичний вимикач RD24
-  Redler[23].DI_Speed_OK := "RD24_DI_Speed_OK"; // Датчик руху RD24
-  Redler[23].DI_Overflow_OK := "RD24_DI_Overflow_OK"; // Датчик переповнення RD24
-  Redler[24].DI_Breaker_OK := "RD25_DI_Breaker_OK"; // Автоматичний вимикач RD25
-  Redler[24].DI_Speed_OK := "RD25_DI_Speed_OK"; // Датчик руху RD25
-  Redler[24].DI_Overflow_OK := "RD25_DI_Overflow_OK"; // Датчик переповнення RD25
-  Redler[25].DI_Breaker_OK := "RD26_DI_Breaker_OK"; // Автоматичний вимикач RD26
-  Redler[25].DI_Speed_OK := "RD26_DI_Speed_OK"; // Датчик руху RD26
-  Redler[25].DI_Overflow_OK := "RD26_DI_Overflow_OK"; // Датчик переповнення RD26
-  Redler[26].DI_Breaker_OK := "RD27_DI_Breaker_OK"; // Автоматичний вимикач RD27
-  Redler[26].DI_Speed_OK := "RD27_DI_Speed_OK"; // Датчик руху RD27
-  Redler[26].DI_Overflow_OK := "RD27_DI_Overflow_OK"; // Датчик переповнення RD27
-  Redler[27].DI_Breaker_OK := "RD28_DI_Breaker_OK"; // Автоматичний вимикач RD28
-  Redler[27].DI_Speed_OK := "RD28_DI_Speed_OK"; // Датчик руху RD28
-  Redler[27].DI_Overflow_OK := "RD28_DI_Overflow_OK"; // Датчик переповнення RD28
-  Redler[28].DI_Breaker_OK := "RD29_DI_Breaker_OK"; // Автоматичний вимикач RD29
-  Redler[28].DI_Speed_OK := "RD29_DI_Speed_OK"; // Датчик руху RD29
-  Redler[28].DI_Overflow_OK := "RD29_DI_Overflow_OK"; // Датчик переповнення RD29
-  Redler[29].DI_Breaker_OK := "RD30_DI_Breaker_OK"; // Автоматичний вимикач RD30
-  Redler[29].DI_Speed_OK := "RD30_DI_Speed_OK"; // Датчик руху RD30
-  Redler[29].DI_Overflow_OK := "RD30_DI_Overflow_OK"; // Датчик переповнення RD30
-  Redler[30].DI_Breaker_OK := "RD31_DI_Breaker_OK"; // Автоматичний вимикач RD31
-  Redler[30].DI_Speed_OK := "RD31_DI_Speed_OK"; // Датчик руху RD31
-  Redler[30].DI_Overflow_OK := "RD31_DI_Overflow_OK"; // Датчик переповнення RD31
-  Redler[31].DI_Breaker_OK := "RD32_DI_Breaker_OK"; // Автоматичний вимикач RD32
-  Redler[31].DI_Speed_OK := "RD32_DI_Speed_OK"; // Датчик руху RD32
-  Redler[31].DI_Overflow_OK := "RD32_DI_Overflow_OK"; // Датчик переповнення RD32
-  Redler[32].DI_Breaker_OK := "RD33_DI_Breaker_OK"; // Автоматичний вимикач RD33
-  Redler[32].DI_Speed_OK := "RD33_DI_Speed_OK"; // Датчик руху RD33
-  Redler[32].DI_Overflow_OK := "RD33_DI_Overflow_OK"; // Датчик переповнення RD33
-  Redler[33].DI_Breaker_OK := "RD34_DI_Breaker_OK"; // Автоматичний вимикач RD34
-  Redler[33].DI_Speed_OK := "RD34_DI_Speed_OK"; // Датчик руху RD34
-  Redler[33].DI_Overflow_OK := "RD34_DI_Overflow_OK"; // Датчик переповнення RD34
-  Redler[34].DI_Breaker_OK := "RD35_DI_Breaker_OK"; // Автоматичний вимикач RD35
-  Redler[34].DI_Speed_OK := "RD35_DI_Speed_OK"; // Датчик руху RD35
-  Redler[34].DI_Overflow_OK := "RD35_DI_Overflow_OK"; // Датчик переповнення RD35
-  Redler[35].DI_Breaker_OK := "RD36_DI_Breaker_OK"; // Автоматичний вимикач RD36
-  Redler[35].DI_Speed_OK := "RD36_DI_Speed_OK"; // Датчик руху RD36
-  Redler[35].DI_Overflow_OK := "RD36_DI_Overflow_OK"; // Датчик переповнення RD36
-  Redler[36].DI_Breaker_OK := "RD37_DI_Breaker_OK"; // Автоматичний вимикач RD37
-  Redler[36].DI_Speed_OK := "RD37_DI_Speed_OK"; // Датчик руху RD37
-  Redler[36].DI_Overflow_OK := "RD37_DI_Overflow_OK"; // Датчик переповнення RD37
-  Redler[37].DI_Breaker_OK := "RD38_DI_Breaker_OK"; // Автоматичний вимикач RD38
-  Redler[37].DI_Speed_OK := "RD38_DI_Speed_OK"; // Датчик руху RD38
-  Redler[37].DI_Overflow_OK := "RD38_DI_Overflow_OK"; // Датчик переповнення RD38
-  Noria[0].DI_Breaker_OK := "NR1_DI_Breaker_OK"; // Автоматичний вимикач NR1
-  Noria[0].DI_Speed_OK := "NR1_DI_Speed_OK"; // Датчик руху NR1
-  Noria[0].DI_Alignment_OK := "NR1_DI_Alignment_OK"; // Схід стрічки NR1
-  Noria[1].DI_Breaker_OK := "NR2_DI_Breaker_OK"; // Автоматичний вимикач NR2
-  Noria[1].DI_Speed_OK := "NR2_DI_Speed_OK"; // Датчик руху NR2
-  Noria[1].DI_Alignment_OK := "NR2_DI_Alignment_OK"; // Схід стрічки NR2
-  Noria[2].DI_Breaker_OK := "NR3_DI_Breaker_OK"; // Автоматичний вимикач NR3
-  Noria[2].DI_Speed_OK := "NR3_DI_Speed_OK"; // Датчик руху NR3
-  Noria[2].DI_Alignment_OK := "NR3_DI_Alignment_OK"; // Схід стрічки NR3
-  Noria[3].DI_Breaker_OK := "NR4_DI_Breaker_OK"; // Автоматичний вимикач NR4
-  Noria[3].DI_Speed_OK := "NR4_DI_Speed_OK"; // Датчик руху NR4
-  Noria[3].DI_Alignment_OK := "NR4_DI_Alignment_OK"; // Схід стрічки NR4
-  Noria[4].DI_Breaker_OK := "NR5_DI_Breaker_OK"; // Автоматичний вимикач NR5
-  Noria[4].DI_Speed_OK := "NR5_DI_Speed_OK"; // Датчик руху NR5
-  Noria[4].DI_Alignment_OK := "NR5_DI_Alignment_OK"; // Схід стрічки NR5
-  Noria[5].DI_Breaker_OK := "NR6_DI_Breaker_OK"; // Автоматичний вимикач NR6
-  Noria[5].DI_Speed_OK := "NR6_DI_Speed_OK"; // Датчик руху NR6
-  Noria[5].DI_Alignment_OK := "NR6_DI_Alignment_OK"; // Схід стрічки NR6
-  Noria[6].DI_Breaker_OK := "NR7_DI_Breaker_OK"; // Автоматичний вимикач NR7
-  Noria[6].DI_Speed_OK := "NR7_DI_Speed_OK"; // Датчик руху NR7
-  Noria[6].DI_Alignment_OK := "NR7_DI_Alignment_OK"; // Схід стрічки NR7
-  Noria[7].DI_Breaker_OK := "NR8_DI_Breaker_OK"; // Автоматичний вимикач NR8
-  Noria[7].DI_Speed_OK := "NR8_DI_Speed_OK"; // Датчик руху NR8
-  Noria[7].DI_Alignment_OK := "NR8_DI_Alignment_OK"; // Схід стрічки NR8
-  Noria[8].DI_Breaker_OK := "NR9_DI_Breaker_OK"; // Автоматичний вимикач NR9
-  Noria[8].DI_Speed_OK := "NR9_DI_Speed_OK"; // Датчик руху NR9
-  Noria[8].DI_Alignment_OK := "NR9_DI_Alignment_OK"; // Схід стрічки NR9
-  Noria[9].DI_Breaker_OK := "NR10_DI_Breaker_OK"; // Автоматичний вимикач NR10
-  Noria[9].DI_Speed_OK := "NR10_DI_Speed_OK"; // Датчик руху NR10
-  Noria[9].DI_Alignment_OK := "NR10_DI_Alignment_OK"; // Схід стрічки NR10
-  Noria[10].DI_Breaker_OK := "NR11_DI_Breaker_OK"; // Автоматичний вимикач NR11
-  Noria[10].DI_Speed_OK := "NR11_DI_Speed_OK"; // Датчик руху NR11
-  Noria[10].DI_Alignment_OK := "NR11_DI_Alignment_OK"; // Схід стрічки NR11
-  Feeder[0].DI_Feedback_OK := "FD1_DI_Feedback_OK"; // Фідбек контактору FD1
-  Separator[0].DI_Feedback_OK := "SEP1_DI_Feedback_OK"; // Фідбек контактору SEP1
-  Fan[0].DI_Feedback_OK := "FN1_DI_Feedback_OK"; // Фідбек контактору FN1
-  Feeder[1].DI_Feedback_OK := "FD2_DI_Feedback_OK"; // Фідбек контактору FD2
-  Separator[1].DI_Feedback_OK := "SEP2_DI_Feedback_OK"; // Фідбек контактору SEP2
-  Fan[1].DI_Feedback_OK := "FN2_DI_Feedback_OK"; // Фідбек контактору FN2
-  Feeder[2].DI_Feedback_OK := "FD3_DI_Feedback_OK"; // Фідбек контактору FD3
-  Separator[2].DI_Feedback_OK := "SEP3_DI_Feedback_OK"; // Фідбек контактору SEP3
-  Fan[2].DI_Feedback_OK := "FN3_DI_Feedback_OK"; // Фідбек контактору FN3
-  Sushka[0].Fans[0].DI_Breaker_OK := "DR1_FN1_DI_Breaker_OK"; // Автоматичний вимикач FN1 Сушарка№1
-  Sushka[0].Fans[0].DI_Feedback_OK := "DR1_FN1_DI_Feedback_OK"; // Фідбек контактору FN1 Сушарка№1
-  Sushka[0].Fans[1].DI_Breaker_OK := "DR1_FN2_DI_Breaker_OK"; // Автоматичний вимикач FN2 Сушарка№1
-  Sushka[0].Fans[1].DI_Feedback_OK := "DR1_FN2_DI_Feedback_OK"; // Фідбек контактору FN2 Сушарка№1
-  Sushka[0].Fans[2].DI_Breaker_OK := "DR1_FN3_DI_Breaker_OK"; // Автоматичний вимикач FN3 Сушарка№1
-  Sushka[0].Fans[2].DI_Feedback_OK := "DR1_FN3_DI_Feedback_OK"; // Фідбек контактору FN3 Сушарка№1
-  Sushka[0].Fans[3].DI_Breaker_OK := "DR1_FN4_DI_Breaker_OK"; // Автоматичний вимикач FN4 Сушарка№1
-  Sushka[0].Fans[3].DI_Feedback_OK := "DR1_FN4_DI_Feedback_OK"; // Фідбек контактору FN4 Сушарка№1
-  Sushka[0].Fans[4].DI_Breaker_OK := "DR1_FN5_DI_Breaker_OK"; // Автоматичний вимикач FN5 Сушарка№1
-  Sushka[0].Fans[4].DI_Feedback_OK := "DR1_FN5_DI_Feedback_OK"; // Фідбек контактору FN5 Сушарка№1
-  Sushka[0].Fans[5].DI_Breaker_OK := "DR1_FN6_DI_Breaker_OK"; // Автоматичний вимикач FN6 Сушарка№1
-  Sushka[0].Fans[5].DI_Feedback_OK := "DR1_FN6_DI_Feedback_OK"; // Фідбек контактору FN6 Сушарка№1
-  Sushka[0].Fans[6].DI_Breaker_OK := "DR1_FN7_DI_Breaker_OK"; // Автоматичний вимикач FN7 Сушарка№1
-  Sushka[0].Fans[6].DI_Feedback_OK := "DR1_FN7_DI_Feedback_OK"; // Фідбек контактору FN7 Сушарка№1
-  Sushka[0].Burners[0].DI_Breaker_OK := "DR1_PAL1_DI_Breaker_OK"; // Автоматичний вимикач PAL1 Сушарка№1
-  Sushka[0].Burners[0].DI_Auto_OK := "DR1_PAL1_DI_Auto_OK"; // Автоматичний режим PAL1 Суршарка№1
-  Sushka[0].Burners[0].DI_Feedback1_OK := "DR1_PAL1_DI_Feedback1_OK"; // Фідбек контактору PAL1 Сушарка№1
-  Sushka[0].Burners[0].DI_Alarm := "DR1_PAL1_DI_Alarm"; // Сигнал аварії PAL1 Сушарка№1
-  Sushka[0].Burners[0].DI_Temp_OK := "DR1_PAL1_DI_Temp_OK"; // Температура в нормі Сушарка№1
-  Sushka[0].Burners[1].DI_Breaker_OK := "DR1_PAL2_DI_Breaker_OK"; // Автоматичний вимикач PAL2 Сушарка№1
-  Sushka[0].Burners[1].DI_Auto_OK := "DR1_PAL2_DI_Auto_OK"; // Автоматичний режим PAL2 Суршарка№1
-  Sushka[0].Burners[1].DI_Feedback1_OK := "DR1_PAL2_DI_Feedback1_OK"; // Фідбек контактору PAL2 Сушарка№1
-  Sushka[0].Burners[1].DI_Alarm := "DR1_PAL2_DI_Alarm"; // Сигнал аварії PAL2 Сушарка№1
-  Sushka[0].Burners[1].DI_Temp_OK := "DR1_PAL2_DI_Temp_OK"; // Температура в нормі Сушарка№1
-  Sushka[0].Discharge.DI_Feedback_OK := "UW1_DI_Feedback_OK"; // 
-  Sushka[1].Fans[0].DI_Breaker_OK := "DR2_FN1_DI_Breaker_OK"; // Автоматичний вимикач FN1 Сушарка№2
-  Sushka[1].Fans[0].DI_Feedback_OK := "DR2_FN1_DI_Feedback_OK"; // Фідбек контактору FN1 Сушарка№2
-  Sushka[1].Fans[1].DI_Breaker_OK := "DR2_FN2_DI_Breaker_OK"; // Автоматичний вимикач FN2 Сушарка№2
-  Sushka[1].Fans[1].DI_Feedback_OK := "DR2_FN2_DI_Feedback_OK"; // Фідбек контактору FN2 Сушарка№2
-  Sushka[1].Fans[2].DI_Breaker_OK := "DR2_FN3_DI_Breaker_OK"; // Автоматичний вимикач FN3 Сушарка№2
-  Sushka[1].Fans[2].DI_Feedback_OK := "DR2_FN3_DI_Feedback_OK"; // Фідбек контактору FN3 Сушарка№2
-  Sushka[1].Fans[3].DI_Breaker_OK := "DR2_FN4_DI_Breaker_OK"; // Автоматичний вимикач FN4 Сушарка№2
-  Sushka[1].Fans[3].DI_Feedback_OK := "DR2_FN4_DI_Feedback_OK"; // Фідбек контактору FN4 Сушарка№2
-  Sushka[1].Fans[4].DI_Breaker_OK := "DR2_FN5_DI_Breaker_OK"; // Автоматичний вимикач FN5 Сушарка№2
-  Sushka[1].Fans[4].DI_Feedback_OK := "DR2_FN5_DI_Feedback_OK"; // Фідбек контактору FN5 Сушарка№2
-  Sushka[1].Fans[5].DI_Breaker_OK := "DR2_FN6_DI_Breaker_OK"; // Автоматичний вимикач FN6 Сушарка№2
-  Sushka[1].Fans[5].DI_Feedback_OK := "DR2_FN6_DI_Feedback_OK"; // Фідбек контактору FN6 Сушарка№2
-  Sushka[1].Fans[6].DI_Breaker_OK := "DR2_FN7_DI_Breaker_OK"; // Автоматичний вимикач FN7 Сушарка№2
-  Sushka[1].Fans[6].DI_Feedback_OK := "DR2_FN7_DI_Feedback_OK"; // Фідбек контактору FN7 Сушарка№2
-  Sushka[1].Burners[0].DI_Breaker_OK := "DR2_PAL1_DI_Breaker_OK"; // Автоматичний вимикач PAL1 Сушарка№2
-  Sushka[1].Burners[0].DI_Auto_OK := "DR2_PAL1_DI_Auto_OK"; // Автоматичний режим PAL1 Суршарка№2
-  Sushka[1].Burners[0].DI_Feedback1_OK := "DR2_PAL1_DI_Feedback1_OK"; // Фідбек контактору PAL1 Сушарка№2
-  Sushka[1].Burners[0].DI_Alarm := "DR2_PAL1_DI_Alarm"; // Сигнал аварії PAL1 Сушарка№2
-  Sushka[1].Burners[0].DI_Temp_OK := "DR2_PAL1_DI_Temp_OK"; // Температура в нормі Сушарка№2
-  Sushka[1].Burners[1].DI_Breaker_OK := "DR2_PAL2_DI_Breaker_OK"; // Автоматичний вимикач PAL2 Сушарка№2
-  Sushka[1].Burners[1].DI_Auto_OK := "DR2_PAL2_DI_Auto_OK"; // Автоматичний режим PAL2 Суршарка№2
-  Sushka[1].Burners[1].DI_Feedback1_OK := "DR2_PAL2_DI_Feedback1_OK"; // Фідбек контактору PAL2 Сушарка№2
-  Sushka[1].Burners[1].DI_Alarm := "DR2_PAL2_DI_Alarm"; // Сигнал аварії PAL2 Сушарка№2
-  Sushka[1].Burners[1].DI_Temp_OK := "DR2_PAL2_DI_Temp_OK"; // Температура в нормі Сушарка№2
-  Sushka[1].Discharge.DI_Feedback_OK := "UW2_DI_Feedback_OK"; // 
-  Sushka[2].Fans[0].DI_Breaker_OK := "DR3_FN1_DI_Breaker_OK"; // Автоматичний вимикач FN1 Сушарка№3
-  Sushka[2].Fans[0].DI_Feedback_OK := "DR3_FN1_DI_Feedback_OK"; // Фідбек контактору FN1 Сушарка№3
-  Sushka[2].Fans[1].DI_Breaker_OK := "DR3_FN2_DI_Breaker_OK"; // Автоматичний вимикач FN2 Сушарка№3
-  Sushka[2].Fans[1].DI_Feedback_OK := "DR3_FN2_DI_Feedback_OK"; // Фідбек контактору FN2 Сушарка№3
-  Sushka[2].Fans[2].DI_Breaker_OK := "DR3_FN3_DI_Breaker_OK"; // Автоматичний вимикач FN3 Сушарка№3
-  Sushka[2].Fans[2].DI_Feedback_OK := "DR3_FN3_DI_Feedback_OK"; // Фідбек контактору FN3 Сушарка№3
-  Sushka[2].Fans[3].DI_Breaker_OK := "DR3_FN4_DI_Breaker_OK"; // Автоматичний вимикач FN4 Сушарка№3
-  Sushka[2].Fans[3].DI_Feedback_OK := "DR3_FN4_DI_Feedback_OK"; // Фідбек контактору FN4 Сушарка№3
-  Sushka[2].Fans[4].DI_Breaker_OK := "DR3_FN5_DI_Breaker_OK"; // Автоматичний вимикач FN5 Сушарка№3
-  Sushka[2].Fans[4].DI_Feedback_OK := "DR3_FN5_DI_Feedback_OK"; // Фідбек контактору FN5 Сушарка№3
-  Sushka[2].Fans[5].DI_Breaker_OK := "DR3_FN6_DI_Breaker_OK"; // Автоматичний вимикач FN6 Сушарка№3
-  Sushka[2].Fans[5].DI_Feedback_OK := "DR3_FN6_DI_Feedback_OK"; // Фідбек контактору FN6 Сушарка№3
-  Sushka[2].Fans[6].DI_Breaker_OK := "DR3_FN7_DI_Breaker_OK"; // Автоматичний вимикач FN7 Сушарка№3
-  Sushka[2].Fans[6].DI_Feedback_OK := "DR3_FN7_DI_Feedback_OK"; // Фідбек контактору FN7 Сушарка№3
-  Sushka[2].Burners[0].DI_Breaker_OK := "DR3_PAL1_DI_Breaker_OK"; // Автоматичний вимикач PAL1 Сушарка№3
-  Sushka[2].Burners[0].DI_Auto_OK := "DR3_PAL1_DI_Auto_OK"; // Автоматичний режим PAL1 Суршарка№3
-  Sushka[2].Burners[0].DI_Feedback1_OK := "DR3_PAL1_DI_Feedback1_OK"; // Фідбек контактору PAL1 Сушарка№3
-  Sushka[2].Burners[0].DI_Alarm := "DR3_PAL1_DI_Alarm"; // Сигнал аварії PAL1 Сушарка№3
-  Sushka[2].Burners[0].DI_Temp_OK := "DR3_PAL1_DI_Temp_OK"; // Температура в нормі Сушарка№3
-  Sushka[2].Burners[1].DI_Breaker_OK := "DR3_PAL2_DI_Breaker_OK"; // Автоматичний вимикач PAL2 Сушарка№3
-  Sushka[2].Burners[1].DI_Auto_OK := "DR3_PAL2_DI_Auto_OK"; // Автоматичний режим PAL2 Суршарка№3
-  Sushka[2].Burners[1].DI_Feedback1_OK := "DR3_PAL2_DI_Feedback1_OK"; // Фідбек контактору PAL2 Сушарка№3
-  Sushka[2].Burners[1].DI_Alarm := "DR3_PAL2_DI_Alarm"; // Сигнал аварії PAL2 Сушарка№3
-  Sushka[2].Burners[1].DI_Temp_OK := "DR3_PAL2_DI_Temp_OK"; // Температура в нормі Сушарка№3
-  Sushka[2].Discharge.DI_Feedback_OK := "UW3_DI_Feedback_OK"; // 
-  Gate2P[15].DI_Breaker_OK := "GT5_1_DI_Breaker_OK"; // Автоматичний вимикач GT5.1
-  Gate2P[15].DI_Pos0_OK := "GT5_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT5.1
-  Gate2P[15].DI_Pos1_OK := "GT5_1_DI_Pos1_OK"; // Датчик положення (закрито) GT5.1
-  Gate2P[16].DI_Breaker_OK := "GT5_2_DI_Breaker_OK"; // Автоматичний вимикач GT5.2
-  Gate2P[16].DI_Pos0_OK := "GT5_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT5.2
-  Gate2P[16].DI_Pos1_OK := "GT5_2_DI_Pos1_OK"; // Датчик положення (закрито) GT5.2
-  Gate2P[17].DI_Breaker_OK := "GT5_3_DI_Breaker_OK"; // Автоматичний вимикач GT5.3
-  Gate2P[17].DI_Pos0_OK := "GT5_3_DI_Pos0_OK"; // Датчик положення (відкрито) GT5.3
-  Gate2P[17].DI_Pos1_OK := "GT5_3_DI_Pos1_OK"; // Датчик положення (закрито) GT5.3
-  Gate2P[25].DI_Breaker_OK := "GT6_1_DI_Breaker_OK"; // Автоматичний вимикач GT6.1
-  Gate2P[25].DI_Pos0_OK := "GT6_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT6.1
-  Gate2P[25].DI_Pos1_OK := "GT6_1_DI_Pos1_OK"; // Датчик положення (закрито) GT6.1
-  Gate2P[26].DI_Breaker_OK := "GT6_2_DI_Breaker_OK"; // Автоматичний вимикач GT6.2
-  Gate2P[26].DI_Pos0_OK := "GT6_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT6.2
-  Gate2P[26].DI_Pos1_OK := "GT6_2_DI_Pos1_OK"; // Датчик положення (закрито) GT6.2
-  Gate2P[27].DI_Breaker_OK := "GT6_3_DI_Breaker_OK"; // Автоматичний вимикач GT6.3
-  Gate2P[27].DI_Pos0_OK := "GT6_3_DI_Pos0_OK"; // Датчик положення (відкрито) GT6.3
-  Gate2P[27].DI_Pos1_OK := "GT6_3_DI_Pos1_OK"; // Датчик положення (закрито) GT6.3
-  Gate2P[35].DI_Breaker_OK := "GT7_1_DI_Breaker_OK"; // Автоматичний вимикач GT7.1
-  Gate2P[35].DI_Pos0_OK := "GT7_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT7.1
-  Gate2P[35].DI_Pos1_OK := "GT7_1_DI_Pos1_OK"; // Датчик положення (закрито) GT7.1
-  Gate2P[30].DI_Breaker_OK := "GT7_2_DI_Breaker_OK"; // Автоматичний вимикач GT7.2
-  Gate2P[30].DI_Pos0_OK := "GT7_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT7.2
-  Gate2P[30].DI_Pos1_OK := "GT7_2_DI_Pos1_OK"; // Датчик положення (закрито) GT7.2
-  Gate2P[56].DI_Breaker_OK := "GT8_1_DI_Breaker_OK"; // Автоматичний вимикач GT8.1
-  Gate2P[56].DI_Pos0_OK := "GT8_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT8.1
-  Gate2P[56].DI_Pos1_OK := "GT8_1_DI_Pos1_OK"; // Датчик положення (закрито) GT8.1
-  Gate2P[54].DI_Breaker_OK := "GT8_2_DI_Breaker_OK"; // Автоматичний вимикач GT8.2
-  Gate2P[54].DI_Pos0_OK := "GT8_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT8.2
-  Gate2P[54].DI_Pos1_OK := "GT8_2_DI_Pos1_OK"; // Датчик положення (закрито) GT8.2
-  Gate2P[53].DI_Breaker_OK := "GT8_3_DI_Breaker_OK"; // Автоматичний вимикач GT8.3
-  Gate2P[53].DI_Pos0_OK := "GT8_3_DI_Pos0_OK"; // Датчик положення (відкрито) GT8.3
-  Gate2P[53].DI_Pos1_OK := "GT8_3_DI_Pos1_OK"; // Датчик положення (закрито) GT8.3
-  Gate2P[31].DI_Breaker_OK := "GT9_1_DI_Breaker_OK"; // Автоматичний вимикач GT9.1
-  Gate2P[31].DI_Pos0_OK := "GT9_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT9.1
-  Gate2P[31].DI_Pos1_OK := "GT9_1_DI_Pos1_OK"; // Датчик положення (закрито) GT9.1
-  Gate2P[29].DI_Breaker_OK := "GT9_2_DI_Breaker_OK"; // Автоматичний вимикач GT9.2
-  Gate2P[29].DI_Pos0_OK := "GT9_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT9.2
-  Gate2P[29].DI_Pos1_OK := "GT9_2_DI_Pos1_OK"; // Датчик положення (закрито) GT9.2
-  Gate2P[52].DI_Breaker_OK := "GT10_1_DI_Breaker_OK"; // Автоматичний вимикач GT10.1
-  Gate2P[52].DI_Pos0_OK := "GT10_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT10.1
-  Gate2P[52].DI_Pos1_OK := "GT10_1_DI_Pos1_OK"; // Датчик положення (закрито) GT10.1
-  Gate2P[51].DI_Breaker_OK := "GT10_2_DI_Breaker_OK"; // Автоматичний вимикач GT10.2
-  Gate2P[51].DI_Pos0_OK := "GT10_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT10.2
-  Gate2P[51].DI_Pos1_OK := "GT10_2_DI_Pos1_OK"; // Датчик положення (закрито) GT10.2
-  Gate2P[34].DI_Breaker_OK := "GT11_1_DI_Breaker_OK"; // Автоматичний вимикач GT11.1
-  Gate2P[34].DI_Pos0_OK := "GT11_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT11.1
-  Gate2P[34].DI_Pos1_OK := "GT11_1_DI_Pos1_OK"; // Датчик положення (закрито) GT11.1
-  Gate2P[36].DI_Breaker_OK := "GT11_2_DI_Breaker_OK"; // Автоматичний вимикач GT11.2
-  Gate2P[36].DI_Pos0_OK := "GT11_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT11.2
-  Gate2P[36].DI_Pos1_OK := "GT11_2_DI_Pos1_OK"; // Датчик положення (закрито) GT11.2
-  Gate2P[55].DI_Breaker_OK := "GT12_1_DI_Breaker_OK"; // Автоматичний вимикач GT12.1
-  Gate2P[55].DI_Pos0_OK := "GT12_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT12.1
-  Gate2P[55].DI_Pos1_OK := "GT12_1_DI_Pos1_OK"; // Датчик положення (закрито) GT12.1
-  Gate2P[57].DI_Breaker_OK := "GT12_2_DI_Breaker_OK"; // Автоматичний вимикач GT12.2
-  Gate2P[57].DI_Pos0_OK := "GT12_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT12.2
-  Gate2P[57].DI_Pos1_OK := "GT12_2_DI_Pos1_OK"; // Датчик положення (закрито) GT12.2
-  Gate2P[60].DI_Breaker_OK := "GT14_1_DI_Breaker_OK"; // Автоматичний вимикач GT14.1
-  Gate2P[60].DI_Pos0_OK := "GT14_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT14.1
-  Gate2P[60].DI_Pos1_OK := "GT14_1_DI_Pos1_OK"; // Датчик положення (закрито) GT14.1
-  Gate2P[59].DI_Breaker_OK := "GT14_2_DI_Breaker_OK"; // Автоматичний вимикач GT14.2
-  Gate2P[59].DI_Pos0_OK := "GT14_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT14.2
-  Gate2P[59].DI_Pos1_OK := "GT14_2_DI_Pos1_OK"; // Датчик положення (закрито) GT14.2
-  Gate2P[23].DI_Breaker_OK := "GT15_1_DI_Breaker_OK"; // Автоматичний вимикач GT15.1
-  Gate2P[23].DI_Pos0_OK := "GT15_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT15.1
-  Gate2P[23].DI_Pos1_OK := "GT15_1_DI_Pos1_OK"; // Датчик положення (закрито) GT15.1
-  Gate2P[24].DI_Breaker_OK := "GT15_2_DI_Breaker_OK"; // Автоматичний вимикач GT15.2
-  Gate2P[24].DI_Pos0_OK := "GT15_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT15.2
-  Gate2P[24].DI_Pos1_OK := "GT15_2_DI_Pos1_OK"; // Датчик положення (закрито) GT15.2
-  Gate2P[46].DI_Breaker_OK := "GT18_1_DI_Breaker_OK"; // Автоматичний вимикач GT18.1
-  Gate2P[46].DI_Pos0_OK := "GT18_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT18.1
-  Gate2P[46].DI_Pos1_OK := "GT18_1_DI_Pos1_OK"; // Датчик положення (закрито) GT18.1
-  Gate2P[47].DI_Breaker_OK := "GT18_2_DI_Breaker_OK"; // Автоматичний вимикач GT18.2
-  Gate2P[47].DI_Pos0_OK := "GT18_2_DI_Pos0_OK"; // Датчик положення (відкрито) GTGT18.2
-  Gate2P[47].DI_Pos1_OK := "GT18_2_DI_Pos1_OK"; // Датчик положення (закрито) GTGT18.2
-  Gate2P[48].DI_Breaker_OK := "GT19_1_DI_Breaker_OK"; // Автоматичний вимикач GT19.1
-  Gate2P[48].DI_Pos0_OK := "GT19_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT19.1
-  Gate2P[48].DI_Pos1_OK := "GT19_1_DI_Pos1_OK"; // Датчик положення (закрито) GT19.1
-  Gate2P[49].DI_Breaker_OK := "GT19_2_DI_Breaker_OK"; // Автоматичний вимикач GT19.2
-  Gate2P[49].DI_Pos0_OK := "GT19_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT19.2
-  Gate2P[49].DI_Pos1_OK := "GT19_2_DI_Pos1_OK"; // Датчик положення (закрито) GT19.2
-  Gate2P[70].DI_Breaker_OK := "GT20_1_DI_Breaker_OK"; // Автоматичний вимикач GT20.1
-  Gate2P[70].DI_Pos0_OK := "GT20_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT20.1
-  Gate2P[70].DI_Pos1_OK := "GT20_1_DI_Pos1_OK"; // Датчик положення (закрито) GT20.1
-  Gate2P[71].DI_Breaker_OK := "GT20_2_DI_Breaker_OK"; // Автоматичний вимикач GT20.2
-  Gate2P[71].DI_Pos0_OK := "GT20_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT20.2
-  Gate2P[71].DI_Pos1_OK := "GT20_2_DI_Pos1_OK"; // Датчик положення (закрито) GT20.2
-  Gate2P[37].DI_Breaker_OK := "GT21_1_DI_Breaker_OK"; // Автоматичний вимикач GT21.1
-  Gate2P[37].DI_Pos0_OK := "GT21_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT21.1
-  Gate2P[37].DI_Pos1_OK := "GT21_1_DI_Pos1_OK"; // Датчик положення (закрито) GT21.1
-  Gate2P[41].DI_Breaker_OK := "GT21_2_DI_Breaker_OK"; // Автоматичний вимикач GT21.2
-  Gate2P[41].DI_Pos0_OK := "GT21_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT21.2
-  Gate2P[41].DI_Pos1_OK := "GT21_2_DI_Pos1_OK"; // Датчик положення (закрито) GT21.2
-  Gate2P[42].DI_Breaker_OK := "GT21_3_DI_Breaker_OK"; // Автоматичний вимикач GT21.3
-  Gate2P[42].DI_Pos0_OK := "GT21_3_DI_Pos0_OK"; // Датчик положення (відкрито) GT21.3
-  Gate2P[42].DI_Pos1_OK := "GT21_3_DI_Pos1_OK"; // Датчик положення (закрито) GT21.3
-  Gate2P[44].DI_Breaker_OK := "GT21_4_DI_Breaker_OK"; // Автоматичний вимикач GT21.4
-  Gate2P[44].DI_Pos0_OK := "GT21_4_DI_Pos0_OK"; // Датчик положення (відкрито) GT21.4
-  Gate2P[44].DI_Pos1_OK := "GT21_4_DI_Pos1_OK"; // Датчик положення (закрито) GT21.4
-  Gate2P[63].DI_Breaker_OK := "GT22_1_DI_Breaker_OK"; // Автоматичний вимикач GT22.1
-  Gate2P[63].DI_Pos0_OK := "GT22_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT22.1
-  Gate2P[63].DI_Pos1_OK := "GT22_1_DI_Pos1_OK"; // Датчик положення (закрито) GT22.1
-  Gate2P[64].DI_Breaker_OK := "GT22_2_DI_Breaker_OK"; // Автоматичний вимикач GT22.2
-  Gate2P[64].DI_Pos0_OK := "GT22_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT22.2
-  Gate2P[64].DI_Pos1_OK := "GT22_2_DI_Pos1_OK"; // Датчик положення (закрито) GT22.2
-  Gate2P[65].DI_Breaker_OK := "GT22_3_DI_Breaker_OK"; // Автоматичний вимикач GT22.3
-  Gate2P[65].DI_Pos0_OK := "GT22_3_DI_Pos0_OK"; // Датчик положення (відкрито) GT22.3
-  Gate2P[65].DI_Pos1_OK := "GT22_3_DI_Pos1_OK"; // Датчик положення (закрито) GT22.3
-  Gate2P[66].DI_Breaker_OK := "GT22_4_DI_Breaker_OK"; // Автоматичний вимикач GT22.4
-  Gate2P[66].DI_Pos0_OK := "GT22_4_DI_Pos0_OK"; // Датчик положення (відкрито) GT22.4
-  Gate2P[66].DI_Pos1_OK := "GT22_4_DI_Pos1_OK"; // Датчик положення (закрито) GT22.4
-  Gate2P[73].DI_Breaker_OK := "GT23_1_DI_Breaker_OK"; // Автоматичний вимикач GT23.1
-  Gate2P[73].DI_Pos0_OK := "GT23_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT23.1
-  Gate2P[73].DI_Pos1_OK := "GT23_1_DI_Pos1_OK"; // Датчик положення (закрито) GT23.1
-  Gate2P[74].DI_Breaker_OK := "GT23_2_DI_Breaker_OK"; // Автоматичний вимикач GT23.2
-  Gate2P[74].DI_Pos0_OK := "GT23_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT23.2
-  Gate2P[74].DI_Pos1_OK := "GT23_2_DI_Pos1_OK"; // Датчик положення (закрито) GT23.2
-  Gate2P[75].DI_Breaker_OK := "GT23_3_DI_Breaker_OK"; // Автоматичний вимикач GT23.3
-  Gate2P[75].DI_Pos0_OK := "GT23_3_DI_Pos0_OK"; // Датчик положення (відкрито) GT23.3
-  Gate2P[75].DI_Pos1_OK := "GT23_3_DI_Pos1_OK"; // Датчик положення (закрито) GT23.3
-  Gate2P[76].DI_Breaker_OK := "GT23_4_DI_Breaker_OK"; // Автоматичний вимикач GT23.4
-  Gate2P[76].DI_Pos0_OK := "GT23_4_DI_Pos0_OK"; // Датчик положення (відкрито) GT23.4
-  Gate2P[76].DI_Pos1_OK := "GT23_4_DI_Pos1_OK"; // Датчик положення (закрито) GT23.4
-  Gate2P[43].DI_Breaker_OK := "GT24_1_DI_Breaker_OK"; // Автоматичний вимикач GT24.1
-  Gate2P[43].DI_Pos0_OK := "GT24_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT24.1
-  Gate2P[43].DI_Pos1_OK := "GT24_1_DI_Pos1_OK"; // Датчик положення (закрито) GT24.1
-  Gate2P[45].DI_Breaker_OK := "GT24_2_DI_Breaker_OK"; // Автоматичний вимикач GT24.2
-  Gate2P[45].DI_Pos0_OK := "GT24_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT24.2
-  Gate2P[45].DI_Pos1_OK := "GT24_2_DI_Pos1_OK"; // Датчик положення (закрито) GT24.2
-  Gate2P[67].DI_Breaker_OK := "GT25_1_DI_Breaker_OK"; // Автоматичний вимикач GT25.1
-  Gate2P[67].DI_Pos0_OK := "GT25_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT25.1
-  Gate2P[67].DI_Pos1_OK := "GT25_1_DI_Pos1_OK"; // Датчик положення (закрито) GT25.1
-  Gate2P[68].DI_Breaker_OK := "GT25_2_DI_Breaker_OK"; // Автоматичний вимикач GT25.2
-  Gate2P[68].DI_Pos0_OK := "GT25_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT25.2
-  Gate2P[68].DI_Pos1_OK := "GT25_2_DI_Pos1_OK"; // Датчик положення (закрито) GT25.2
-  Gate2P[77].DI_Breaker_OK := "GT26_1_DI_Breaker_OK"; // Автоматичний вимикач GT26.1
-  Gate2P[77].DI_Pos0_OK := "GT26_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT26.1
-  Gate2P[77].DI_Pos1_OK := "GT26_1_DI_Pos1_OK"; // Датчик положення (закрито) GT26.1
-  Gate2P[78].DI_Breaker_OK := "GT26_2_DI_Breaker_OK"; // Автоматичний вимикач GT26.2
-  Gate2P[78].DI_Pos0_OK := "GT26_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT26.2
-  Gate2P[78].DI_Pos1_OK := "GT26_2_DI_Pos1_OK"; // Датчик положення (закрито) GT26.2
-  Gate2P[40].DI_Breaker_OK := "GT30_1_DI_Breaker_OK"; // Автоматичний вимикач GT30.1
-  Gate2P[40].DI_Pos0_OK := "GT30_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT30.1
-  Gate2P[40].DI_Pos1_OK := "GT30_1_DI_Pos1_OK"; // Датчик положення (закрито) GT30.1
-  Gate2P[39].DI_Breaker_OK := "GT30_2_DI_Breaker_OK"; // Автоматичний вимикач GT30.2
-  Gate2P[39].DI_Pos0_OK := "GT30_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT30.2
-  Gate2P[39].DI_Pos1_OK := "GT30_2_DI_Pos1_OK"; // Датчик положення (закрито) GT30.2
-  Gate2P[62].DI_Breaker_OK := "GT31_1_DI_Breaker_OK"; // Автоматичний вимикач GT31.1
-  Gate2P[62].DI_Pos0_OK := "GT31_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT31.1
-  Gate2P[62].DI_Pos1_OK := "GT31_1_DI_Pos1_OK"; // Датчик положення (закрито) GT31.1
-  Gate2P[61].DI_Breaker_OK := "GT31_2_DI_Breaker_OK"; // Автоматичний вимикач GT31.2
-  Gate2P[61].DI_Pos0_OK := "GT31_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT31.2
-  Gate2P[61].DI_Pos1_OK := "GT31_2_DI_Pos1_OK"; // Датчик положення (закрито) GT31.2
-  Gate2P[72].DI_Breaker_OK := "GT32_1_DI_Breaker_OK"; // Автоматичний вимикач GT32.1
-  Gate2P[72].DI_Pos0_OK := "GT32_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT32.1
-  Gate2P[72].DI_Pos1_OK := "GT32_1_DI_Pos1_OK"; // Датчик положення (закрито) GT32.1
-  Gate2P[69].DI_Breaker_OK := "GT32_2_DI_Breaker_OK"; // Автоматичний вимикач GT32.2
-  Gate2P[69].DI_Pos0_OK := "GT32_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT32.2
-  Gate2P[69].DI_Pos1_OK := "GT32_2_DI_Pos1_OK"; // Датчик положення (закрито) GT32.2
-  Gate2P[58].DI_Breaker_OK := "GT35_1_DI_Breaker_OK"; // Автоматичний вимикач GT35.1
-  Gate2P[58].DI_Pos0_OK := "GT35_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT35.1
-  Gate2P[58].DI_Pos1_OK := "GT35_1_DI_Pos1_OK"; // Датчик положення (закрито) GT35.1
-  Gate2P[50].DI_Breaker_OK := "GT35_2_DI_Breaker_OK"; // Автоматичний вимикач GT35.2
-  Gate2P[50].DI_Pos0_OK := "GT35_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT35.2
-  Gate2P[50].DI_Pos1_OK := "GT35_2_DI_Pos1_OK"; // Датчик положення (закрито) GT35.2
-  Gate2P[38].DI_Breaker_OK := "GT36_1_DI_Breaker_OK"; // Автоматичний вимикач GT36.1
-  Gate2P[38].DI_Pos0_OK := "GT36_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT36.1
-  Gate2P[38].DI_Pos1_OK := "GT36_1_DI_Pos1_OK"; // Датчик положення (закрито) GT36.1
-  Gate2P[28].DI_Breaker_OK := "GT36_2_DI_Breaker_OK"; // Автоматичний вимикач GT36.2
-  Gate2P[28].DI_Pos0_OK := "GT36_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT36.2
-  Gate2P[28].DI_Pos1_OK := "GT36_2_DI_Pos1_OK"; // Датчик положення (закрито) GT36.2
-  Gate2P[18].DI_Breaker_OK := "GT36_3_DI_Breaker_OK"; // Автоматичний вимикач GT36.3
-  Gate2P[18].DI_Pos0_OK := "GT36_3_DI_Pos0_OK"; // Датчик положення (відкрито) GT36.3
-  Gate2P[18].DI_Pos1_OK := "GT36_3_DI_Pos1_OK"; // Датчик положення (закрито) GT36.3
-  Gate2P[79].DI_Breaker_OK := "GT38_1_DI_Breaker_OK"; // Автоматичний вимикач GT38.1
-  Gate2P[79].DI_Pos0_OK := "GT38_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT38.1
-  Gate2P[79].DI_Pos1_OK := "GT38_1_DI_Pos1_OK"; // Датчик положення (закрито) GT38.1
-  Gate2P[80].DI_Breaker_OK := "GT38_2_DI_Breaker_OK"; // Автоматичний вимикач GT38.2
-  Gate2P[80].DI_Pos0_OK := "GT38_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT38.2
-  Gate2P[80].DI_Pos1_OK := "GT38_2_DI_Pos1_OK"; // Датчик положення (закрито) GT38.2
-  Valve3P[0].DI_Breaker_OK := "VL1_DI_Breaker_OK"; // Автоматичний вимикач VL1
-  Valve3P[0].DI_Pos0_OK := "VL1_DI_Pos0_OK"; // Датчик положення (ліво) VL1
-  Valve3P[0].DI_Pos1_OK := "VL1_DI_Pos1_OK"; // Датчик положення (право) VL1
-  Valve3P[1].DI_Breaker_OK := "VL2_DI_Breaker_OK"; // Автоматичний вимикач VL2
-  Valve3P[1].DI_Pos0_OK := "VL2_DI_Pos0_OK"; // Датчик положення (ліво) VL2
-  Valve3P[1].DI_Pos1_OK := "VL2_DI_Pos1_OK"; // Датчик положення (право) VL2
-  Valve3P[2].DI_Breaker_OK := "VL3_DI_Breaker_OK"; // Автоматичний вимикач VL3
-  Valve3P[2].DI_Pos0_OK := "VL3_DI_Pos0_OK"; // Датчик положення (ліво) VL3
-  Valve3P[2].DI_Pos1_OK := "VL3_DI_Pos1_OK"; // Датчик положення (право) VL3
-  Valve3P[3].DI_Breaker_OK := "VL4_DI_Breaker_OK"; // Автоматичний вимикач VL4
-  Valve3P[3].DI_Pos0_OK := "VL4_DI_Pos0_OK"; // Датчик положення (ліво) VL4
-  Valve3P[3].DI_Pos1_OK := "VL4_DI_Pos1_OK"; // Датчик положення (право) VL4
-  Valve3P[4].DI_Breaker_OK := "VL5_DI_Breaker_OK"; // Автоматичний вимикач VL5
-  Valve3P[4].DI_Pos0_OK := "VL5_DI_Pos0_OK"; // Датчик положення (ліво) VL5
-  Valve3P[4].DI_Pos1_OK := "VL5_DI_Pos1_OK"; // Датчик положення (право) VL5
-  Valve3P[5].DI_Breaker_OK := "VL6_DI_Breaker_OK"; // Автоматичний вимикач VL6
-  Valve3P[5].DI_Pos0_OK := "VL6_DI_Pos0_OK"; // Датчик положення (ліво) VL6
-  Valve3P[5].DI_Pos1_OK := "VL6_DI_Pos1_OK"; // Датчик положення (право) VL6
-  Valve3P[6].DI_Breaker_OK := "VL7_DI_Breaker_OK"; // Автоматичний вимикач VL7
-  Valve3P[6].DI_Pos0_OK := "VL7_DI_Pos0_OK"; // Датчик положення (ліво) VL7
-  Valve3P[6].DI_Pos1_OK := "VL7_DI_Pos1_OK"; // Датчик положення (право) VL7
-  Valve3P[7].DI_Breaker_OK := "VL8_DI_Breaker_OK"; // Автоматичний вимикач VL8
-  Valve3P[7].DI_Pos0_OK := "VL8_DI_Pos0_OK"; // Датчик положення (ліво) VL8
-  Valve3P[7].DI_Pos1_OK := "VL8_DI_Pos1_OK"; // Датчик положення (право) VL8
-  Valve3P[8].DI_Breaker_OK := "VL9_DI_Breaker_OK"; // Автоматичний вимикач VL9
-  Valve3P[8].DI_Pos0_OK := "VL9_DI_Pos0_OK"; // Датчик положення (ліво) VL9
-  Valve3P[8].DI_Pos1_OK := "VL9_DI_Pos1_OK"; // Датчик положення (право) VL9
-  Valve3P[9].DI_Breaker_OK := "VL10_DI_Breaker_OK"; // Автоматичний вимикач VL10
-  Valve3P[9].DI_Pos0_OK := "VL10_DI_Pos0_OK"; // Датчик положення (ліво) VL10
-  Valve3P[9].DI_Pos1_OK := "VL10_DI_Pos1_OK"; // Датчик положення (право) VL10
-  Valve3P[10].DI_Breaker_OK := "VL11_DI_Breaker_OK"; // Автоматичний вимикач VL11
-  Valve3P[10].DI_Pos0_OK := "VL11_DI_Pos0_OK"; // Датчик положення (ліво) VL11
-  Valve3P[10].DI_Pos1_OK := "VL11_DI_Pos1_OK"; // Датчик положення (право) VL11
-  Valve3P[11].DI_Breaker_OK := "VL12_DI_Breaker_OK"; // Автоматичний вимикач VL12
-  Valve3P[11].DI_Pos0_OK := "VL12_DI_Pos0_OK"; // Датчик положення (ліво) VL12
-  Valve3P[11].DI_Pos1_OK := "VL12_DI_Pos1_OK"; // Датчик положення (право) VL12
-  Valve3P[12].DI_Breaker_OK := "VL13_DI_Breaker_OK"; // Автоматичний вимикач VL13
-  Valve3P[12].DI_Pos0_OK := "VL13_DI_Pos0_OK"; // Датчик положення (ліво) VL13
-  Valve3P[12].DI_Pos1_OK := "VL13_DI_Pos1_OK"; // Датчик положення (право) VL13
-  Valve3P[13].DI_Breaker_OK := "VL14_DI_Breaker_OK"; // Автоматичний вимикач VL14
-  Valve3P[13].DI_Pos0_OK := "VL14_DI_Pos0_OK"; // Датчик положення (ліво) VL14
-  Valve3P[13].DI_Pos1_OK := "VL14_DI_Pos1_OK"; // Датчик положення (право) VL14
-  Valve3P[14].DI_Breaker_OK := "VL15_DI_Breaker_OK"; // Автоматичний вимикач VL15
-  Valve3P[14].DI_Pos0_OK := "VL15_DI_Pos0_OK"; // Датчик положення (ліво) VL15
-  Valve3P[14].DI_Pos1_OK := "VL15_DI_Pos1_OK"; // Датчик положення (право) VL15
-  Valve3P[15].DI_Breaker_OK := "VL16_DI_Breaker_OK"; // Автоматичний вимикач VL16
-  Valve3P[15].DI_Pos0_OK := "VL16_DI_Pos0_OK"; // Датчик положення (ліво) VL16
-  Valve3P[15].DI_Pos1_OK := "VL16_DI_Pos1_OK"; // Датчик положення (право) VL16
-  Valve3P[16].DI_Breaker_OK := "VL17_DI_Breaker_OK"; // Автоматичний вимикач VL17
-  Valve3P[16].DI_Pos0_OK := "VL17_DI_Pos0_OK"; // Датчик положення (ліво) VL17
-  Valve3P[16].DI_Pos1_OK := "VL17_DI_Pos1_OK"; // Датчик положення (право) VL17
-  Valve3P[17].DI_Breaker_OK := "VL18_DI_Breaker_OK"; // Автоматичний вимикач VL18
-  Valve3P[17].DI_Pos0_OK := "VL18_DI_Pos0_OK"; // Датчик положення (ліво) VL18
-  Valve3P[17].DI_Pos1_OK := "VL18_DI_Pos1_OK"; // Датчик положення (право) VL18
-  Valve3P[18].DI_Breaker_OK := "VL19_DI_Breaker_OK"; // Автоматичний вимикач VL19
-  Valve3P[18].DI_Pos0_1_OK := "VL19_DI_Pos0_1_OK"; // Датчик положення (ліво1) VL19
-  Valve3P[18].DI_Pos1_1_OK := "VL19_DI_Pos1_1_OK"; // Датчик положення (право1) VL19
-  Valve3P[18].DI_Pos0_2_OK := "VL19_DI_Pos0_2_OK"; // Датчик положення (ліво2) VL19
-  Valve3P[18].DI_Pos1_2_OK := "VL19_DI_Pos1_2_OK"; // Датчик положення (право2) VL19
-  Valve3P[19].DI_Breaker_OK := "VL20_DI_Breaker_OK"; // Автоматичний вимикач VL20
-  Valve3P[19].DI_Pos0_OK := "VL20_DI_Pos0_OK"; // Датчик положення (ліво) VL20
-  Valve3P[19].DI_Pos1_OK := "VL20_DI_Pos1_OK"; // Датчик положення (право) VL20
-  Valve3P[20].DI_Breaker_OK := "VL21_DI_Breaker_OK"; // Автоматичний вимикач VL21
-  Valve3P[20].DI_Pos0_OK := "VL21_DI_Pos0_OK"; // Датчик положення (ліво) VL21
-  Valve3P[20].DI_Pos1_OK := "VL21_DI_Pos1_OK"; // Датчик положення (право) VL21
-  Valve3P[21].DI_Breaker_OK := "VL22_DI_Breaker_OK"; // Автоматичний вимикач VL22
-  Valve3P[21].DI_Pos0_OK := "VL22_DI_Pos0_OK"; // Датчик положення (ліво) VL22
-  Valve3P[21].DI_Pos1_OK := "VL22_DI_Pos1_OK"; // Датчик положення (право) VL22
-  Valve3P[22].DI_Breaker_OK := "VL23_DI_Breaker_OK"; // Автоматичний вимикач VL23
-  Valve3P[22].DI_Pos0_OK := "VL23_DI_Pos0_OK"; // Датчик положення (ліво) VL23
-  Valve3P[22].DI_Pos1_OK := "VL23_DI_Pos1_OK"; // Датчик положення (право) VL23
-  Valve3P[23].DI_Breaker_OK := "VL24_DI_Breaker_OK"; // Автоматичний вимикач VL24
-  Valve3P[23].DI_Pos0_OK := "VL24_DI_Pos0_OK"; // Датчик положення (ліво) VL24
-  Valve3P[23].DI_Pos1_OK := "VL24_DI_Pos1_OK"; // Датчик положення (право) VL24
-  Valve3P[24].DI_Breaker_OK := "VL25_DI_Breaker_OK"; // Автоматичний вимикач VL25
-  Valve3P[24].DI_Pos0_OK := "VL25_DI_Pos0_OK"; // Датчик положення (ліво) VL25
-  Valve3P[24].DI_Pos1_OK := "VL25_DI_Pos1_OK"; // Датчик положення (право) VL25
-  Valve3P[25].DI_Breaker_OK := "VL26_DI_Breaker_OK"; // Автоматичний вимикач VL26
-  Valve3P[25].DI_Pos0_OK := "VL26_DI_Pos0_OK"; // Датчик положення (ліво) VL26
-  Valve3P[25].DI_Pos1_OK := "VL26_DI_Pos1_OK"; // Датчик положення (право) VL26
-  Valve3P[26].DI_Breaker_OK := "VL27_DI_Breaker_OK"; // Автоматичний вимикач VL27
-  Valve3P[26].DI_Pos0_OK := "VL27_DI_Pos0_OK"; // Датчик положення (ліво) VL27
-  Valve3P[26].DI_Pos1_OK := "VL27_DI_Pos1_OK"; // Датчик положення (право) VL27
-  Valve3P[27].DI_Breaker_OK := "VL28_DI_Breaker_OK"; // Автоматичний вимикач VL28
-  Valve3P[27].DI_Pos0_OK := "VL28_DI_Pos0_OK"; // Датчик положення (ліво) VL28
-  Valve3P[27].DI_Pos1_OK := "VL28_DI_Pos1_OK"; // Датчик положення (право) VL28
-  Valve3P[28].DI_Breaker_OK := "VL29_DI_Breaker_OK"; // Автоматичний вимикач VL29
-  Valve3P[28].DI_Pos0_OK := "VL29_DI_Pos0_OK"; // Датчик положення (ліво) VL29
-  Valve3P[28].DI_Pos1_OK := "VL29_DI_Pos1_OK"; // Датчик положення (право) VL29
-  Sushka[0].Burners[0].DI_Feedback2_OK := "DR1_PAL1_DI_Feedback2_OK"; // 
-  Sushka[0].Burners[1].DI_Feedback2_OK := "DR1_PAL2_DI_Feedback2_OK"; // 
-  Sushka[1].Burners[0].DI_Feedback2_OK := "DR2_PAL1_DI_Feedback2_OK"; // 
-  Sushka[1].Burners[1].DI_Feedback2_OK := "DR2_PAL2_DI_Feedback2_OK"; // 
-  Sushka[2].Burners[0].DI_Feedback2_OK := "DR3_PAL1_DI_Feedback2_OK"; // 
-  Sushka[2].Burners[1].DI_Feedback2_OK := "DR3_PAL2_DI_Feedback2_OK"; // 
-  Sushka[0].LevelHigh_OK := "DR1_LevelHigh_OK"; // Верхній рівень Сушарка№1
-  Sushka[0].LevelLow_OK := "DR1_LevelLow_OK"; // Нижній рівень Сушарка№1
-  Silos[4].DI_LevelHigh_OK := "SLA1_LevelHigh_OK"; // Верхній рівень SLA1
-  Silos[5].DI_LevelHigh_OK := "SLA2_LevelHigh_OK"; // Верхній рівень SLA2
-  Sushka[1].LevelHigh_OK := "DR2_LevelHigh_OK"; // Верхній рівень Сушарка№2
-  Sushka[1].LevelLow_OK := "DR2_LevelLow_OK"; // Нижній рівень Сушарка№2
-  Sushka[2].LevelHigh_OK := "DR3_LevelHigh_OK"; // Верхній рівень Сушарка№3
-  Sushka[2].LevelLow_OK := "DR3_LevelLow_OK"; // Нижній рівень Сушарка№3
-  Silos[12].DI_LevelHigh_OK := "SLA3_LevelHigh_OK"; // Верхній рівень SLA3
-  Silos[11].DI_LevelHigh_OK := "SLA4_LevelHigh_OK"; // Верхній рівень SLA4
-  Silos[6].DI_LevelHigh_OK := "SPA1_LevelHigh_OK"; // Верхній рівень SPA1
-  Silos[7].DI_LevelHigh_OK := "SPA2_LevelHigh_OK"; // Верхній рівень SPA2
-  Silos[8].DI_LevelHigh_OK := "SPA3_LevelHigh_OK"; // Верхній рівень SPA3
-  Silos[9].DI_LevelHigh_OK := "SPA4_LevelHigh_OK"; // Верхній рівень SPA4
-  Silos[10].DI_LevelHigh_OK := "SPA5_LevelHigh_OK"; // Верхній рівень SPA5
-  Silos[13].DI_LevelHigh_OK := "SPA6_LevelHigh_OK"; // Верхній рівень SPA6
-  Silos[14].DI_LevelHigh_OK := "SPA7_LevelHigh_OK"; // Верхній рівень SPA7
-  Silos[15].DI_LevelHigh_OK := "SPA8_LevelHigh_OK"; // Верхній рівень SPA8
-  Silos[16].DI_LevelHigh_OK := "SPA9_LevelHigh_OK"; // Верхній рівень SPA9
-  Silos[17].DI_LevelHigh_OK := "SPA10_LevelHigh_OK"; // Верхній рівень SPA10
-  Silos[18].DI_LevelHigh_OK := "SPA11_LevelHigh_OK"; // Верхній рівень SPA11
-  Silos[19].DI_LevelHigh_OK := "SPA12_LevelHigh_OK"; // Верхній рівень SPA12
-  Silos[20].DI_LevelHigh_OK := "SPA13_LevelHigh_OK"; // Верхній рівень SPA13
-  Silos[21].DI_LevelHigh_OK := "SPA14_LevelHigh_OK"; // Верхній рівень SPA14
-  Silos[22].DI_LevelHigh_OK := "SPA15_LevelHigh_OK"; // Верхній рівень SPA15
-  Silos[26].DI_LevelHigh_OK := "AR8_1_LevelHigh_OK"; // Верхній рівень AR_1
-  Silos[27].DI_LevelHigh_OK := "AR8_2_LevelHigh_OK"; // Верхній рівень AR_2
-  Silos[25].DI_LevelHigh_OK := "AR_2_LevelHigh_OK" AND "AR_1_LevelHigh_OK"; // Верхній рівень ZHD
-
-
-// Warning: Tag '80.1' () skipped due to unknown mechanism or ID.
-// Warning: Tag '80.2' () skipped due to unknown mechanism or ID.
-// Warning: Tag '80.3' () skipped due to unknown mechanism or ID.
-// Warning: Tag '80.4' () skipped due to unknown mechanism or ID.
-// Warning: Tag '80.5' () skipped due to unknown mechanism or ID.
-// Warning: Tag '80.6' () skipped due to unknown mechanism or ID.
-// Warning: Tag '80.7' () skipped due to unknown mechanism or ID.
-// Warning: Tag '81.0' () skipped due to unknown mechanism or ID.
-// Warning: Tag '81.1' () skipped due to unknown mechanism or ID.
-// Warning: Tag '81.2' () skipped due to unknown mechanism or ID.
-// Warning: Tag '81.3' () skipped due to unknown mechanism or ID.
-// Warning: Tag '81.4' () skipped due to unknown mechanism or ID.
-// Warning: Tag '81.5' () skipped due to unknown mechanism or ID.
-// Warning: Tag '81.6' () skipped due to unknown mechanism or ID.
-// Warning: Tag '81.7' () skipped due to unknown mechanism or ID.
-// Warning: Tag '82.0' () skipped due to unknown mechanism or ID.
-// Warning: Tag '82.1' () skipped due to unknown mechanism or ID.
-// Warning: Tag '82.2' () skipped due to unknown mechanism or ID.
-// Warning: Tag '82.3' () skipped due to unknown mechanism or ID.
-// Warning: Tag '82.4' () skipped due to unknown mechanism or ID.
-// Warning: Tag '82.5' () skipped due to unknown mechanism or ID.
-// Warning: Tag '82.6' () skipped due to unknown mechanism or ID.
-// Warning: Tag '82.7' () skipped due to unknown mechanism or ID.
-// Warning: Tag '83.0' () skipped due to unknown mechanism or ID.
-// Warning: Tag '83.1' () skipped due to unknown mechanism or ID.
-// Warning: Tag '83.2' () skipped due to unknown mechanism or ID.
-// Warning: Tag '83.3' () skipped due to unknown mechanism or ID.
-// Warning: Tag '83.4' () skipped due to unknown mechanism or ID.
-// Warning: Tag '83.5' () skipped due to unknown mechanism or ID.
-// Warning: Tag '83.6' () skipped due to unknown mechanism or ID.
-// Warning: Tag '83.7' () skipped due to unknown mechanism or ID.
-  Sushka[3].Temps[1] := "DR4_Temp_1"; // Int
-  Sushka[3].Temps[2] := "DR4_Temp_2"; // Int
-  Sushka[3].Temps[3] := "DR4_Temp_3"; // Int
-  Sushka[3].Temps[4] := "DR4_Temp_4"; // Int
-  Sushka[3].Temps[5] := "DR4_Temp_5"; // Int
-  Sushka[3].Temps[6] := "DR4_Temp_6"; // Int
-  Sushka[3].Temps[7] := "DR4_Temp_7"; // Int
-  Sushka[3].Temps[8] := "DR4_Temp_8"; // Int
-  Sushka[3].Temps[9] := "DR4_Temp_9"; // Int
-  Sushka[3].Temps[10] := "DR4_Temp_10"; // Int
-  Sushka[3].Temps[11] := "DR4_Temp_11"; // Int
-  Sushka[3].Temps[12] := "DR4_Temp_12"; // Int
-  Sushka[3].Temps[13] := "DR4_Temp_13"; // Int
-  Sushka[3].Temps[14] := "DR4_Temp_14"; // Int
-  Sushka[3].Temps[15] := "DR4_Temp_15"; // Int
-  Sushka[3].Temps[16] := "DR4_Temp_16"; // Int
-  Sushka[2].Temps[1] := "DR3_Temp_1"; // Int
-  Sushka[2].Temps[2] := "DR3_Temp_2"; // Int
-  Sushka[2].Temps[3] := "DR3_Temp_3"; // Int
-  Sushka[2].Temps[4] := "DR3_Temp_4"; // Int
-  Sushka[2].Temps[5] := "DR3_Temp_5"; // Int
-  Sushka[2].Temps[6] := "DR3_Temp_6"; // Int
-  Sushka[2].Temps[7] := "DR3_Temp_7"; // Int
-  Sushka[2].Temps[8] := "DR3_Temp_8"; // Int
-  Sushka[2].Temps[9] := "DR3_Temp_9"; // Int
-  Sushka[2].Temps[10] := "DR3_Temp_10"; // Int
-  Sushka[2].Temps[11] := "DR3_Temp_11"; // Int
-  Sushka[2].Temps[12] := "DR3_Temp_12"; // Int
-  Sushka[2].Temps[13] := "DR3_Temp_13"; // Int
-  Sushka[2].Temps[14] := "DR3_Temp_14"; // Int
-  Sushka[2].Temps[15] := "DR3_Temp_15"; // Int
-  Sushka[2].Temps[16] := "DR3_Temp_16"; // Int
-  Sushka[1].Temps[1] := "DR2_Temp_1"; // Int
-  Sushka[1].Temps[2] := "DR2_Temp_2"; // Int
-  Sushka[1].Temps[3] := "DR2_Temp_3"; // Int
-  Sushka[1].Temps[4] := "DR2_Temp_4"; // Int
-  Sushka[1].Temps[5] := "DR2_Temp_5"; // Int
-  Sushka[1].Temps[6] := "DR2_Temp_6"; // Int
-  Sushka[1].Temps[7] := "DR2_Temp_7"; // Int
-  Sushka[1].Temps[8] := "DR2_Temp_8"; // Int
-  Sushka[1].Temps[9] := "DR2_Temp_9"; // Int
-  Sushka[1].Temps[10] := "DR2_Temp_10"; // Int
-  Sushka[1].Temps[11] := "DR2_Temp_11"; // Int
-  Sushka[1].Temps[12] := "DR2_Temp_12"; // Int
-  Sushka[1].Temps[13] := "DR2_Temp_13"; // Int
-  Sushka[1].Temps[14] := "DR2_Temp_14"; // Int
-  Sushka[1].Temps[15] := "DR2_Temp_15"; // Int
-  Sushka[1].Temps[16] := "DR2_Temp_16"; // Int
-  Sushka[0].Temps[1] := "DR1_Temp_1"; // Int
-  Sushka[0].Temps[2] := "DR1_Temp_2"; // Int
-  Sushka[0].Temps[3] := "DR1_Temp_3"; // Int
-  Sushka[0].Temps[4] := "DR1_Temp_4"; // Int
-  Sushka[0].Temps[5] := "DR1_Temp_5"; // Int
-  Sushka[0].Temps[6] := "DR1_Temp_6"; // Int
-  Sushka[0].Temps[7] := "DR1_Temp_7"; // Int
-  Sushka[0].Temps[8] := "DR1_Temp_8"; // Int
-  Sushka[0].Temps[9] := "DR1_Temp_9"; // Int
-  Sushka[0].Temps[10] := "DR1_Temp_10"; // Int
-  Sushka[0].Temps[11] := "DR1_Temp_11"; // Int
-  Sushka[0].Temps[12] := "DR1_Temp_12"; // Int
-  Sushka[0].Temps[13] := "DR1_Temp_13"; // Int
-  Sushka[0].Temps[14] := "DR1_Temp_14"; // Int
-  Sushka[0].Temps[15] := "DR1_Temp_15"; // Int
-  Sushka[0].Temps[16] := "DR1_Temp_16"; // Int
-
+	// ===================================================================
+	// FC_HAL_Read: Чтение физических входов в структуры DB_Mechs
+	// Сгенерировано автоматически на основе PLCTags.csv и graph.json
+	// ===================================================================
+	REGION REDLERS
+	    REGION RD1 
+	        #Redler[0].DI_Breaker_OK := "RD1_DI_Breaker_OK"; // Автоматичний вимикач RD1
+	        #Redler[0].DI_Speed_OK := "RD1_DI_Speed_OK"; // Датчик руху RD1
+	        #Redler[0].DI_Overflow_OK := "RD1_DI_Overflow_OK"; // Датчик переповнення RD1
+	    END_REGION
+	    REGION RD2
+	        #Redler[1].DI_Breaker_OK := "RD2_DI_Breaker_OK"; // Автоматичний вимикач RD2
+	        #Redler[1].DI_Speed_OK := "RD2_DI_Speed_OK"; // Датчик руху RD2
+	        #Redler[1].DI_Overflow_OK := "RD2_DI_Overflow_OK"; // Датчик переповнення RD2
+	    END_REGION
+	    REGION RD3
+	        #Redler[2].DI_Breaker_OK := "RD3_DI_Breaker_OK"; // Автоматичний вимикач RD3
+	        #Redler[2].DI_Speed_OK := "RD3_DI_Speed_OK"; // Датчик руху RD3
+	        #Redler[2].DI_Overflow_OK := "RD3_DI_Overflow_OK"; // Датчик переповнення RD3
+	    END_REGION
+	    REGION RD4
+	        #Redler[3].DI_Breaker_OK := "RD4_DI_Breaker_OK"; // Автоматичний вимикач RD4
+	        #Redler[3].DI_Speed_OK := "RD4_DI_Speed_OK"; // Датчик руху RD4
+	        #Redler[3].DI_Overflow_OK := "RD4_DI_Overflow_OK"; // Датчик переповнення RD4
+	    END_REGION
+	    REGION RD5
+	        #Redler[4].DI_Breaker_OK := "RD5_DI_Breaker_OK"; // Автоматичний вимикач RD5
+	        #Redler[4].DI_Speed_OK := "RD5_DI_Speed_OK"; // Датчик руху RD5
+	        #Redler[4].DI_Overflow_OK := "RD5_DI_Overflow_OK"; // Датчик переповнення RD5
+	    END_REGION
+	    REGION RD6
+	        #Redler[5].DI_Breaker_OK := "RD6_DI_Breaker_OK"; // Автоматичний вимикач RD6
+	        #Redler[5].DI_Speed_OK := "RD6_DI_Speed_OK"; // Датчик руху RD6
+	        #Redler[5].DI_Overflow_OK := "RD6_DI_Overflow_OK"; // Датчик переповнення RD6
+	    END_REGION
+	    REGION RD7
+	        #Redler[6].DI_Breaker_OK := "RD7_DI_Breaker_OK"; // Автоматичний вимикач RD7
+	        #Redler[6].DI_Speed_OK := "RD7_DI_Speed_OK"; // Датчик руху RD7
+	        #Redler[6].DI_Overflow_OK := "RD7_DI_Overflow_OK"; // Датчик переповнення RD7
+	    END_REGION
+	    REGION RD8
+	        #Redler[7].DI_Breaker_OK := "RD8_DI_Breaker_OK"; // Автоматичний вимикач RD8
+	        #Redler[7].DI_Speed_OK := "RD8_DI_Speed_OK"; // Датчик руху RD8
+	        #Redler[7].DI_Overflow_OK := "RD8_DI_Overflow_OK"; // Датчик переповнення RD8
+	    END_REGION
+	    REGION RD9
+	        #Redler[8].DI_Breaker_OK := "RD9_DI_Breaker_OK"; // Автоматичний вимикач RD9
+	        #Redler[8].DI_Speed_OK := "RD9_DI_Speed_OK"; // Датчик руху RD9
+	        #Redler[8].DI_Overflow_OK := "RD9_DI_Overflow_OK"; // Датчик переповнення RD9
+	    END_REGION
+	    REGION RD10
+	        #Redler[9].DI_Breaker_OK := "RD10_DI_Breaker_OK"; // Автоматичний вимикач RD10
+	        #Redler[9].DI_Speed_OK := "RD10_DI_Speed_OK"; // Датчик руху RD10
+	        #Redler[9].DI_Overflow_OK := "RD10_DI_Overflow_OK"; // Датчик переповнення RD10
+	    END_REGION
+	    REGION RD11
+	        #Redler[10].DI_Breaker_OK := "RD11_DI_Breaker_OK"; // Автоматичний вимикач RD11
+	        #Redler[10].DI_Speed_OK := "RD11_DI_Speed_OK"; // Датчик руху RD11
+	        #Redler[10].DI_Overflow_OK := "RD11_DI_Overflow_OK"; // Датчик переповнення RD11
+	    END_REGION
+	    REGION RD12
+	        #Redler[11].DI_Breaker_OK := "RD12_DI_Breaker_OK"; // Автоматичний вимикач RD12
+	        #Redler[11].DI_Speed_OK := "RD12_DI_Speed_OK"; // Датчик руху RD12
+	        #Redler[11].DI_Overflow_OK := "RD12_DI_Overflow_OK"; // Датчик переповнення RD12
+	    END_REGION
+	    REGION RD13
+	        #Redler[12].DI_Breaker_OK := "RD13_DI_Breaker_OK"; // Автоматичний вимикач RD13
+	        #Redler[12].DI_Speed_OK := "RD13_DI_Speed_OK"; // Датчик руху RD13
+	        #Redler[12].DI_Overflow_OK := "RD13_DI_Overflow_OK"; // Датчик переповнення RD13
+	    END_REGION
+	    REGION RD14
+	        #Redler[13].DI_Breaker_OK := "RD14_DI_Breaker_OK"; // Автоматичний вимикач RD14
+	        #Redler[13].DI_Speed_OK := "RD14_DI_Speed_OK"; // Датчик руху RD14
+	        #Redler[13].DI_Overflow_OK := "RD14_DI_Overflow_OK"; // Датчик переповнення RD14
+	    END_REGION
+	    REGION RD15
+	        #Redler[14].DI_Breaker_OK := "RD15_DI_Breaker_OK"; // Автоматичний вимикач RD15
+	        #Redler[14].DI_Speed_OK := "RD15_DI_Speed_OK"; // Датчик руху RD15
+	        #Redler[14].DI_Overflow_OK := "RD15_DI_Overflow_OK"; // Датчик переповнення RD15
+	    END_REGION
+	    REGION RD16
+	        #Redler[15].DI_Breaker_OK := "RD16_DI_Breaker_OK"; // Автоматичний вимикач RD16
+	        #Redler[15].DI_Speed_OK := "RD16_DI_Speed_OK"; // Датчик руху RD16
+	        #Redler[15].DI_Overflow_OK := "RD16_DI_Overflow_OK"; // Датчик переповнення RD16
+	    END_REGION
+	    REGION RD17
+	        #Redler[16].DI_Breaker_OK := "RD17_DI_Breaker_OK"; // Автоматичний вимикач RD17
+	        #Redler[16].DI_Speed_OK := "RD17_DI_Speed_OK"; // Датчик руху RD17
+	        #Redler[16].DI_Overflow_OK := "RD17_DI_Overflow_OK"; // Датчик переповнення RD17
+	    END_REGION
+	    REGION RD18
+	        #Redler[17].DI_Breaker_OK := "RD18_DI_Breaker_OK"; // Автоматичний вимикач RD18
+	        #Redler[17].DI_Speed_OK := "RD18_DI_Speed_OK"; // Датчик руху RD18
+	        #Redler[17].DI_Overflow_OK := "RD18_DI_Overflow_OK"; // Датчик переповнення RD18
+	    END_REGION
+	    REGION RD19
+	        #Redler[18].DI_Breaker_OK := "RD19_DI_Breaker_OK"; // Автоматичний вимикач RD19
+	        #Redler[18].DI_Speed_OK := "RD19_DI_Speed_OK"; // Датчик руху RD19
+	        #Redler[18].DI_Overflow_OK := "RD19_DI_Overflow_OK"; // Датчик переповнення RD19
+	    END_REGION
+	    REGION RD20
+	        #Redler[19].DI_Breaker_OK := "RD20_DI_Breaker_OK"; // Автоматичний вимикач RD20
+	        #Redler[19].DI_Speed_OK := "RD20_DI_Speed_OK"; // Датчик руху RD20
+	        #Redler[19].DI_Overflow_OK := "RD20_DI_Overflow_OK"; // Датчик переповнення RD20
+	    END_REGION
+	    REGION RD21
+	        #Redler[20].DI_Breaker_OK := "RD21_DI_Breaker_OK"; // Автоматичний вимикач RD21
+	        #Redler[20].DI_Speed_OK := "RD21_DI_Speed_OK"; // Датчик руху RD21
+	        #Redler[20].DI_Overflow_OK := "RD21_DI_Overflow_OK"; // Датчик переповнення RD21
+	    END_REGION
+	    REGION RD22
+	        #Redler[21].DI_Breaker_OK := "RD22_DI_Breaker_OK"; // Автоматичний вимикач RD22
+	        #Redler[21].DI_Speed_OK := "RD22_DI_Speed_OK"; // Датчик руху RD22
+	        #Redler[21].DI_Overflow_OK := "RD22_DI_Overflow_OK"; // Датчик переповнення RD22
+	    END_REGION
+	    REGION RD23
+	        #Redler[22].DI_Breaker_OK := "RD23_DI_Breaker_OK"; // Автоматичний вимикач RD23
+	        #Redler[22].DI_Speed_OK := "RD23_DI_Speed_OK"; // Датчик руху RD23
+	        #Redler[22].DI_Overflow_OK := "RD23_DI_Overflow_OK"; // Датчик переповнення RD23
+	    END_REGION
+	    REGION RD24
+	        #Redler[23].DI_Breaker_OK := "RD24_DI_Breaker_OK"; // Автоматичний вимикач RD24
+	        #Redler[23].DI_Speed_OK := "RD24_DI_Speed_OK"; // Датчик руху RD24
+	        #Redler[23].DI_Overflow_OK := "RD24_DI_Overflow_OK"; // Датчик переповнення RD24
+	    END_REGION
+	    REGION RD25
+	        #Redler[24].DI_Breaker_OK := "RD25_DI_Breaker_OK"; // Автоматичний вимикач RD25
+	        #Redler[24].DI_Speed_OK := "RD25_DI_Speed_OK"; // Датчик руху RD25
+	        #Redler[24].DI_Overflow_OK := "RD25_DI_Overflow_OK"; // Датчик переповнення RD25
+	    END_REGION
+	    REGION RD26
+	        #Redler[25].DI_Breaker_OK := "RD26_DI_Breaker_OK"; // Автоматичний вимикач RD26
+	        #Redler[25].DI_Speed_OK := "RD26_DI_Speed_OK"; // Датчик руху RD26
+	        #Redler[25].DI_Overflow_OK := "RD26_DI_Overflow_OK"; // Датчик переповнення RD26
+	    END_REGION
+	    REGION RD27
+	        #Redler[26].DI_Breaker_OK := "RD27_DI_Breaker_OK"; // Автоматичний вимикач RD27
+	        #Redler[26].DI_Speed_OK := "RD27_DI_Speed_OK"; // Датчик руху RD27
+	        #Redler[26].DI_Overflow_OK := "RD27_DI_Overflow_OK"; // Датчик переповнення RD27
+	    END_REGION
+	    REGION RD28
+	        #Redler[27].DI_Breaker_OK := "RD28_DI_Breaker_OK"; // Автоматичний вимикач RD28
+	        #Redler[27].DI_Speed_OK := "RD28_DI_Speed_OK"; // Датчик руху RD28
+	        #Redler[27].DI_Overflow_OK := "RD28_DI_Overflow_OK"; // Датчик переповнення RD28
+	    END_REGION
+	    REGION RD29
+	        #Redler[28].DI_Breaker_OK := "RD29_DI_Breaker_OK"; // Автоматичний вимикач RD29
+	        #Redler[28].DI_Speed_OK := "RD29_DI_Speed_OK"; // Датчик руху RD29
+	        #Redler[28].DI_Overflow_OK := "RD29_DI_Overflow_OK"; // Датчик переповнення RD29
+	    END_REGION
+	    REGION RD30
+	        #Redler[29].DI_Breaker_OK := "RD30_DI_Breaker_OK"; // Автоматичний вимикач RD30
+	        #Redler[29].DI_Speed_OK := "RD30_DI_Speed_OK"; // Датчик руху RD30
+	        #Redler[29].DI_Overflow_OK := "RD30_DI_Overflow_OK"; // Датчик переповнення RD30
+	    END_REGION
+	    REGION RD31
+	        #Redler[30].DI_Breaker_OK := "RD31_DI_Breaker_OK"; // Автоматичний вимикач RD31
+	        #Redler[30].DI_Speed_OK := "RD31_DI_Speed_OK"; // Датчик руху RD31
+	        #Redler[30].DI_Overflow_OK := "RD31_DI_Overflow_OK"; // Датчик переповнення RD31
+	    END_REGION
+	    REGION RD32
+	        #Redler[31].DI_Breaker_OK := "RD32_DI_Breaker_OK"; // Автоматичний вимикач RD32
+	        #Redler[31].DI_Speed_OK := "RD32_DI_Speed_OK"; // Датчик руху RD32
+	        #Redler[31].DI_Overflow_OK := "RD32_DI_Overflow_OK"; // Датчик переповнення RD32
+	    END_REGION
+	    REGION RD33
+	        #Redler[32].DI_Breaker_OK := "RD33_DI_Breaker_OK"; // Автоматичний вимикач RD33
+	        #Redler[32].DI_Speed_OK := "RD33_DI_Speed_OK"; // Датчик руху RD33
+	        #Redler[32].DI_Overflow_OK := "RD33_DI_Overflow_OK"; // Датчик переповнення RD33
+	    END_REGION
+	    REGION RD34
+	        #Redler[33].DI_Breaker_OK := "RD34_DI_Breaker_OK"; // Автоматичний вимикач RD34
+	        #Redler[33].DI_Speed_OK := "RD34_DI_Speed_OK"; // Датчик руху RD34
+	        #Redler[33].DI_Overflow_OK := "RD34_DI_Overflow_OK"; // Датчик переповнення RD34
+	    END_REGION
+	    REGION RD35
+	        #Redler[34].DI_Breaker_OK := "RD35_DI_Breaker_OK"; // Автоматичний вимикач RD35
+	        #Redler[34].DI_Speed_OK := "RD35_DI_Speed_OK"; // Датчик руху RD35
+	        #Redler[34].DI_Overflow_OK := "RD35_DI_Overflow_OK"; // Датчик переповнення RD5
+	    END_REGION
+	    REGION RD36
+	        #Redler[35].DI_Breaker_OK := "RD36_DI_Breaker_OK"; // Автоматичний вимикач RD36
+	        #Redler[35].DI_Speed_OK := "RD36_DI_Speed_OK"; // Датчик руху RD36
+	        #Redler[35].DI_Overflow_OK := "RD36_DI_Overflow_OK"; // Датчик переповнення RD36
+	    END_REGION
+	    REGION RD37
+	        #Redler[36].DI_Breaker_OK := "RD37_DI_Breaker_OK"; // Автоматичний вимикач RD37
+	        #Redler[36].DI_Speed_OK := "RD37_DI_Speed_OK"; // Датчик руху RD37
+	        #Redler[36].DI_Overflow_OK := "RD37_DI_Overflow_OK"; // Датчик переповнення RD37
+	    END_REGION
+	    REGION RD38
+	        #Redler[37].DI_Breaker_OK := "RD38_DI_Breaker_OK"; // Автоматичний вимикач RD38
+	        #Redler[37].DI_Speed_OK := "RD38_DI_Speed_OK"; // Датчик руху RD38
+	        #Redler[37].DI_Overflow_OK := "RD38_DI_Overflow_OK"; // Датчик переповнення RD38
+	    END_REGION
+	END_REGION
+	REGION NORIAS
+	    REGION NR1
+	        #Noria[0].DI_Breaker_OK := "NR1_DI_Breaker_OK"; // Автоматичний вимикач NR1
+	        #Noria[0].DI_Speed_OK := "NR1_DI_Speed_OK"; // Датчик руху NR1
+	        #Noria[0].DI_Alignment_OK := "NR1_DI_Alignment_OK"; // Схід стрічки NR1
+	    END_REGION
+	    REGION NR2
+	        #Noria[1].DI_Breaker_OK := "NR2_DI_Breaker_OK"; // Автоматичний вимикач NR2
+	        #Noria[1].DI_Speed_OK := "NR2_DI_Speed_OK"; // Датчик руху NR2
+	        #Noria[1].DI_Alignment_OK := "NR2_DI_Alignment_OK"; // Схід стрічки NR2
+	    END_REGION
+	    REGION NR3
+	        #Noria[2].DI_Breaker_OK := "NR3_DI_Breaker_OK"; // Автоматичний вимикач NR3
+	        #Noria[2].DI_Speed_OK := "NR3_DI_Speed_OK"; // Датчик руху NR3
+	        #Noria[2].DI_Alignment_OK := "NR3_DI_Alignment_OK"; // Схід стрічки NR3
+	    END_REGION
+	    REGION NR4
+	        #Noria[3].DI_Breaker_OK := "NR4_DI_Breaker_OK"; // Автоматичний вимикач NR4
+	        #Noria[3].DI_Speed_OK := "NR4_DI_Speed_OK"; // Датчик руху NR4
+	        #Noria[3].DI_Alignment_OK := "NR4_DI_Alignment_OK"; // Схід стрічки NR4
+	    END_REGION
+	    REGION NR5
+	        #Noria[4].DI_Breaker_OK := "NR5_DI_Breaker_OK"; // Автоматичний вимикач NR5
+	        #Noria[4].DI_Speed_OK := "NR5_DI_Speed_OK"; // Датчик руху NR5
+	        #Noria[4].DI_Alignment_OK := "NR5_DI_Alignment_OK"; // Схід стрічки NR5
+	    END_REGION
+	    REGION NR6
+	        #Noria[5].DI_Breaker_OK := "NR6_DI_Breaker_OK"; // Автоматичний вимикач NR6
+	        #Noria[5].DI_Speed_OK := "NR6_DI_Speed_OK"; // Датчик руху NR6
+	        #Noria[5].DI_Alignment_OK := "NR6_DI_Alignment_OK"; // Схід стрічки NR6
+	    END_REGION
+	    REGION NR7
+	        #Noria[6].DI_Breaker_OK := "NR7_DI_Breaker_OK"; // Автоматичний вимикач NR7
+	        #Noria[6].DI_Speed_OK := "NR7_DI_Speed_OK"; // Датчик руху NR7
+	        #Noria[6].DI_Alignment_OK := "NR7_DI_Alignment_OK"; // Схід стрічки NR7
+	    END_REGION
+	    REGION NR8
+	        #Noria[7].DI_Breaker_OK := "NR8_DI_Breaker_OK"; // Автоматичний вимикач NR8
+	        #Noria[7].DI_Speed_OK := "NR8_DI_Speed_OK"; // Датчик руху NR8
+	        #Noria[7].DI_Alignment_OK := "NR8_DI_Alignment_OK"; // Схід стрічки NR8
+	    END_REGION
+	    REGION NR9
+	        #Noria[8].DI_Breaker_OK := "NR9_DI_Breaker_OK"; // Автоматичний вимикач NR9
+	        #Noria[8].DI_Speed_OK := "NR9_DI_Speed_OK"; // Датчик руху NR9
+	        #Noria[8].DI_Alignment_OK := "NR9_DI_Alignment_OK"; // Схід стрічки NR9
+	    END_REGION
+	    REGION NR10
+	        #Noria[9].DI_Breaker_OK := "NR10_DI_Breaker_OK"; // Автоматичний вимикач NR10
+	        #Noria[9].DI_Speed_OK := "NR10_DI_Speed_OK"; // Датчик руху NR10
+	        #Noria[9].DI_Alignment_OK := "NR10_DI_Alignment_OK"; // Схід стрічки NR10
+	    END_REGION
+	    REGION NR11
+	        #Noria[10].DI_Breaker_OK := "NR11_DI_Breaker_OK"; // Автоматичний вимикач NR11
+	        #Noria[10].DI_Speed_OK := "NR11_DI_Speed_OK"; // Датчик руху NR11
+	        #Noria[10].DI_Alignment_OK := "NR11_DI_Alignment_OK"; // Схід стрічки NR11
+	    END_REGION
+	END_REGION
+	REGION FEEDERS_SEPARATORS_FANS    
+	    REGION SEP1
+	        #Separator[0].DI_Feedback_OK := "SEP1_DI_Feedback_OK"; // Фідбек контактору SEP1
+	        REGION FN1
+	            #Fan[0].DI_Feedback_OK := "FN1_DI_Feedback_OK"; // Фідбек контактору FN1
+	        END_REGION
+	        REGION FD1
+	            #Feeder[0].DI_Feedback_OK := "FD1_DI_Feedback_OK"; // Фідбек контактору FD1
+	        END_REGION
+	    END_REGION
+	    REGION SEP2
+	        #Separator[1].DI_Feedback_OK := "SEP2_DI_Feedback_OK"; // Фідбек контактору SEP2
+	        REGION FN2
+	            #Fan[1].DI_Feedback_OK := "FN2_DI_Feedback_OK"; // Фідбек контактору FN2
+	        END_REGION
+	        REGION FD2
+	            #Feeder[1].DI_Feedback_OK := "FD2_DI_Feedback_OK"; // Фідбек контактору FD2
+	        END_REGION
+	    END_REGION
+	    REGION SEP3
+	        #Separator[2].DI_Feedback_OK := "SEP3_DI_Feedback_OK"; // Фідбек контактору SEP3
+	        REGION FN3
+	            #Fan[2].DI_Feedback_OK := "FN3_DI_Feedback_OK"; // Фідбек контактору FN3
+	        END_REGION
+	        REGION FD3
+	            #Feeder[2].DI_Feedback_OK := "FD3_DI_Feedback_OK"; // Фідбек контактору FD3
+	        END_REGION
+	    END_REGION
+	END_REGION
+	REGION DRYER
+	    REGION DR1
+	        REGION FANS[1-7]
+	            #Dryer[0].Fans[0].DI_Breaker_OK := "DR1_FN1_DI_Breaker_OK"; // Автоматичний вимикач FN1 Сушарка№1
+	            #Dryer[0].Fans[0].DI_Feedback_OK := "DR1_FN1_DI_Feedback_OK"; // Фідбек контактору FN1 Сушарка№1
+	            #Dryer[0].Fans[1].DI_Breaker_OK := "DR1_FN2_DI_Breaker_OK"; // Автоматичний вимикач FN2 Сушарка№1
+	            #Dryer[0].Fans[1].DI_Feedback_OK := "DR1_FN2_DI_Feedback_OK"; // Фідбек контактору FN2 Сушарка№1
+	            #Dryer[0].Fans[2].DI_Breaker_OK := "DR1_FN3_DI_Breaker_OK"; // Автоматичний вимикач FN3 Сушарка№1
+	            #Dryer[0].Fans[2].DI_Feedback_OK := "DR1_FN3_DI_Feedback_OK"; // Фідбек контактору FN3 Сушарка№1
+	            #Dryer[0].Fans[3].DI_Breaker_OK := "DR1_FN4_DI_Breaker_OK"; // Автоматичний вимикач FN4 Сушарка№1
+	            #Dryer[0].Fans[3].DI_Feedback_OK := "DR1_FN4_DI_Feedback_OK"; // Фідбек контактору FN4 Сушарка№1
+	            #Dryer[0].Fans[4].DI_Breaker_OK := "DR1_FN5_DI_Breaker_OK"; // Автоматичний вимикач FN5 Сушарка№1
+	            #Dryer[0].Fans[4].DI_Feedback_OK := "DR1_FN5_DI_Feedback_OK"; // Фідбек контактору FN5 Сушарка№1
+	            #Dryer[0].Fans[5].DI_Breaker_OK := "DR1_FN6_DI_Breaker_OK"; // Автоматичний вимикач FN6 Сушарка№1
+	            #Dryer[0].Fans[5].DI_Feedback_OK := "DR1_FN6_DI_Feedback_OK"; // Фідбек контактору FN6 Сушарка№1
+	            #Dryer[0].Fans[6].DI_Breaker_OK := "DR1_FN7_DI_Breaker_OK"; // Автоматичний вимикач FN7 Сушарка№1
+	            #Dryer[0].Fans[6].DI_Feedback_OK := "DR1_FN7_DI_Feedback_OK"; // Фідбек контактору FN7 Сушарка№1
+	        END_REGION
+	        REGION BURNER 1
+	            #Dryer[0].Burners[0].DI_Breaker_OK := "DR1_PAL1_DI_Breaker_OK"; // Автоматичний вимикач PAL1 Сушарка№1
+	            #Dryer[0].Burners[0].DI_Auto_OK := "DR1_PAL1_DI_Auto_OK"; // Автоматичний режим PAL1 Суршарка№1
+	            #Dryer[0].Burners[0].DI_Feedback1_OK := "DR1_PAL1_DI_Feedback1_OK"; // Фідбек контактору PAL1 Сушарка№1
+	            #Dryer[0].Burners[0].DI_Alarm := "DR1_PAL1_DI_Alarm"; // Сигнал аварії PAL1 Сушарка№1
+	            #Dryer[0].Burners[0].DI_Temp_OK := "DR1_PAL1_DI_Temp_OK"; // Температура в нормі Сушарка№1
+	        END_REGION
+	        REGION BURNER 2
+	            #Dryer[0].Burners[1].DI_Breaker_OK := "DR1_PAL2_DI_Breaker_OK"; // Автоматичний вимикач PAL2 Сушарка№1
+	            #Dryer[0].Burners[1].DI_Auto_OK := "DR1_PAL2_DI_Auto_OK"; // Автоматичний режим PAL2 Суршарка№1
+	            #Dryer[0].Burners[1].DI_Feedback1_OK := "DR1_PAL2_DI_Feedback1_OK"; // Фідбек контактору PAL2 Сушарка№1
+	            #Dryer[0].Burners[1].DI_Alarm := "DR1_PAL2_DI_Alarm"; // Сигнал аварії PAL2 Сушарка№1
+	            #Dryer[0].Burners[1].DI_Temp_OK := "DR1_PAL2_DI_Temp_OK"; // Температура в нормі Сушарка№1
+	        END_REGION
+	        REGION UW
+	            #Dryer[0].Discharge.DI_Feedback_OK := "UW1_DI_Feedback_OK"; // 
+	        END_REGION
+	    END_REGION
+	    REGION DR2
+	        REGION FANS[1-7]
+	            #Dryer[1].Fans[0].DI_Breaker_OK := "DR2_FN1_DI_Breaker_OK"; // Автоматичний вимикач FN1 Сушарка№2
+	            #Dryer[1].Fans[0].DI_Feedback_OK := "DR2_FN1_DI_Feedback_OK"; // Фідбек контактору FN1 Сушарка№2
+	            #Dryer[1].Fans[1].DI_Breaker_OK := "DR2_FN2_DI_Breaker_OK"; // Автоматичний вимикач FN2 Сушарка№2
+	            #Dryer[1].Fans[1].DI_Feedback_OK := "DR2_FN2_DI_Feedback_OK"; // Фідбек контактору FN2 Сушарка№2
+	            #Dryer[1].Fans[2].DI_Breaker_OK := "DR2_FN3_DI_Breaker_OK"; // Автоматичний вимикач FN3 Сушарка№2
+	            #Dryer[1].Fans[2].DI_Feedback_OK := "DR2_FN3_DI_Feedback_OK"; // Фідбек контактору FN3 Сушарка№2
+	            #Dryer[1].Fans[3].DI_Breaker_OK := "DR2_FN4_DI_Breaker_OK"; // Автоматичний вимикач FN4 Сушарка№2
+	            #Dryer[1].Fans[3].DI_Feedback_OK := "DR2_FN4_DI_Feedback_OK"; // Фідбек контактору FN4 Сушарка№2
+	            #Dryer[1].Fans[4].DI_Breaker_OK := "DR2_FN5_DI_Breaker_OK"; // Автоматичний вимикач FN5 Сушарка№2
+	            #Dryer[1].Fans[4].DI_Feedback_OK := "DR2_FN5_DI_Feedback_OK"; // Фідбек контактору FN5 Сушарка№2
+	            #Dryer[1].Fans[5].DI_Breaker_OK := "DR2_FN6_DI_Breaker_OK"; // Автоматичний вимикач FN6 Сушарка№2
+	            #Dryer[1].Fans[5].DI_Feedback_OK := "DR2_FN6_DI_Feedback_OK"; // Фідбек контактору FN6 Сушарка№2
+	            #Dryer[1].Fans[6].DI_Breaker_OK := "DR2_FN7_DI_Breaker_OK"; // Автоматичний вимикач FN7 Сушарка№2
+	            #Dryer[1].Fans[6].DI_Feedback_OK := "DR2_FN7_DI_Feedback_OK"; // Фідбек контактору FN7 Сушарка№2
+	        END_REGION
+	        REGION BURNER 1
+	            #Dryer[1].Burners[0].DI_Breaker_OK := "DR2_PAL1_DI_Breaker_OK"; // Автоматичний вимикач PAL1 Сушарка№2
+	            #Dryer[1].Burners[0].DI_Auto_OK := "DR2_PAL1_DI_Auto_OK"; // Автоматичний режим PAL1 Суршарка№2
+	            #Dryer[1].Burners[0].DI_Feedback1_OK := "DR2_PAL1_DI_Feedback1_OK"; // Фідбек контактору PAL1 Сушарка№2
+	            #Dryer[1].Burners[0].DI_Alarm := "DR2_PAL1_DI_Alarm"; // Сигнал аварії PAL1 Сушарка№2
+	            #Dryer[1].Burners[0].DI_Temp_OK := "DR2_PAL1_DI_Temp_OK"; // Температура в нормі Сушарка№2
+	        END_REGION
+	        REGION BURNER 2
+	            #Dryer[1].Burners[1].DI_Breaker_OK := "DR2_PAL2_DI_Breaker_OK"; // Автоматичний вимикач PAL2 Сушарка№2
+	            #Dryer[1].Burners[1].DI_Auto_OK := "DR2_PAL2_DI_Auto_OK"; // Автоматичний режим PAL2 Сушарка№2
+	            #Dryer[1].Burners[1].DI_Feedback1_OK := "DR2_PAL2_DI_Feedback1_OK"; // Фідбек контактору PAL2 Сушарка№2
+	            #Dryer[1].Burners[1].DI_Alarm := "DR2_PAL2_DI_Alarm"; // Сигнал аварії PAL2 Сушарка№2
+	            #Dryer[1].Burners[1].DI_Temp_OK := "DR2_PAL2_DI_Temp_OK"; // Температура в нормі Сушарка№2
+	        END_REGION
+	        REGION UW 
+	            #Dryer[1].Discharge.DI_Feedback_OK := "UW2_DI_Feedback_OK"; // 
+	        END_REGION
+	    END_REGION
+	    REGION DR3
+	        REGION FANS [1-7]
+	            #Dryer[2].Fans[0].DI_Breaker_OK := "DR3_FN1_DI_Breaker_OK"; // Автоматичний вимикач FN1 Сушарка№3
+	            #Dryer[2].Fans[0].DI_Feedback_OK := "DR3_FN1_DI_Feedback_OK"; // Фідбек контактору FN1 Сушарка№3
+	            #Dryer[2].Fans[1].DI_Breaker_OK := "DR3_FN2_DI_Breaker_OK"; // Автоматичний вимикач FN2 Сушарка№3
+	            #Dryer[2].Fans[1].DI_Feedback_OK := "DR3_FN2_DI_Feedback_OK"; // Фідбек контактору FN2 Сушарка№3
+	            #Dryer[2].Fans[2].DI_Breaker_OK := "DR3_FN3_DI_Breaker_OK"; // Автоматичний вимикач FN3 Сушarка№3
+	            #Dryer[2].Fans[2].DI_Feedback_OK := "DR3_FN3_DI_Feedback_OK"; // Фідбек контактору FN3 Сушarка№3
+	            #Dryer[2].Fans[3].DI_Breaker_OK := "DR3_FN4_DI_Breaker_OK"; // Автоматичний вимикач FN4 Сушарка№3
+	            #Dryer[2].Fans[3].DI_Feedback_OK := "DR3_FN4_DI_Feedback_OK"; // Фідбек контактору FN4 Сушарка№3
+	            #Dryer[2].Fans[4].DI_Breaker_OK := "DR3_FN5_DI_Breaker_OK"; // Автоматичний вимикач FN5 Сушарка№3
+	            #Dryer[2].Fans[4].DI_Feedback_OK := "DR3_FN5_DI_Feedback_OK"; // Фідбек контактору FN5 Сушарка№3
+	            #Dryer[2].Fans[5].DI_Breaker_OK := "DR3_FN6_DI_Breaker_OK"; // Автоматичний вимикач FN6 Сушарка№3
+	            #Dryer[2].Fans[5].DI_Feedback_OK := "DR3_FN6_DI_Feedback_OK"; // Фідбек контактору FN6 Сушарка№3
+	            #Dryer[2].Fans[6].DI_Breaker_OK := "DR3_FN7_DI_Breaker_OK"; // Автоматичний вимикач FN7 Сушarка№3
+	            #Dryer[2].Fans[6].DI_Feedback_OK := "DR3_FN7_DI_Feedback_OK"; // Фідбек контактору FN7 Сушarка№3
+	        END_REGION
+	        REGION BURNER 1
+	            #Dryer[2].Burners[0].DI_Breaker_OK := "DR3_PAL1_DI_Breaker_OK"; // Автоматичний вимикач PAL1 Сушарка№3
+	            #Dryer[2].Burners[0].DI_Auto_OK := "DR3_PAL1_DI_Auto_OK"; // Автоматичний режим PAL1 Суршарка№3
+	            #Dryer[2].Burners[0].DI_Feedback1_OK := "DR3_PAL1_DI_Feedback1_OK"; // Фідбек контактору PAL1 Сушарка№3
+	            #Dryer[2].Burners[0].DI_Alarm := "DR3_PAL1_DI_Alarm"; // Сигнал аварії PAL1 Сушарка№3
+	            #Dryer[2].Burners[0].DI_Temp_OK := "DR3_PAL1_DI_Temp_OK"; // Температура в нормі Сушарка№3
+	        END_REGION
+	        REGION BURNER 2
+	            #Dryer[2].Burners[1].DI_Breaker_OK := "DR3_PAL2_DI_Breaker_OK"; // Автоматичний вимикач PAL2 Сушарка№3
+	            #Dryer[2].Burners[1].DI_Auto_OK := "DR3_PAL2_DI_Auto_OK"; // Автоматичний режим PAL2 Сушарка№3
+	            #Dryer[2].Burners[1].DI_Feedback1_OK := "DR3_PAL2_DI_Feedback1_OK"; // Фідбек контактору PAL2 Сушарка№3
+	            #Dryer[2].Burners[1].DI_Alarm := "DR3_PAL2_DI_Alarm"; // Сигнал аварії PAL2 Сушарка№3
+	            #Dryer[2].Burners[1].DI_Temp_OK := "DR3_PAL2_DI_Temp_OK"; // Температура в нормі Сушарка№3
+	        END_REGION
+	        REGION UW
+	            #Dryer[2].Discharge.DI_Feedback_OK := "UW3_DI_Feedback_OK"; // 
+	        END_REGION
+	    END_REGION
+	END_REGION
+	REGION GATE2PS
+	    REGION GT5.1
+	        #Gate2P[15].DI_Breaker_OK := "GT5_1_DI_Breaker_OK"; // Автоматичний вимикач GT5.1
+	        #Gate2P[15].DI_Pos0_OK := "GT5_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT5.1
+	        #Gate2P[15].DI_Pos1_OK := "GT5_1_DI_Pos1_OK"; // Датчик положення (закрито) GT5.1
+	    END_REGION
+	    REGION GT5.2
+	        #Gate2P[16].DI_Breaker_OK := "GT5_2_DI_Breaker_OK"; // Автоматичний вимикач GT5.2
+	        #Gate2P[16].DI_Pos0_OK := "GT5_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT5.2
+	        #Gate2P[16].DI_Pos1_OK := "GT5_2_DI_Pos1_OK"; // Датчик положення (закрито) GT5.2
+	    END_REGION
+	    REGION GT5.3
+	        #Gate2P[17].DI_Breaker_OK := "GT5_3_DI_Breaker_OK"; // Автоматичний вимикач GT5.3
+	        #Gate2P[17].DI_Pos0_OK := "GT5_3_DI_Pos0_OK"; // Датчик положення (відкрито) GT5.3
+	        #Gate2P[17].DI_Pos1_OK := "GT5_3_DI_Pos1_OK"; // Датчик положення (закрито) GT5.3
+	    END_REGION
+	    REGION GT6.1
+	        #Gate2P[25].DI_Breaker_OK := "GT6_1_DI_Breaker_OK"; // Автоматичний вимикач GT6.1
+	        #Gate2P[25].DI_Pos0_OK := "GT6_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT6.1
+	        #Gate2P[25].DI_Pos1_OK := "GT6_1_DI_Pos1_OK"; // Датчик положення (закрито) GT6.1
+	    END_REGION
+	    REGION GT6.2
+	        #Gate2P[26].DI_Breaker_OK := "GT6_2_DI_Breaker_OK"; // Автоматичний вимикач GT6.2
+	        #Gate2P[26].DI_Pos0_OK := "GT6_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT6.2
+	        #Gate2P[26].DI_Pos1_OK := "GT6_2_DI_Pos1_OK"; // Датчик положення (закрито) GT6.2
+	    END_REGION
+	    REGION GT6.3
+	        #Gate2P[27].DI_Breaker_OK := "GT6_3_DI_Breaker_OK"; // Автоматичний вимикач GT6.3
+	        #Gate2P[27].DI_Pos0_OK := "GT6_3_DI_Pos0_OK"; // Датчик положення (відкрито) GT6.3
+	        #Gate2P[27].DI_Pos1_OK := "GT6_3_DI_Pos1_OK"; // Датчик положення (закрито) GT6.3
+	    END_REGION
+	    REGION GT7.1
+	        #Gate2P[35].DI_Breaker_OK := "GT7_1_DI_Breaker_OK"; // Автоматичний вимикач GT7.1
+	        #Gate2P[35].DI_Pos0_OK := "GT7_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT7.1
+	        #Gate2P[35].DI_Pos1_OK := "GT7_1_DI_Pos1_OK"; // Датчик положення (закрито) GT7.1
+	    END_REGION
+	    REGION GT7.2
+	        #Gate2P[30].DI_Breaker_OK := "GT7_2_DI_Breaker_OK"; // Автоматичний вимикач GT7.2
+	        #Gate2P[30].DI_Pos0_OK := "GT7_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT7.2
+	        #Gate2P[30].DI_Pos1_OK := "GT7_2_DI_Pos1_OK"; // Датчик положення (закрито) GT7.2
+	    END_REGION
+	    REGION GT8.1
+	        #Gate2P[56].DI_Breaker_OK := "GT8_1_DI_Breaker_OK"; // Автоматичний вимикач GT8.1
+	        #Gate2P[56].DI_Pos0_OK := "GT8_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT8.1
+	        #Gate2P[56].DI_Pos1_OK := "GT8_1_DI_Pos1_OK"; // Датчик положення (закрито) GT8.1
+	    END_REGION
+	    REGION GT8.2
+	        #Gate2P[54].DI_Breaker_OK := "GT8_2_DI_Breaker_OK"; // Автоматичний вимикач GT8.2
+	        #Gate2P[54].DI_Pos0_OK := "GT8_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT8.2
+	        #Gate2P[54].DI_Pos1_OK := "GT8_2_DI_Pos1_OK"; // Датчик положення (закрито) GT8.2
+	    END_REGION
+	    REGION GT8.3
+	        #Gate2P[53].DI_Breaker_OK := "GT8_3_DI_Breaker_OK"; // Автоматичний вимикач GT8.3
+	        #Gate2P[53].DI_Pos0_OK := "GT8_3_DI_Pos0_OK"; // Датчик положення (відкрито) GT8.3
+	        #Gate2P[53].DI_Pos1_OK := "GT8_3_DI_Pos1_OK"; // Датчик положення (закрито) GT8.3
+	    END_REGION
+	    REGION GT9.1
+	        #Gate2P[31].DI_Breaker_OK := "GT9_1_DI_Breaker_OK"; // Автоматичний вимикач GT9.1
+	        #Gate2P[31].DI_Pos0_OK := "GT9_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT9.1
+	        #Gate2P[31].DI_Pos1_OK := "GT9_1_DI_Pos1_OK"; // Датчик положення (закрито) GT9.1
+	    END_REGION
+	    REGION GT9.2
+	        #Gate2P[29].DI_Breaker_OK := "GT9_2_DI_Breaker_OK"; // Автоматичний вимикач GT9.2
+	        #Gate2P[29].DI_Pos0_OK := "GT9_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT9.2
+	        #Gate2P[29].DI_Pos1_OK := "GT9_2_DI_Pos1_OK"; // Датчик положення (закрито) GT9.2
+	    END_REGION
+	    REGION GT10.1
+	        #Gate2P[52].DI_Breaker_OK := "GT10_1_DI_Breaker_OK"; // Автоматичний вимикач GT10.1
+	        #Gate2P[52].DI_Pos0_OK := "GT10_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT10.1
+	        #Gate2P[52].DI_Pos1_OK := "GT10_1_DI_Pos1_OK"; // Датчик положення (закрито) GT10.1
+	    END_REGION
+	    REGION GT10.2
+	        #Gate2P[51].DI_Breaker_OK := "GT10_2_DI_Breaker_OK"; // Автоматичний вимикач GT10.2
+	        #Gate2P[51].DI_Pos0_OK := "GT10_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT10.2
+	        #Gate2P[51].DI_Pos1_OK := "GT10_2_DI_Pos1_OK"; // Датчик положення (закрито) GT10.2
+	    END_REGION
+	    REGION GT11.1
+	        #Gate2P[34].DI_Breaker_OK := "GT11_1_DI_Breaker_OK"; // Автоматичний вимикач GT11.1
+	        #Gate2P[34].DI_Pos0_OK := "GT11_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT11.1
+	        #Gate2P[34].DI_Pos1_OK := "GT11_1_DI_Pos1_OK"; // Датчик положення (закрито) GT11.1
+	    END_REGION
+	    REGION GT11.2
+	        #Gate2P[36].DI_Breaker_OK := "GT11_2_DI_Breaker_OK"; // Автоматичний вимикач GT11.2
+	        #Gate2P[36].DI_Pos0_OK := "GT11_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT11.2
+	        #Gate2P[36].DI_Pos1_OK := "GT11_2_DI_Pos1_OK"; // Датчик положення (закрито) GT11.2
+	    END_REGION
+	    REGION GT12.1
+	        #Gate2P[55].DI_Breaker_OK := "GT12_1_DI_Breaker_OK"; // Автоматичний вимикач GT12.1
+	        #Gate2P[55].DI_Pos0_OK := "GT12_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT12.1
+	        #Gate2P[55].DI_Pos1_OK := "GT12_1_DI_Pos1_OK"; // Датчик положення (закрито) GT12.1
+	    END_REGION
+	    REGION GT12.2
+	        #Gate2P[57].DI_Breaker_OK := "GT12_2_DI_Breaker_OK"; // Автоматичний вимикач GT12.2
+	        #Gate2P[57].DI_Pos0_OK := "GT12_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT12.2
+	        #Gate2P[57].DI_Pos1_OK := "GT12_2_DI_Pos1_OK"; // Датчик положення (закрито) GT12.2
+	    END_REGION
+	    REGION GT14.1
+	        #Gate2P[60].DI_Breaker_OK := "GT14_1_DI_Breaker_OK"; // Автоматичний вимикач GT14.1
+	        #Gate2P[60].DI_Pos0_OK := "GT14_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT14.1
+	        #Gate2P[60].DI_Pos1_OK := "GT14_1_DI_Pos1_OK"; // Датчик положення (закрито) GT14.1
+	    END_REGION
+	    REGION GT14.2
+	        #Gate2P[59].DI_Breaker_OK := "GT14_2_DI_Breaker_OK"; // Автоматичний вимикач GT14.2
+	        #Gate2P[59].DI_Pos0_OK := "GT14_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT14.2
+	        #Gate2P[59].DI_Pos1_OK := "GT14_2_DI_Pos1_OK"; // Датчик положення (закрито) GT14.2
+	    END_REGION
+	    REGION GT15.1
+	        #Gate2P[23].DI_Breaker_OK := "GT15_1_DI_Breaker_OK"; // Автоматичний вимикач GT15.1
+	        #Gate2P[23].DI_Pos0_OK := "GT15_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT15.1
+	        #Gate2P[23].DI_Pos1_OK := "GT15_1_DI_Pos1_OK"; // Датчик положення (закрито) GT15.1
+	    END_REGION
+	    REGION GT15.2
+	        #Gate2P[24].DI_Breaker_OK := "GT15_2_DI_Breaker_OK"; // Автоматичний вимикач GT15.2
+	        #Gate2P[24].DI_Pos0_OK := "GT15_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT15.2
+	        #Gate2P[24].DI_Pos1_OK := "GT15_2_DI_Pos1_OK"; // Датчик положення (закрито) GT15.2
+	    END_REGION
+	    REGION GT18.1
+	        #Gate2P[46].DI_Breaker_OK := "GT18_1_DI_Breaker_OK"; // Автоматичний вимикач GT18.1
+	        #Gate2P[46].DI_Pos0_OK := "GT18_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT18.1
+	        #Gate2P[46].DI_Pos1_OK := "GT18_1_DI_Pos1_OK"; // Датчик положення (закрито) GT18.1
+	    END_REGION
+	    REGION GT18.2
+	        #Gate2P[47].DI_Breaker_OK := "GT18_2_DI_Breaker_OK"; // Автоматичний вимикач GT18.2
+	        #Gate2P[47].DI_Pos0_OK := "GT18_2_DI_Pos0_OK"; // Датчик положення (відкрито) GTGT18.2
+	        #Gate2P[47].DI_Pos1_OK := "GT18_2_DI_Pos1_OK"; // Датчик положення (закрито) GTGT18.2
+	    END_REGION
+	    REGION GT19.1
+	        #Gate2P[48].DI_Breaker_OK := "GT19_1_DI_Breaker_OK"; // Автоматичний вимикач GT19.1
+	        #Gate2P[48].DI_Pos0_OK := "GT19_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT19.1
+	        #Gate2P[48].DI_Pos1_OK := "GT19_1_DI_Pos1_OK"; // Датчик положення (закрито) GT19.1
+	    END_REGION
+	    REGION GT19.2
+	        #Gate2P[49].DI_Breaker_OK := "GT19_2_DI_Breaker_OK"; // Автоматичний вимикач GT19.2
+	        #Gate2P[49].DI_Pos0_OK := "GT19_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT19.2
+	        #Gate2P[49].DI_Pos1_OK := "GT19_2_DI_Pos1_OK"; // Датчик положення (закрито) GT19.2
+	    END_REGION
+	    REGION GT20.1
+	        #Gate2P[70].DI_Breaker_OK := "GT20_1_DI_Breaker_OK"; // Автоматичний вимикач GT20.1
+	        #Gate2P[70].DI_Pos0_OK := "GT20_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT20.1
+	        #Gate2P[70].DI_Pos1_OK := "GT20_1_DI_Pos1_OK"; // Датчик положення (закрито) GT20.1
+	    END_REGION
+	    REGION GT20.2
+	        #Gate2P[71].DI_Breaker_OK := "GT20_2_DI_Breaker_OK"; // Автоматичний вимикач GT20.2
+	        #Gate2P[71].DI_Pos0_OK := "GT20_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT20.2
+	        #Gate2P[71].DI_Pos1_OK := "GT20_2_DI_Pos1_OK"; // Датчик положення (закрито) GT20.2
+	    END_REGION
+	    REGION GT21.1
+	        #Gate2P[37].DI_Breaker_OK := "GT21_1_DI_Breaker_OK"; // Автоматичний вимикач GT21.1
+	        #Gate2P[37].DI_Pos0_OK := "GT21_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT21.1
+	        #Gate2P[37].DI_Pos1_OK := "GT21_1_DI_Pos1_OK"; // Датчик положення (закрито) GT21.1
+	    END_REGION
+	    REGION GT21.2
+	        #Gate2P[41].DI_Breaker_OK := "GT21_2_DI_Breaker_OK"; // Автоматичний вимикач GT21.2
+	        #Gate2P[41].DI_Pos0_OK := "GT21_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT21.2
+	        #Gate2P[41].DI_Pos1_OK := "GT21_2_DI_Pos1_OK"; // Датчик положення (закрито) GT21.2
+	    END_REGION
+	    REGION GT21.3
+	        #Gate2P[42].DI_Breaker_OK := "GT21_3_DI_Breaker_OK"; // Автоматичний вимикач GT21.3
+	        #Gate2P[42].DI_Pos0_OK := "GT21_3_DI_Pos0_OK"; // Датчик положення (відкрито) GT21.3
+	        #Gate2P[42].DI_Pos1_OK := "GT21_3_DI_Pos1_OK"; // Датчик положення (закрито) GT21.3
+	    END_REGION
+	    REGION GT21.4
+	        #Gate2P[44].DI_Breaker_OK := "GT21_4_DI_Breaker_OK"; // Автоматичний вимикач GT21.4
+	        #Gate2P[44].DI_Pos0_OK := "GT21_4_DI_Pos0_OK"; // Датчик положення (відкрито) GT21.4
+	        #Gate2P[44].DI_Pos1_OK := "GT21_4_DI_Pos1_OK"; // Датчик положення (закрито) GT21.4
+	    END_REGION
+	    REGION GT22.1
+	        #Gate2P[63].DI_Breaker_OK := "GT22_1_DI_Breaker_OK"; // Автоматичний вимикач GT22.1
+	        #Gate2P[63].DI_Pos0_OK := "GT22_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT22.1
+	        #Gate2P[63].DI_Pos1_OK := "GT22_1_DI_Pos1_OK"; // Датчик положення (закрито) GT22.1
+	    END_REGION
+	    REGION GT22.2
+	        #Gate2P[64].DI_Breaker_OK := "GT22_2_DI_Breaker_OK"; // Автоматичний вимикач GT22.2
+	        #Gate2P[64].DI_Pos0_OK := "GT22_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT22.2
+	        #Gate2P[64].DI_Pos1_OK := "GT22_2_DI_Pos1_OK"; // Датчик положення (закрито) GT22.2
+	    END_REGION
+	    REGION GT22.3
+	        #Gate2P[65].DI_Breaker_OK := "GT22_3_DI_Breaker_OK"; // Автоматичний вимикач GT22.3
+	        #Gate2P[65].DI_Pos0_OK := "GT22_3_DI_Pos0_OK"; // Датчик положення (відкрито) GT22.3
+	        #Gate2P[65].DI_Pos1_OK := "GT22_3_DI_Pos1_OK"; // Датчик положення (закрито) GT22.3
+	    END_REGION
+	    REGION GT22.4
+	        #Gate2P[66].DI_Breaker_OK := "GT22_4_DI_Breaker_OK"; // Автоматичний вимикач GT22.4
+	        #Gate2P[66].DI_Pos0_OK := "GT22_4_DI_Pos0_OK"; // Датчик положення (відкрито) GT22.4
+	        #Gate2P[66].DI_Pos1_OK := "GT22_4_DI_Pos1_OK"; // Датчик положення (закрито) GT22.4
+	    END_REGION
+	    REGION GT23.1
+	        #Gate2P[73].DI_Breaker_OK := "GT23_1_DI_Breaker_OK"; // Автоматичний вимикач GT23.1
+	        #Gate2P[73].DI_Pos0_OK := "GT23_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT23.1
+	        #Gate2P[73].DI_Pos1_OK := "GT23_1_DI_Pos1_OK"; // Датчик положення (закрито) GT23.1
+	    END_REGION
+	    REGION GT23.2
+	        #Gate2P[74].DI_Breaker_OK := "GT23_2_DI_Breaker_OK"; // Автоматичний вимикач GT23.2
+	        #Gate2P[74].DI_Pos0_OK := "GT23_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT23.2
+	        #Gate2P[74].DI_Pos1_OK := "GT23_2_DI_Pos1_OK"; // Датчик положення (закрито) GT23.2
+	    END_REGION
+	    REGION GT23.3
+	        #Gate2P[75].DI_Breaker_OK := "GT23_3_DI_Breaker_OK"; // Автоматичний вимикач GT23.3
+	        #Gate2P[75].DI_Pos0_OK := "GT23_3_DI_Pos0_OK"; // Датчик положення (відкрито) GT23.3
+	        #Gate2P[75].DI_Pos1_OK := "GT23_3_DI_Pos1_OK"; // Датчик положення (закрито) GT23.3
+	    END_REGION
+	    REGION GT23.4
+	        #Gate2P[76].DI_Breaker_OK := "GT23_4_DI_Breaker_OK"; // Автоматичний вимикач GT23.4
+	        #Gate2P[76].DI_Pos0_OK := "GT23_4_DI_Pos0_OK"; // Датчик положення (відкрито) GT23.4
+	        #Gate2P[76].DI_Pos1_OK := "GT23_4_DI_Pos1_OK"; // Датчик положення (закрито) GT23.4
+	    END_REGION
+	    REGION GT24.1
+	        #Gate2P[43].DI_Breaker_OK := "GT24_1_DI_Breaker_OK"; // Автоматичний вимикач GT24.1
+	        #Gate2P[43].DI_Pos0_OK := "GT24_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT24.1
+	        #Gate2P[43].DI_Pos1_OK := "GT24_1_DI_Pos1_OK"; // Датчик положення (закрито) GT24.1
+	    END_REGION
+	    REGION GT24.2
+	        #Gate2P[45].DI_Breaker_OK := "GT24_2_DI_Breaker_OK"; // Автоматичний вимикач GT24.2
+	        #Gate2P[45].DI_Pos0_OK := "GT24_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT24.2
+	        #Gate2P[45].DI_Pos1_OK := "GT24_2_DI_Pos1_OK"; // Датчик положення (закрито) GT24.2
+	    END_REGION
+	    REGION GT25.1
+	        #Gate2P[67].DI_Breaker_OK := "GT25_1_DI_Breaker_OK"; // Автоматичний вимикач GT25.1
+	        #Gate2P[67].DI_Pos0_OK := "GT25_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT25.1
+	        #Gate2P[67].DI_Pos1_OK := "GT25_1_DI_Pos1_OK"; // Датчик положення (закрито) GT25.1
+	    END_REGION
+	    REGION GT25.2
+	        #Gate2P[68].DI_Breaker_OK := "GT25_2_DI_Breaker_OK"; // Автоматичний вимикач GT25.2
+	        #Gate2P[68].DI_Pos0_OK := "GT25_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT25.2
+	        #Gate2P[68].DI_Pos1_OK := "GT25_2_DI_Pos1_OK"; // Датчик положення (закрито) GT25.2
+	    END_REGION
+	    REGION GT26.1
+	        #Gate2P[77].DI_Breaker_OK := "GT26_1_DI_Breaker_OK"; // Автоматичний вимикач GT26.1
+	        #Gate2P[77].DI_Pos0_OK := "GT26_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT26.1
+	        #Gate2P[77].DI_Pos1_OK := "GT26_1_DI_Pos1_OK"; // Датчик положення (закрито) GT26.1
+	    END_REGION
+	    REGION GT26.2
+	        #Gate2P[78].DI_Breaker_OK := "GT26_2_DI_Breaker_OK"; // Автоматичний вимикач GT26.2
+	        #Gate2P[78].DI_Pos0_OK := "GT26_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT26.2
+	        #Gate2P[78].DI_Pos1_OK := "GT26_2_DI_Pos1_OK"; // Датчик положення (закрито) GT26.2
+	    END_REGION
+	    REGION GT30.1
+	        #Gate2P[40].DI_Breaker_OK := "GT30_1_DI_Breaker_OK"; // Автоматичний вимикач GT30.1
+	        #Gate2P[40].DI_Pos0_OK := "GT30_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT30.1
+	        #Gate2P[40].DI_Pos1_OK := "GT30_1_DI_Pos1_OK"; // Датчик положення (закрито) GT30.1
+	    END_REGION
+	    REGION GT30.2
+	        #Gate2P[39].DI_Breaker_OK := "GT30_2_DI_Breaker_OK"; // Автоматичний вимикач GT30.2
+	        #Gate2P[39].DI_Pos0_OK := "GT30_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT30.2
+	        #Gate2P[39].DI_Pos1_OK := "GT30_2_DI_Pos1_OK"; // Датчик положення (закрито) GT30.2
+	    END_REGION
+	    REGION GT31.1
+	        #Gate2P[62].DI_Breaker_OK := "GT31_1_DI_Breaker_OK"; // Автоматичний вимикач GT31.1
+	        #Gate2P[62].DI_Pos0_OK := "GT31_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT31.1
+	        #Gate2P[62].DI_Pos1_OK := "GT31_1_DI_Pos1_OK"; // Датчик положення (закрито) GT31.1
+	    END_REGION
+	    REGION GT31.2
+	        #Gate2P[61].DI_Breaker_OK := "GT31_2_DI_Breaker_OK"; // Автоматичний вимикач GT31.2
+	        #Gate2P[61].DI_Pos0_OK := "GT31_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT31.2
+	        #Gate2P[61].DI_Pos1_OK := "GT31_2_DI_Pos1_OK"; // Датчик положення (закрито) GT31.2
+	    END_REGION
+	    REGION GT32.1
+	        #Gate2P[72].DI_Breaker_OK := "GT32_1_DI_Breaker_OK"; // Автоматичний вимикач GT32.1
+	        #Gate2P[72].DI_Pos0_OK := "GT32_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT32.1
+	        #Gate2P[72].DI_Pos1_OK := "GT32_1_DI_Pos1_OK"; // Датчик положення (закрито) GT32.1
+	    END_REGION
+	    REGION GT32.2
+	        #Gate2P[69].DI_Breaker_OK := "GT32_2_DI_Breaker_OK"; // Автоматичний вимикач GT32.2
+	        #Gate2P[69].DI_Pos0_OK := "GT32_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT32.2
+	        #Gate2P[69].DI_Pos1_OK := "GT32_2_DI_Pos1_OK"; // Датчик положення (закрито) GT32.2
+	    END_REGION
+	    REGION GT35.1
+	        #Gate2P[58].DI_Breaker_OK := "GT35_1_DI_Breaker_OK"; // Автоматичний вимикач GT35.1
+	        #Gate2P[58].DI_Pos0_OK := "GT35_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT35.1
+	        #Gate2P[58].DI_Pos1_OK := "GT35_1_DI_Pos1_OK"; // Датчик положення (закрито) GT35.1
+	    END_REGION
+	    REGION GT35.2
+	        #Gate2P[50].DI_Breaker_OK := "GT35_2_DI_Breaker_OK"; // Автоматичний вимикач GT35.2
+	        #Gate2P[50].DI_Pos0_OK := "GT35_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT35.2
+	        #Gate2P[50].DI_Pos1_OK := "GT35_2_DI_Pos1_OK"; // Датчик положення (закрито) GT35.2
+	    END_REGION
+	    REGION GT36.1
+	        #Gate2P[38].DI_Breaker_OK := "GT36_1_DI_Breaker_OK"; // Автоматичний вимикач GT36.1
+	        #Gate2P[38].DI_Pos0_OK := "GT36_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT36.1
+	        #Gate2P[38].DI_Pos1_OK := "GT36_1_DI_Pos1_OK"; // Датчик положення (закрито) GT36.1
+	    END_REGION
+	    REGION GT36.2
+	        #Gate2P[28].DI_Breaker_OK := "GT36_2_DI_Breaker_OK"; // Автоматичний вимикач GT36.2
+	        #Gate2P[28].DI_Pos0_OK := "GT36_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT36.2
+	        #Gate2P[28].DI_Pos1_OK := "GT36_2_DI_Pos1_OK"; // Датчик положення (закрито) GT36.2
+	    END_REGION
+	    REGION GT36.3
+	        #Gate2P[18].DI_Breaker_OK := "GT36_3_DI_Breaker_OK"; // Автоматичний вимикач GT36.3
+	        #Gate2P[18].DI_Pos0_OK := "GT36_3_DI_Pos0_OK"; // Датчик положення (відкрито) GT36.3
+	        #Gate2P[18].DI_Pos1_OK := "GT36_3_DI_Pos1_OK"; // Датчик положення (закрито) GT36.3
+	    END_REGION
+	    REGION GT38.1
+	        #Gate2P[79].DI_Breaker_OK := "GT38_1_DI_Breaker_OK"; // Автоматичний вимикач GT38.1
+	        #Gate2P[79].DI_Pos0_OK := "GT38_1_DI_Pos0_OK"; // Датчик положення (відкрито) GT38.1
+	        #Gate2P[79].DI_Pos1_OK := "GT38_1_DI_Pos1_OK"; // Датчик положення (закрито) GT38.1
+	    END_REGION
+	    REGION GT38.2
+	        #Gate2P[80].DI_Breaker_OK := "GT38_2_DI_Breaker_OK"; // Автоматичний вимикач GT38.2
+	        #Gate2P[80].DI_Pos0_OK := "GT38_2_DI_Pos0_OK"; // Датчик положення (відкрито) GT38.2
+	        #Gate2P[80].DI_Pos1_OK := "GT38_2_DI_Pos1_OK"; // Датчик положення (закрито) GT38.2
+	    END_REGION
+	END_REGION
+	REGION VALVE3PS
+	    REGION VL1
+	        #Valve3P[0].DI_Breaker_OK := "VL1_DI_Breaker_OK"; // Автоматичний вимикач VL1
+	        #Valve3P[0].DI_Pos0_OK := "VL1_DI_Pos0_OK"; // Датчик положення (ліво) VL1
+	        #Valve3P[0].DI_Pos1_OK := "VL1_DI_Pos1_OK"; // Датчик положення (право) VL1
+	    END_REGION
+	    REGION VL2
+	        #Valve3P[1].DI_Breaker_OK := "VL2_DI_Breaker_OK"; // Автоматичний вимикач VL2
+	        #Valve3P[1].DI_Pos0_OK := "VL2_DI_Pos0_OK"; // Датчик положення (ліво) VL2
+	        #Valve3P[1].DI_Pos1_OK := "VL2_DI_Pos1_OK"; // Датчик положення (право) VL2
+	    END_REGION
+	    REGION VL3
+	        #Valve3P[2].DI_Breaker_OK := "VL3_DI_Breaker_OK"; // Автоматичний вимикач VL3
+	        #Valve3P[2].DI_Pos0_OK := "VL3_DI_Pos0_OK"; // Датчик положення (ліво) VL3
+	        #Valve3P[2].DI_Pos1_OK := "VL3_DI_Pos1_OK"; // Датчик положення (право) VL3
+	    END_REGION
+	    REGION VL4
+	        #Valve3P[3].DI_Breaker_OK := "VL4_DI_Breaker_OK"; // Автоматичний вимикач VL4
+	        #Valve3P[3].DI_Pos0_OK := "VL4_DI_Pos0_OK"; // Датчик положення (ліво) VL4
+	        #Valve3P[3].DI_Pos1_OK := "VL4_DI_Pos1_OK"; // Датчик положення (право) VL4
+	    END_REGION
+	    REGION VL5
+	        #Valve3P[4].DI_Breaker_OK := "VL5_DI_Breaker_OK"; // Автоматичний вимикач VL5
+	        #Valve3P[4].DI_Pos0_OK := "VL5_DI_Pos0_OK"; // Датчик положення (ліво) VL5
+	        #Valve3P[4].DI_Pos1_OK := "VL5_DI_Pos1_OK"; // Датчик положення (право) VL5
+	    END_REGION
+	    REGION VL6
+	        #Valve3P[5].DI_Breaker_OK := "VL6_DI_Breaker_OK"; // Автоматичний вимикач VL6
+	        #Valve3P[5].DI_Pos0_OK := "VL6_DI_Pos0_OK"; // Датчик положення (ліво) VL6
+	        #Valve3P[5].DI_Pos1_OK := "VL6_DI_Pos1_OK"; // Датчик положення (право) VL6
+	    END_REGION
+	    REGION VL7
+	        #Valve3P[6].DI_Breaker_OK := "VL7_DI_Breaker_OK"; // Автоматичний вимикач VL7
+	        #Valve3P[6].DI_Pos0_OK := "VL7_DI_Pos0_OK"; // Датчик положення (ліво) VL7
+	        #Valve3P[6].DI_Pos1_OK := "VL7_DI_Pos1_OK"; // Датчик положення (право) VL7
+	    END_REGION
+	    REGION VL8
+	        #Valve3P[7].DI_Breaker_OK := "VL8_DI_Breaker_OK"; // Автоматичний вимикач VL8
+	        #Valve3P[7].DI_Pos0_OK := "VL8_DI_Pos0_OK"; // Датчик положення (ліво) VL8
+	        #Valve3P[7].DI_Pos1_OK := "VL8_DI_Pos1_OK"; // Датчик положення (право) VL8
+	    END_REGION
+	    REGION VL9
+	        #Valve3P[8].DI_Breaker_OK := "VL9_DI_Breaker_OK"; // Автоматичний вимикач VL9
+	        #Valve3P[8].DI_Pos0_OK := "VL9_DI_Pos0_OK"; // Датчик положення (ліво) VL9
+	        #Valve3P[8].DI_Pos1_OK := "VL9_DI_Pos1_OK"; // Датчик положення (право) VL9
+	    END_REGION
+	    REGION VL10
+	        #Valve3P[9].DI_Breaker_OK := "VL10_DI_Breaker_OK"; // Автоматичний вимикач VL10
+	        #Valve3P[9].DI_Pos0_OK := "VL10_DI_Pos0_OK"; // Датчик положення (ліво) VL10
+	        #Valve3P[9].DI_Pos1_OK := "VL10_DI_Pos1_OK"; // Датчик положення (право) VL10
+	    END_REGION
+	    REGION VL11
+	        #Valve3P[10].DI_Breaker_OK := "VL11_DI_Breaker_OK"; // Автоматичний вимикач VL11
+	        #Valve3P[10].DI_Pos0_OK := "VL11_DI_Pos0_OK"; // Датчик положення (ліво) VL11
+	        #Valve3P[10].DI_Pos1_OK := "VL11_DI_Pos1_OK"; // Датчик положення (право) VL11
+	    END_REGION
+	    REGION VL12
+	        #Valve3P[11].DI_Breaker_OK := "VL12_DI_Breaker_OK"; // Автоматичний вимикач VL12
+	        #Valve3P[11].DI_Pos0_OK := "VL12_DI_Pos0_OK"; // Датчик положення (ліво) VL12
+	        #Valve3P[11].DI_Pos1_OK := "VL12_DI_Pos1_OK"; // Датчик положення (право) VL12
+	    END_REGION
+	    REGION VL13
+	        #Valve3P[12].DI_Breaker_OK := "VL13_DI_Breaker_OK"; // Автоматичний вимикач VL13
+	        #Valve3P[12].DI_Pos0_OK := "VL13_DI_Pos0_OK"; // Датчик положення (ліво) VL13
+	        #Valve3P[12].DI_Pos1_OK := "VL13_DI_Pos1_OK"; // Датчик положення (право) VL13
+	    END_REGION
+	    REGION VL14
+	        #Valve3P[13].DI_Breaker_OK := "VL14_DI_Breaker_OK"; // Автоматичний вимикач VL14
+	        #Valve3P[13].DI_Pos0_OK := "VL14_DI_Pos0_OK"; // Датчик положення (ліво) VL14
+	        #Valve3P[13].DI_Pos1_OK := "VL14_DI_Pos1_OK"; // Датчик положення (право) VL14
+	    END_REGION
+	    REGION VL15
+	        #Valve3P[14].DI_Breaker_OK := "VL15_DI_Breaker_OK"; // Автоматичний вимикач VL15
+	        #Valve3P[14].DI_Pos0_OK := "VL15_DI_Pos0_OK"; // Датчик положення (ліво) VL15
+	        #Valve3P[14].DI_Pos1_OK := "VL15_DI_Pos1_OK"; // Датчик положення (право) VL15
+	    END_REGION
+	    REGION VL16
+	        #Valve3P[15].DI_Breaker_OK := "VL16_DI_Breaker_OK"; // Автоматичний вимикач VL16
+	        #Valve3P[15].DI_Pos0_OK := "VL16_DI_Pos0_OK"; // Датчик положення (ліво) VL16
+	        #Valve3P[15].DI_Pos1_OK := "VL16_DI_Pos1_OK"; // Датчик положення (право) VL16
+	    END_REGION
+	    REGION VL17
+	        #Valve3P[16].DI_Breaker_OK := "VL17_DI_Breaker_OK"; // Автоматичний вимикач VL17
+	        #Valve3P[16].DI_Pos0_OK := "VL17_DI_Pos0_OK"; // Датчик положення (ліво) VL17
+	        #Valve3P[16].DI_Pos1_OK := "VL17_DI_Pos1_OK"; // Датчик положення (право) VL17
+	    END_REGION
+	    REGION VL18
+	        #Valve3P[17].DI_Breaker_OK := "VL18_DI_Breaker_OK"; // Автоматичний вимикач VL18
+	        #Valve3P[17].DI_Pos0_OK := "VL18_DI_Pos0_OK"; // Датчик положення (ліво) VL18
+	        #Valve3P[17].DI_Pos1_OK := "VL18_DI_Pos1_OK"; // Датчик положення (право) VL18
+	    END_REGION
+	    REGION VL19
+	        #Valve3P[18].DI_Breaker_OK := "VL19_DI_Breaker_OK"; // Автоматичний вимикач VL19
+	        #Valve3P[18].DI_Pos0_OK := "VL19_DI_Pos0_1_OK"; // Датчик положення (ліво1) VL19
+	        #Valve3P[18].DI_Pos2_OK := "VL19_DI_Pos0_2_OK" AND "VL19_DI_Pos1_1_OK"; // Датчик положення (центр) VL19
+	        #Valve3P[18].DI_Pos1_OK := "VL19_DI_Pos1_2_OK"; // Датчик положення (право2) VL19
+	    END_REGION
+	    REGION VL20
+	        #Valve3P[19].DI_Breaker_OK := "VL20_DI_Breaker_OK"; // Автоматичний вимикач VL20
+	        #Valve3P[19].DI_Pos0_OK := "VL20_DI_Pos0_OK"; // Датчик положення (ліво) VL20
+	        #Valve3P[19].DI_Pos1_OK := "VL20_DI_Pos1_OK"; // Датчик положення (право) VL20
+	    END_REGION
+	    REGION VL21
+	        #Valve3P[20].DI_Breaker_OK := "VL21_DI_Breaker_OK"; // Автоматичний вимикач VL21
+	        #Valve3P[20].DI_Pos0_OK := "VL21_DI_Pos0_OK"; // Датчик положення (ліво) VL21
+	        #Valve3P[20].DI_Pos1_OK := "VL21_DI_Pos1_OK"; // Датчик положення (право) VL21
+	    END_REGION
+	    REGION VL22
+	        #Valve3P[21].DI_Breaker_OK := "VL22_DI_Breaker_OK"; // Автоматичний вимикач VL22
+	        #Valve3P[21].DI_Pos0_OK := "VL22_DI_Pos0_OK"; // Датчик положення (ліво) VL22
+	        #Valve3P[21].DI_Pos1_OK := "VL22_DI_Pos1_OK"; // Датчик положення (право) VL22
+	    END_REGION
+	    REGION VL23
+	        #Valve3P[22].DI_Breaker_OK := "VL23_DI_Breaker_OK"; // Автоматичний вимикач VL23
+	        #Valve3P[22].DI_Pos0_OK := "VL23_DI_Pos0_OK"; // Датчик положення (ліво) VL23
+	        #Valve3P[22].DI_Pos1_OK := "VL23_DI_Pos1_OK"; // Датчик положення (право) VL23
+	    END_REGION
+	    REGION VL24
+	        #Valve3P[23].DI_Breaker_OK := "VL24_DI_Breaker_OK"; // Автоматичний вимикач VL24
+	        #Valve3P[23].DI_Pos0_OK := "VL24_DI_Pos0_OK"; // Датчик положення (ліво) VL24
+	        #Valve3P[23].DI_Pos1_OK := "VL24_DI_Pos1_OK"; // Датчик положення (право) VL24
+	    END_REGION
+	    REGION VL25
+	        #Valve3P[24].DI_Breaker_OK := "VL25_DI_Breaker_OK"; // Автоматичний вимикач VL25
+	        #Valve3P[24].DI_Pos0_OK := "VL25_DI_Pos0_OK"; // Датчик положення (ліво) VL25
+	        #Valve3P[24].DI_Pos1_OK := "VL25_DI_Pos1_OK"; // Датчик положення (право) VL25
+	    END_REGION
+	    REGION VL26
+	        #Valve3P[25].DI_Breaker_OK := "VL26_DI_Breaker_OK"; // Автоматичний вимикач VL26
+	        #Valve3P[25].DI_Pos0_OK := "VL26_DI_Pos0_OK"; // Датчик положення (ліво) VL26
+	        #Valve3P[25].DI_Pos1_OK := "VL26_DI_Pos1_OK"; // Датчик положення (право) VL26
+	    END_REGION
+	    REGION VL27
+	        #Valve3P[26].DI_Breaker_OK := "VL27_DI_Breaker_OK"; // Автоматичний вимикач VL27
+	        #Valve3P[26].DI_Pos0_OK := "VL27_DI_Pos0_OK"; // Датчик положення (ліво) VL27
+	        #Valve3P[26].DI_Pos1_OK := "VL27_DI_Pos1_OK"; // Датчик положення (право) VL27
+	    END_REGION
+	    REGION VL28
+	        #Valve3P[27].DI_Breaker_OK := "VL28_DI_Breaker_OK"; // Автоматичний вимикач VL28
+	        #Valve3P[27].DI_Pos0_OK := "VL28_DI_Pos0_OK"; // Датчик положення (ліво) VL28
+	        #Valve3P[27].DI_Pos1_OK := "VL28_DI_Pos1_OK"; // Датчик положення (право) VL28
+	    END_REGION
+	    REGION VL29
+	        #Valve3P[28].DI_Breaker_OK := "VL29_DI_Breaker_OK"; // Автоматичний вимикач VL29
+	        #Valve3P[28].DI_Pos0_OK := "VL29_DI_Pos0_OK"; // Датчик положення (ліво) VL29
+	        #Valve3P[28].DI_Pos1_OK := "VL29_DI_Pos1_OK"; // Датчик положення (право) VL29
+	    END_REGION
+	END_REGION
+	REGION DRYERS_AND_SILOS_LEVELS
+	    REGION DR1_FEEDBACKS
+	        #Dryer[0].Burners[0].DI_Feedback2_OK := "DR1_PAL1_DI_Feedback2_OK"; // 
+	        #Dryer[0].Burners[1].DI_Feedback2_OK := "DR1_PAL2_DI_Feedback2_OK"; // 
+	    END_REGION
+	    REGION DR2_FEEDBACKS
+	        #Dryer[1].Burners[0].DI_Feedback2_OK := "DR2_PAL1_DI_Feedback2_OK"; // 
+	        #Dryer[1].Burners[1].DI_Feedback2_OK := "DR2_PAL2_DI_Feedback2_OK"; // 
+	    END_REGION
+	    REGION DR3_FEEDBACKS
+	        #Dryer[2].Burners[0].DI_Feedback2_OK := "DR3_PAL1_DI_Feedback2_OK"; // 
+	        #Dryer[2].Burners[1].DI_Feedback2_OK := "DR3_PAL2_DI_Feedback2_OK"; // 
+	    END_REGION
+	    REGION DR1_LEVELS
+	        #Dryer[0].Levels.High_OK := "DR1_LevelHigh_OK"; // Верхній рівень Сушарка№1
+	        #Dryer[0].Levels.Low_OK := "DR1_LevelLow_OK"; // Нижній рівень Сушарка№1
+	    END_REGION
+	    REGION SLA1_SLA2
+	        #Silos[4].DI_LevelHigh_OK := "SLA1_LevelHigh_OK"; // Верхній рівень SLA1
+	        #Silos[5].DI_LevelHigh_OK := "SLA2_LevelHigh_OK"; // Верхній рівень SLA2
+	    END_REGION
+	    REGION DR2_LEVELS
+	        #Dryer[1].Levels.High_OK := "DR2_LevelHigh_OK"; // Верхній рівень Сушарка№2
+	        #Dryer[1].Levels.Low_OK := "DR2_LevelLow_OK"; // Нижній рівень Сушарка№2
+	    END_REGION
+	    REGION DR3_LEVELS
+	        #Dryer[2].Levels.High_OK := "DR3_LevelHigh_OK"; // Верхній рівень Сушарка№3
+	        #Dryer[2].Levels.Low_OK := "DR3_LevelLow_OK"; // Нижній рівень Сушарка№3
+	    END_REGION
+	    REGION SLA3_SLA4
+	        #Silos[12].DI_LevelHigh_OK := "SLA3_LevelHigh_OK"; // Верхній рівень SLA3
+	        #Silos[11].DI_LevelHigh_OK := "SLA4_LevelHigh_OK"; // Верхній рівень SLA4
+	    END_REGION
+	    REGION SPA1_SPA5
+	        #Silos[6].DI_LevelHigh_OK := "SPA1_LevelHigh_OK"; // Верхній рівень SPA1
+	        #Silos[7].DI_LevelHigh_OK := "SPA2_LevelHigh_OK"; // Верхній рівень SPA2
+	        #Silos[8].DI_LevelHigh_OK := "SPA3_LevelHigh_OK"; // Верхній рівень SPA3
+	        #Silos[9].DI_LevelHigh_OK := "SPA4_LevelHigh_OK"; // Верхній рівень SPA4
+	        #Silos[10].DI_LevelHigh_OK := "SPA5_LevelHigh_OK"; // Верхній рівень SPA5
+	    END_REGION
+	    REGION SPA6_SPA10
+	        #Silos[13].DI_LevelHigh_OK := "SPA6_LevelHigh_OK"; // Верхній рівень SPA6
+	        #Silos[14].DI_LevelHigh_OK := "SPA7_LevelHigh_OK"; // Верхній рівень SPA7
+	        #Silos[15].DI_LevelHigh_OK := "SPA8_LevelHigh_OK"; // Верхній рівень SPA8
+	        #Silos[16].DI_LevelHigh_OK := "SPA9_LevelHigh_OK"; // Верхній рівень SPA9
+	        #Silos[17].DI_LevelHigh_OK := "SPA10_LevelHigh_OK"; // Верхній рівень SPA10
+	    END_REGION
+	    REGION SPA11_SPA15
+	        #Silos[18].DI_LevelHigh_OK := "SPA11_LevelHigh_OK"; // Верхній рівень SPA11
+	        #Silos[19].DI_LevelHigh_OK := "SPA12_LevelHigh_OK"; // Верхній рівень SPA12
+	        #Silos[20].DI_LevelHigh_OK := "SPA13_LevelHigh_OK"; // Верхній рівень SPA13
+	        #Silos[21].DI_LevelHigh_OK := "SPA14_LevelHigh_OK"; // Верхній рівень SPA14
+	        #Silos[22].DI_LevelHigh_OK := "SPA15_LevelHigh_OK"; // Верхній рівень SPA15
+	    END_REGION
+	    REGION AR8_ARB
+	        #Silos[26].DI_LevelHigh_OK := "AR8_1_LevelHigh_OK"; // Верхній рівень AR_1
+	        #Silos[27].DI_LevelHigh_OK := "AR8_2_LevelHigh_OK"; // Верхній рівень AR_2
+	        #Silos[25].DI_LevelHigh_OK := "AR_2_LevelHigh_OK" AND "AR_1_LevelHigh_OK"; // Верхній рівень ZHD
+	    END_REGION
+	END_REGION
+	
+	
+	// Warning: Tag '80.1' () skipped due to unknown mechanism or ID.
+	// Warning: Tag '80.2' () skipped due to unknown mechanism or ID.
+	// Warning: Tag '80.3' () skipped due to unknown mechanism or ID.
+	// Warning: Tag '80.4' () skipped due to unknown mechanism or ID.
+	// Warning: Tag '80.5' () skipped due to unknown mechanism or ID.
+	// Warning: Tag '80.6' () skipped due to unknown mechanism or ID.
+	// Warning: Tag '80.7' () skipped due to unknown mechanism or ID.
+	// Warning: Tag '81.0' () skipped due to unknown mechanism or ID.
+	// Warning: Tag '81.1' () skipped due to unknown mechanism or ID.
+	// Warning: Tag '81.2' () skipped due to unknown mechanism or ID.
+	// Warning: Tag '81.3' () skipped due to unknown mechanism or ID.
+	// Warning: Tag '81.4' () skipped due to unknown mechanism or ID.
+	// Warning: Tag '81.5' () skipped due to unknown mechanism or ID.
+	// Warning: Tag '81.6' () skipped due to unknown mechanism or ID.
+	// Warning: Tag '81.7' () skipped due to unknown mechanism or ID.
+	// Warning: Tag '82.0' () skipped due to unknown mechanism or ID.
+	// Warning: Tag '82.1' () skipped due to unknown mechanism or ID.
+	// Warning: Tag '82.2' () skipped due to unknown mechanism or ID.
+	// Warning: Tag '82.3' () skipped due to unknown mechanism or ID.
+	// Warning: Tag '82.4' () skipped due to unknown mechanism or ID.
+	// Warning: Tag '82.5' () skipped due to unknown mechanism or ID.
+	// Warning: Tag '82.6' () skipped due to unknown mechanism or ID.
+	// Warning: Tag '82.7' () skipped due to unknown mechanism or ID.
+	// Warning: Tag '83.0' () skipped due to unknown mechanism or ID.
+	// Warning: Tag '83.1' () skipped due to unknown mechanism or ID.
+	// Warning: Tag '83.2' () skipped due to unknown mechanism or ID.
+	// Warning: Tag '83.3' () skipped due to unknown mechanism or ID.
+	// Warning: Tag '83.4' () skipped due to unknown mechanism or ID.
+	// Warning: Tag '83.5' () skipped due to unknown mechanism or ID.
+	// Warning: Tag '83.6' () skipped due to unknown mechanism or ID.
+	// Warning: Tag '83.7' () skipped due to unknown mechanism or ID.
+	REGION DRYERS_TEMPERATURES
+	    REGION DRYER4_TEMPERATURE
+	        #Dryer[3].Temps[0] := "DR4_Temp_0"; // Int
+	        #Dryer[3].Temps[1] := "DR4_Temp_1"; // Int
+	        #Dryer[3].Temps[2] := "DR4_Temp_2"; // Int
+	        #Dryer[3].Temps[3] := "DR4_Temp_3"; // Int
+	        #Dryer[3].Temps[4] := "DR4_Temp_4"; // Int
+	        #Dryer[3].Temps[5] := "DR4_Temp_5"; // Int
+	        #Dryer[3].Temps[6] := "DR4_Temp_6"; // Int
+	        #Dryer[3].Temps[7] := "DR4_Temp_7"; // Int
+	        #Dryer[3].Temps[8] := "DR4_Temp_8"; // Int
+	        #Dryer[3].Temps[9] := "DR4_Temp_9"; // Int
+	        #Dryer[3].Temps[10] := "DR4_Temp_10"; // Int
+	        #Dryer[3].Temps[11] := "DR4_Temp_11"; // Int
+	        #Dryer[3].Temps[12] := "DR4_Temp_12"; // Int
+	        #Dryer[3].Temps[13] := "DR4_Temp_13"; // Int
+	        #Dryer[3].Temps[14] := "DR4_Temp_14"; // Int
+	        #Dryer[3].Temps[15] := "DR4_Temp_15"; // Int
+	    END_REGION
+	    REGION DRYER3_TEMPERATURE
+	        #Dryer[2].Temps[0] := "DR3_Temp_0"; // Int
+	        #Dryer[2].Temps[1] := "DR3_Temp_1"; // Int
+	        #Dryer[2].Temps[2] := "DR3_Temp_2"; // Int
+	        #Dryer[2].Temps[3] := "DR3_Temp_3"; // Int
+	        #Dryer[2].Temps[4] := "DR3_Temp_4"; // Int
+	        #Dryer[2].Temps[5] := "DR3_Temp_5"; // Int
+	        #Dryer[2].Temps[6] := "DR3_Temp_6"; // Int
+	        #Dryer[2].Temps[7] := "DR3_Temp_7"; // Int
+	        #Dryer[2].Temps[8] := "DR3_Temp_8"; // Int
+	        #Dryer[2].Temps[9] := "DR3_Temp_9"; // Int
+	        #Dryer[2].Temps[10] := "DR3_Temp_10"; // Int
+	        #Dryer[2].Temps[11] := "DR3_Temp_11"; // Int
+	        #Dryer[2].Temps[12] := "DR3_Temp_12"; // Int
+	        #Dryer[2].Temps[13] := "DR3_Temp_13"; // Int
+	        #Dryer[2].Temps[14] := "DR3_Temp_14"; // Int
+	        #Dryer[2].Temps[15] := "DR3_Temp_15"; // Int
+	    END_REGION
+	    REGION DRYER2_TEMPERATURE
+	        #Dryer[1].Temps[0] := "DR2_Temp_0"; // Int
+	        #Dryer[1].Temps[1] := "DR2_Temp_1"; // Int
+	        #Dryer[1].Temps[2] := "DR2_Temp_2"; // Int
+	        #Dryer[1].Temps[3] := "DR2_Temp_3"; // Int
+	        #Dryer[1].Temps[4] := "DR2_Temp_4"; // Int
+	        #Dryer[1].Temps[5] := "DR2_Temp_5"; // Int
+	        #Dryer[1].Temps[6] := "DR2_Temp_6"; // Int
+	        #Dryer[1].Temps[7] := "DR2_Temp_7"; // Int
+	        #Dryer[1].Temps[8] := "DR2_Temp_8"; // Int
+	        #Dryer[1].Temps[9] := "DR2_Temp_9"; // Int
+	        #Dryer[1].Temps[10] := "DR2_Temp_10"; // Int
+	        #Dryer[1].Temps[11] := "DR2_Temp_11"; // Int
+	        #Dryer[1].Temps[12] := "DR2_Temp_12"; // Int
+	        #Dryer[1].Temps[13] := "DR2_Temp_13"; // Int
+	        #Dryer[1].Temps[14] := "DR2_Temp_14"; // Int
+	        #Dryer[1].Temps[15] := "DR2_Temp_15"; // Int
+	    END_REGION
+	    REGION DRYER1_TEMPERATURE
+	        #Dryer[0].Temps[0] := "DR1_Temp_0"; // Int
+	        #Dryer[0].Temps[1] := "DR1_Temp_1"; // Int
+	        #Dryer[0].Temps[2] := "DR1_Temp_2"; // Int
+	        #Dryer[0].Temps[3] := "DR1_Temp_3"; // Int
+	        #Dryer[0].Temps[4] := "DR1_Temp_4"; // Int
+	        #Dryer[0].Temps[5] := "DR1_Temp_5"; // Int
+	        #Dryer[0].Temps[6] := "DR1_Temp_6"; // Int
+	        #Dryer[0].Temps[7] := "DR1_Temp_7"; // Int
+	        #Dryer[0].Temps[8] := "DR1_Temp_8"; // Int
+	        #Dryer[0].Temps[9] := "DR1_Temp_9"; // Int
+	        #Dryer[0].Temps[10] := "DR1_Temp_10"; // Int
+	        #Dryer[0].Temps[11] := "DR1_Temp_11"; // Int
+	        #Dryer[0].Temps[12] := "DR1_Temp_12"; // Int
+	        #Dryer[0].Temps[13] := "DR1_Temp_13"; // Int
+	        #Dryer[0].Temps[14] := "DR1_Temp_14"; // Int
+	        #Dryer[0].Temps[15] := "DR1_Temp_15"; // Int
+	    END_REGION
+	END_REGION
+	
 END_FUNCTION
-```
-```diff
+
