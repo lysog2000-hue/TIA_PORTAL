@@ -6,11 +6,6 @@ import {OnMechTapped, GetActiveRouteData, GetStepsByVariant,GetVariantFromBuffer
 
 
 
-
-
-
-
-
 // Кнопка формування маршруту та виводу його в таблицю
 export async function Open_Route_OnTapped(item, x, y, modifiers, trigger) {
 let startId = Tags("StartPortId").Read();
@@ -467,10 +462,12 @@ export async function Stop_Route_OnTapped(item, x, y, modifiers, trigger) {
         let newCommit = commitScada + 1;
         
         try {
+            // Оптимизация: пишем только команду остановки, не трогаем шаги в CMD_Route
             await Promise.all([
                 Tags("HDR_RouteId").Write(rawId),
                 Tags("CMD_Route.RC_Cmd").Write(2),           // RT_CMD_STOP_OP
                 Tags("CMD_Route.RC_StepCount").Write(0),     // □□ НЕ передавать шаги при STOP!
+                Tags("CMD_Route.RC_StepCount").Write(0),
                 Tags("HDR_Commit").Write(newCommit)          // Отправить команду
             ]);
             HMIRuntime.Trace(`□ STOP отправлена для маршрута ${rawId}`);
@@ -631,47 +628,11 @@ Tags("SelectModeActive").Write(3);
 
 
 
-
-
-
-
 //Вивід стартової, кінцевої та середньої точки маршруту в форматі імені 
 export function StartPortId_ProcessValue_Trigger(item) {
 let id = Tags("StartPortId").Read();
-    const deviceMap = {
-        0: "NONE",1: "RD1",2: "RD2",3: "RD3",4: "RD4",5: "RD5",6: "RD6",7: "RD7",8: "RD8",9: "RD9",10: "RD10",
-        11: "RD11",12: "RD12",13: "RD13",14: "RD14",15: "RD15",16: "RD16",17: "RD17",18: "RD18",19: "RD19",
-        20: "RD20",21: "RD21",22: "RD22",23: "RD23",24: "RD24",25: "RD25",26: "RD26",27: "RD27",28: "RD28",
-        29: "RD29",30: "RD30",31: "RD31",32: "RD32",33: "RD33",34: "RD34",35: "RD35",36: "RD36",37: "RD37",
-        38: "RD38",39: "RD39",51: "NR1",52: "NR2", 53: "NR3",54: "NR4",55: "NR5",56: "NR6",57: "NR7",58: "NR8",
-        59: "NR9",60: "NR10",61: "NR11",62: "NR12",116: "GT5.1",117: "GT5.2",118: "GT5.3",119: "GT36.3",
-        125: "GT15.1",126: "GT15.2",127: "GT6.1",128: "GT6.2",129: "GT6.3",130: "GT36.2",131: "GT9.2",
-        132: "GT7.2",133: "GT9.1",134: "GT11.3",135: "GT7.3",136: "GT11.1",137: "GT7.1",138: "GT11.2",
-        139: "GT21.1",140: "GT36.1",141: "GT30.2",142: "GT30.1",143: "GT21.2",144: "GT21.3",145: "GT24.1",
-        146: "GT21.4",147: "GT24.2", 148: "GT18.1",149: "GT18.2",150: "GT19.1",151: "GT19.2",152: "GT35.2",
-        153: "GT10.2",154: "GT10.1",155: "GT8.3",156: "GT8.2",157: "GT12.1",158: "GT8.1",159: "GT12.2",
-        160: "GT35.1",161: "GT14.2",162: "GT14.1",163: "GT31.2",164: "GT31.1",165: "GT22.1",166: "GT22.2",
-        167: "GT22.3",168: "GT22.4",169: "GT25.1",170: "GT25.2",171: "GT32.2",172: "GT20.1",173: "GT20.2",
-        174: "GT32.1",175: "GT23.1",176: "GT23.2",177: "GT23.3",178: "GT23.4",179: "GT26.1",180: "GT26.2",
-        181: "GT38.1",182: "GT38.2",201: "VL1",202: "VL2",203: "VL3", 204: "VL4", 205: "VL5",206: "VL6",
-        207: "VL7",208: "VL8",209: "VL9",210: "VL10",211: "Vl11",212: "VL12",213: "VL13",214: "VL14",
-        215: "VL15",216: "VL16",217: "VL17",218: "VL18",219: "VL19",220: "VL20",221: "VL21",222: "VL22",
-        223: "VL23",224: "VL24",225: "VL25",226: "VL26",227: "VL27",228: "VL28",229: "VL29",230: "VL30",
-        251: "Auto1",252: "Auto1",253: "Auto2",254: "Auto2",255: "SLA1",256: "SLA2",257: "SPA1",258: "SPA2",
-        259: "SPA3",260: "SPA4",261: "SPA5",262: "SLA4",263: "SLA3",264: "SPA6",265: "SPA7",266: "SPA8",
-        267: "SPA9",268: "SPA10",269: "Auto3",270: "Auto3",271: "SPA11",272: "SPA12",273: "SPA13",274: "SPA14",
-        275: "SPA15",276: "ZHD",277: "ARB1",278: "ARB2",301: "DR1",302: "DR2",303: "DR3",304: "DR4",305: "RP1",
-        306: "RP2",311: "KBS1",312: "KBS2",313: "KBS3",314: "FD1",315: "FD2",316: "FD3",317: "FN1",318: "FN2",
-        319: "FN3",
-    };
-    return deviceMap[id] || `Unknown (ID: ${id})`;
-
+return Id_Name(id);
 }
-
-
-
-
-
 
 
 //клік на механізм 

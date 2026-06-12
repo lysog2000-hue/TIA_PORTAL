@@ -148,35 +148,3 @@ Tags("DR4_Tp").Write(Tp_Write);
 Tags("DR4_Td").Write(Td_Write);
 Tags("DR4_Tg").Write(Tg_Write);
 }
-
-
-
-
-
-//Запис значень форсування стандартних механізмів в базу даних
-export function Task_ForceLog_Update() {
-let slotId = Tags("Slot_ID").Read();
-// Выходим из скрипта, если slotId находится в диапазоне от 300 до 304 включительно
-if (slotId>=300&&slotId<=304) return;
-let force = Tags("BaseMechs.Force_Code").Read();
-let pre = Tags("Pre_SlotId").Read();
-if (slotId !== pre)
-{Tags("Pre_SlotId").Write(slotId);
-}else{
-LogForceChange(slotId,force);
-}
-}
-
-
-
-//Запис значень форсування Сушарок в базу даних
-export function Task_ForceSushka_Update() {
-let slotId = Tags("Slot_ID").Read();
-let force = Tags("Sushka.ForceCode").Read();
-let pre = Tags("Pre_SlotId").Read();
-if (slotId !== pre)
-{Tags("Pre_SlotId").Write(slotId);
-}else{
-LogForceChange(slotId,force);
-}
-}

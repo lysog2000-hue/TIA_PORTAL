@@ -142,7 +142,7 @@ BEGIN
 	    // ===================================================================
 	    
 	    // Логіка аварійної зупинки (Emergency Stop)
-	    IF "Emergency_Stop" OR NOT "Main_DI_E_Stop_OK" THEN
+	    IF "Emergency_Stop"  THEN
 	        "GlobalSafetyStop" := TRUE; // Активуємо латч безпеки
 	    END_IF;
 	    
@@ -178,7 +178,7 @@ BEGIN
 	                      Gate := "DB_Mechs".Gate2P,
 	                      Valve3P := "DB_Mechs".Valve3P,
 	                      Separator := "DB_Mechs".Separator,
-	                      Sushka := "DB_Mechs".Dryer,
+	                      Dryer := "DB_Mechs".Dryer,
 	                      Silos := "DB_Mechs".Silos,
 	                      ReceivingPit := "DB_Mechs".ReceivingPit,
 	                      Fan := "DB_Mechs".Fan,
