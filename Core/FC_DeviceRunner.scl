@@ -107,7 +107,7 @@ BEGIN
 	    
 	    // === SUSHKA (slot 301..304) ===
 	    FOR #slot := 301 TO 303 DO
-	        IF #Mechs[#slot].DeviceType = "TYPE_DRYER" THEN
+	        IF #Mechs[#slot].DeviceType = "TYPE_SUSHKA" THEN
 	            #idx := #Mechs[#slot].TypedIndex;
 	            "FC_Dryer"(D := #Dryer[#idx],
 	                        B := #Mechs[#slot],
@@ -116,7 +116,7 @@ BEGIN
 	        END_IF;
 	    END_FOR;
 	    FOR #slot := 304 TO 304 DO
-	        IF #Mechs[#slot].DeviceType = "TYPE_DRYER" THEN
+	        IF #Mechs[#slot].DeviceType = "TYPE_SUSHKA" THEN
 	            #idx := #Mechs[#slot].TypedIndex;
 	            "FC_Dryer_1B"(D := #Dryer[#idx],
 	                           B := #Mechs[#slot],
@@ -135,3 +135,4 @@ BEGIN
 	    END_FOR;
 	    
 END_FUNCTION
+

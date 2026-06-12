@@ -74,7 +74,7 @@ BEGIN
 	        END_FOR;
 	        
 	        // Симуляція сушарок
-	        FOR #i := 0 TO "DRYER_COUNT" DO
+	        FOR #i := 0 TO "SUSHKAS_COUNT" DO
 	            IF "DB_SimConfig".Sushka[#i].Enable THEN
 	                "FC_SimDryer"(
 	                               SushkaIdx := #i,
@@ -85,7 +85,7 @@ BEGIN
 	                               ManualReset := "DB_SimConfig".Sushka[#i].ManualReset,
 	                               TempRampRate := "DB_SimConfig".Sushka[#i].TempRampRate,
 	                               CaseID := "Case".CaseID[#i],
-	                               S := "DB_Mechs".Sushka[#i],
+	                               S := "DB_Mechs".Dryer[#i],
 	                               State := "DB_SimMechs".Sushka[#i]
 	                );
 	            END_IF;
@@ -178,7 +178,7 @@ BEGIN
 	                      Gate := "DB_Mechs".Gate2P,
 	                      Valve3P := "DB_Mechs".Valve3P,
 	                      Separator := "DB_Mechs".Separator,
-	                      Sushka := "DB_Mechs".Sushka,
+	                      Sushka := "DB_Mechs".Dryer,
 	                      Silos := "DB_Mechs".Silos,
 	                      ReceivingPit := "DB_Mechs".ReceivingPit,
 	                      Fan := "DB_Mechs".Fan,

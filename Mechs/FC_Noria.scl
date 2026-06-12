@@ -38,7 +38,7 @@ BEGIN
 	            END_IF;
 	        END_IF;
 	        IF (#B.FLTCode AND "FLT_ALINGMENT") <> 0 THEN
-	            IF #N.DI_Alingment_OK OR #forceAlingment THEN
+	            IF #N.DI_Alignment_OK OR #forceAlingment THEN
 	                #B.FLTCode := #B.FLTCode AND NOT "FLT_ALINGMENT";
 	            END_IF;
 	        END_IF;
@@ -86,7 +86,7 @@ BEGIN
 	        IF NOT #N.DI_Breaker_OK THEN
 	            #B.FLTCode := #B.FLTCode OR "FLT_BREAKER";
 	        END_IF;
-	        IF NOT #N.DI_Alingment_OK THEN
+	        IF NOT #N.DI_Alignment_OK THEN
 	            #B.FLTCode := #B.FLTCode OR "FLT_ALINGMENT";
 	        END_IF;
 	    END_IF;

@@ -24,7 +24,7 @@ BEGIN
 	// === Noria ===
 	FOR #i := 0 TO "NORIAS_COUNT" DO
 	    "DB_Mechs".Noria[#i].DI_Breaker_OK := FALSE;
-	    "DB_Mechs".Noria[#i].DI_Alingment_OK := FALSE;
+	    "DB_Mechs".Noria[#i].DI_Alignment_OK := FALSE;
 	    "DB_Mechs".Noria[#i].DI_Speed_OK := FALSE;
 	    "DB_Mechs".Noria[#i].DO_Run := FALSE;
 	    "DB_Mechs".Noria[#i].StartMs := 0;
